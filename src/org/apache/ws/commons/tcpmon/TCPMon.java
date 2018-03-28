@@ -16,13 +16,19 @@
 
 package org.apache.ws.commons.tcpmon;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
+
 import javax.swing.*;
+import java.awt.*;
 import java.util.ResourceBundle;
 
 /**
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
  */
 
+@SpringBootApplication
 public class TCPMon extends JFrame {
 
     /**
@@ -146,13 +152,31 @@ public class TCPMon extends JFrame {
         }
     }
 
+    public TCPMon() {
+        this(0, null, 0);
+    }
+
     /**
      * this is our main method
      *
      * @param args
      */
     public static void main(String[] args) {
+        ConfigurableApplicationContext ctx = new SpringApplicationBuilder(TCPMon.class)
+                .headless(false).run(args);
+
         try {
+            TCPMon.setupLookAndFeel(true);
+        } catch (Throwable exp) {
+            exp.printStackTrace();
+        }
+
+        EventQueue.invokeLater(() -> {
+            TCPMon ex = ctx.getBean(TCPMon.class);
+            ex.setVisible(true);
+        });
+
+ /*       try {
 
             // switch between swing L&F here
             setupLookAndFeel(true);
@@ -172,7 +196,7 @@ public class TCPMon extends JFrame {
             }
         } catch (Throwable exp) {
             exp.printStackTrace();
-        }
+        }*/
     }
 
     /**

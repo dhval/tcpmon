@@ -1,18 +1,6 @@
 package org.apache.ws.commons.tcpmon;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -53,6 +41,12 @@ class Sender extends JPanel {
     private JTextArea inputText = null;
     private JTextArea outputText = null;
 
+
+    String[] bookTitles = new String[] {"Effective Java", "Head First Java",
+            "Thinking in Java", "Java for Dummies"};
+
+    JComboBox<String> bookList = new JComboBox<>(bookTitles);
+
     public Sender(JTabbedPane _notebook) {
         notebook = _notebook;
         this.setLayout(new BorderLayout());
@@ -69,6 +63,8 @@ class Sender extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("SOAP Action  ", SwingConstants.RIGHT));
         top.add(actionField = new JTextField("", 4));
+        top.add(Box.createRigidArea(new Dimension(5, 0)));
+        top.add(bookList);
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));

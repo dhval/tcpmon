@@ -30,135 +30,31 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	<developers>
-		<developer>
-			<name>Robert Bachmann</name>
-			<email>rb AT robertbachmann.at</email>
-		</developer>
-		<!-- Developers of TCPMon <= 1.0 -->
-		<developer>
-			<name>Davanum Srinivas</name>
-			<id>dims</id>
-			<email>dims AT wso2.com</email>
-			<organization>WSO2</organization>
-		</developer>
-		<developer>
-			<name>Sanjiva Weerawarana</name>
-			<id>sanjiva</id>
-			<email>sanjiva AT wso2.com</email>
-			<organization>WSO2</organization>
-		</developer>
-		<developer>
-			<name>Glen Daniels</name>
-			<id>gdaniels</id>
-			<email>gdaniels AT apache.org</email>
-			<organization>Sonic Software</organization>
-		</developer>
-		<developer>
-			<name>Aleksander Slominski</name>
-			<id>alek</id>
-			<email>aslom AT cs.indiana.edu</email>
-			<organization>Indiana University Extreme! Computing Lab</organization>
-		</developer>
-		<developer>
-			<name>Srinath Perera</name>
-			<id>hemapani</id>
-			<email>hemapani AT apache.org</email>
-			<organization>Lanka Software Foundation</organization>
-			<url>http://www.apache.org/~hemapani</url>
-		</developer>
-		<developer>
-			<name>Eran Chinthaka</name>
-			<id>chinthaka</id>
-			<email>chinthaka AT wso2.com</email>
-			<organization>WSO2</organization>
-			<url>http://www.apache.org/~chinthaka</url>
-		</developer>
-		<developer>
-			<name>Dasarath Weerathunga</name>
-			<id>dasarath</id>
-			<email>dasarath AT opensource.lk</email>
-			<organization>Lanka Software Foundation</organization>
-		</developer>
-		<developer>
-			<name>Jaliya Ekanayake</name>
-			<id>jaliya</id>
-			<email>jaliya AT opensource.lk</email>
-			<organization>Virtusa / Lanka Software Foundation</organization>
-			<url>http://www.apache.org/~jaliya</url>
-		</developer>
-		<developer>
-			<name>Chathura Herath</name>
-			<id>chathura</id>
-			<email>chathura AT opensource.lk</email>
-			<organization>LSF/MIT</organization>
-			<url>www.apache.org/~chathura</url>
-		</developer>
-		<developer>
-			<name>Deepal Jayasinghe</name>
-			<id>deepal</id>
-			<email>deepal AT wso2.com</email>
-			<organization>WSO2</organization>
-			<url>http://www.apache.org/~deepal</url>
-		</developer>
-		<developer>
-			<name>Ajith Ranabahu</name>
-			<id>ajith</id>
-			<email>ajith AT wso2.com</email>
-			<organization>WSO2</organization>
-			<url>http://www.apache.org/~ajith</url>
-		</developer>
-		<developer>
-			<name>Venkat Reddy</name>
-			<id>venkat</id>
-			<email>vreddyp AT gmail.com</email>
-			<organization>Computer Associates</organization>
-		</developer>
-		<developer>
-			<name>Ashutosh Shahi</name>
-			<id>ashu</id>
-			<email>Ashutosh.Shahi AT ca.com</email>
-			<organization>Computer Associates</organization>
-		</developer>
-		<developer>
-			<name>Jayachandra Sekhara Rao Sunkara</name>
-			<id>jaya</id>
-			<email>jayachandra AT gmail.com</email>
-			<organization>Computer Associates</organization>
-		</developer>
-		<developer>
-			<name>Thilina Gunarathne</name>
-			<id>thilina</id>
-			<email>thilina AT opensource.lk</email>
-			<organization>Lanka Software Foundation</organization>
-		</developer>
-		<developer>
-			<name>Ruchith Fernando</name>
-			<id>ruchith</id>
-			<email>ruchith AT wso2.com</email>
-			<organization>WSO2</organization>
-		</developer>
-		<developer>
-			<name>Saminda Abeyruwan</name>
-			<id>saminda</id>
-			<email>saminda AT wso2.com</email>
-			<organization>WSO2</organization>
-		</developer>
-		<developer>
-			<name>Chamil Thanthrimudalige</name>
-			<id>chamil</id>
-			<email>chamil AT wso2.com</email>
-			<organization>WSO2</organization>
-		</developer>
-	</developers>
-	<contributors>
-		<!-- Contributors of TCPMon <= 1.0 -->
-		<contributor>
-			<name>Chatra Nakkawita</name>
-			<email>chatra AT WSO2.com</email>
-			<organization>WSO2</organization>
-		</contributor>
-	</contributors>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.3.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<dependencies>
+		<!-- Spring Boot Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -167,8 +63,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.4</source>
-					<target>1.4</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
