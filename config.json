@@ -1,0 +1,32 @@
+{
+    "name": "CCF Client",
+    "environments": {
+      "Test": "1",
+      "Internal Test": "2",
+      "Prod": "3",
+      "Internal Prod": "4"
+    },
+    "applications": {
+      "Test": "1",
+      "Internal Test": "2",
+      "Prod": "3",
+      "Internal Prod": "4"
+    },
+    "requests": {
+      "Test": "1",
+      "Internal Test": "2",
+      "Prod": "3",
+      "Internal Prod": "4"
+    },
+    "cf-xpath-expression": [
+      "//*[local-name()='CourtFiling']"
+    ],
+      "profiles": [
+      {
+        "profile": "JNET"
+      },
+      {
+        "profile": "ALLECO"
+      }
+    ]
+}

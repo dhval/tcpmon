@@ -16,9 +16,12 @@
 
 package org.apache.ws.commons.tcpmon;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,10 +34,11 @@ import java.util.ResourceBundle;
 @SpringBootApplication
 public class TCPMon extends JFrame {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
     /**
      * Field notebook
      */
-    private JTabbedPane notebook = null;
+    private JTabbedPane notebook = new JTabbedPane();;
 
     /**
      * Field STATE_COLUMN
@@ -66,6 +70,11 @@ public class TCPMon extends JFrame {
      */
     static final int DEFAULT_PORT = 8888;
 
+    //@Bean
+    public AdminPane createAdminPane() {
+        return new AdminPane(notebook, getMessage("admin00", "Admin"));
+    }
+
     /**
      * Constructor
      *
@@ -77,7 +86,7 @@ public class TCPMon extends JFrame {
     public TCPMon(int listenPort, String targetHost, int targetPort, boolean embedded) {
         super(getMessage("httptracer00","TCPMon"));
         JComponent componentToDisplay;
-        notebook = new JTabbedPane();
+
         this.getContentPane().add(notebook);
         componentToDisplay = new AdminPane(notebook, getMessage("admin00", "Admin"));
         if (listenPort != 0) {
@@ -175,6 +184,8 @@ public class TCPMon extends JFrame {
             TCPMon ex = ctx.getBean(TCPMon.class);
             ex.setVisible(true);
         });
+
+        LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
 
  /*       try {
 

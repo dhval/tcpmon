@@ -1,5 +1,10 @@
 package org.apache.ws.commons.tcpmon;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -11,29 +16,24 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Allows one to send an arbitrary soap message to a specific url with a specified soap action
  */
 class Sender extends JPanel {
+    private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
     public JTextField endpointField = null;
     public JTextField actionField = null;
     public JCheckBox xmlFormatBox = null;
     public JButton sendButton = null;
     public JButton switchButton = null;
+    public JButton fileButton = null;
     public JSplitPane outPane = null;
     public JPanel leftPanel = null;
     public JPanel rightPanel = null;
@@ -42,13 +42,30 @@ class Sender extends JPanel {
     private JTextArea outputText = null;
 
 
-    String[] bookTitles = new String[] {"Effective Java", "Head First Java",
-            "Thinking in Java", "Java for Dummies"};
 
-    JComboBox<String> bookList = new JComboBox<>(bookTitles);
+    JComboBox<String> selectEnvironment = null;
+    JComboBox<String> selectApplication = null;
+    JComboBox<String> selectRequest = null;
 
     public Sender(JTabbedPane _notebook) {
         notebook = _notebook;
+
+        final Map<String, String> environmentMap = new HashMap<>();
+        final Map<String, String> applicationMap = new HashMap<>();
+        final Map<String, String> requestMap = new HashMap<>();
+        try {
+            Map readValue = new ObjectMapper().readValue(new File("config.json"), Map.class);
+            environmentMap.putAll((Map<String, String>) readValue.get("environments"));
+            applicationMap.putAll((Map<String, String>) readValue.get("applications"));
+            requestMap.putAll((Map<String, String>) readValue.get("requests"));
+        } catch (IOException io) {
+            LOG.warn("config.json file not found");
+        }
+
+        selectEnvironment = new JComboBox<>(environmentMap.keySet().toArray(new String[0]));
+        selectApplication = new JComboBox<>(applicationMap.keySet().toArray(new String[0]));
+        selectRequest = new JComboBox<>(applicationMap.keySet().toArray(new String[0]));
+
         this.setLayout(new BorderLayout());
 
         // 1st component is just a row of labels and 1-line entry fields
@@ -56,6 +73,7 @@ class Sender extends JPanel {
         JPanel top = new JPanel();
         top.setLayout(new BoxLayout(top, BoxLayout.X_AXIS));
         top.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        top.add(selectEnvironment);
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("Connection Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -64,8 +82,9 @@ class Sender extends JPanel {
         top.add(new JLabel("SOAP Action  ", SwingConstants.RIGHT));
         top.add(actionField = new JTextField("", 4));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(bookList);
-        top.add(Box.createRigidArea(new Dimension(5, 0)));
+
+        JFileChooser fc = new JFileChooser();
+
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
         this.add(top, BorderLayout.NORTH);
@@ -89,13 +108,17 @@ class Sender extends JPanel {
         outPane.setDividerSize(4);
         pane2.add(outPane, BorderLayout.CENTER);
         JPanel bottomButtons = new JPanel();
-        bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.X_AXIS));
+        bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.LINE_AXIS));
         bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         bottomButtons.add(
                 xmlFormatBox =
                 new JCheckBox(TCPMon.getMessage("xmlFormat00", "XML Format")));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         bottomButtons.add(sendButton = new JButton("Send"));
+
+        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
+        bottomButtons.add(fileButton = new JButton("Open"));
+
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         final String switchStr = TCPMon.getMessage("switch00", "Switch Layout");
         bottomButtons.add(switchButton = new JButton(switchStr));
@@ -121,6 +144,49 @@ class Sender extends JPanel {
                         outPane.setOrientation(0);
                     }
                     outPane.setDividerLocation(0.5);
+                }
+            }
+        });
+        selectEnvironment.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                    String item = (String) selectEnvironment.getSelectedItem();//get the selected item
+
+                    endpointField.setText(environmentMap.get(item));
+
+                }
+        });
+        Sender sender = this;
+        fileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch (fc.showOpenDialog(sender))
+                {
+                    case JFileChooser.APPROVE_OPTION:
+                        JOptionPane.showMessageDialog(sender, "Selected: "+
+                                        fc.getSelectedFile(),
+                                "FCDemo",
+                                JOptionPane.OK_OPTION);
+                        try {
+                            LOG.info("Read File: " + fc.getSelectedFile().getAbsolutePath());
+                            String text = FileUtils.readFileToString(fc.getSelectedFile());
+                            inputText.setText(prettyXML(text));
+                        } catch (Exception ex) {
+
+                        }
+                        break;
+
+                    case JFileChooser.CANCEL_OPTION:
+                        JOptionPane.showMessageDialog(sender, "Cancelled",
+                                "FCDemo",
+                                JOptionPane.OK_OPTION);
+                        break;
+
+                    case JFileChooser.ERROR_OPTION:
+                        JOptionPane.showMessageDialog(sender, "Error",
+                                "FCDemo",
+                                JOptionPane.OK_OPTION);
                 }
             }
         });
