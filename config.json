@@ -1,6 +1,7 @@
 {
     "name": "CCF Client",
     "environments": {
+      "Echo": "http://localhost:8080/echo/services/XYZ",
       "Test": "1",
       "Internal Test": "2",
       "Prod": "3",

@@ -16,16 +16,15 @@
 
 package org.apache.ws.commons.tcpmon;
 
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
+import apache.tcpmon.EchoHandler;
+import apache.tcpmon.JUtils;
+import apache.tcpmon.LocalTestServer;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -43,7 +42,8 @@ import java.awt.event.ActionListener;
  * this is the admin page
  */
 class AdminPane extends JPanel {
-	
+    private static final Logger LOG = LoggerFactory.getLogger(AdminPane.class);
+
     /**
      * Field listenerButton, proxyButton
      */
@@ -109,6 +109,13 @@ class AdminPane extends JPanel {
      */
     public JCheckBox delayBox;
 
+    public JFileChooser fileChooser = new JFileChooser();
+
+    public JLabel fileLabel = new JLabel();
+
+    public JTextField httpPath = JUtils.jTextField("/echo/*", 25, 100);
+
+    private final EchoHandler httpHandler = new EchoHandler();
     /**
      * Constructor AdminPage
      *
@@ -118,6 +125,16 @@ class AdminPane extends JPanel {
     public AdminPane(JTabbedPane notebook, String name) {
         JPanel mainPane = null;
         JButton addButton = null;
+        JButton serverButton = null;
+
+        GridBagConstraints DEF_GRID_BAG = new GridBagConstraints();
+        DEF_GRID_BAG.anchor = GridBagConstraints.WEST;
+        DEF_GRID_BAG.gridwidth = GridBagConstraints.REMAINDER;
+
+        GridBagConstraints DEF_GRID_1 = new GridBagConstraints();
+        DEF_GRID_1.anchor = GridBagConstraints.WEST;
+        DEF_GRID_1.gridwidth = 1;
+
         this.setLayout(new BorderLayout());
         noteb = notebook;
         GridBagLayout layout = new GridBagLayout();
@@ -353,21 +370,46 @@ class AdminPane extends JPanel {
             }
         });
 
+        mainPane.add(Box.createRigidArea(new Dimension(1, 10)), c);
+
+        // Act as Server section
+        // /////////////////////////////////////////////////////////////////
+        JPanel opts2 = new JPanel(new GridBagLayout());
+        opts2.setBorder(new TitledBorder("Server"));
+        mainPane.add(opts2, DEF_GRID_BAG);
+        JButton fileChooseButton =  new JButton("File");
+        opts2.add(new JLabel("Path: "), DEF_GRID_1);
+        opts2.add(httpPath, DEF_GRID_1);
+        opts2.add(new JComboBox<String> (new String[] {"Echo", "Canned"}), DEF_GRID_1);
+        opts2.add(fileChooseButton, DEF_GRID_BAG);
+        opts2.add(fileLabel = new JLabel("File"), DEF_GRID_BAG);
+
         // Spacer
         // ////////////////////////////////////////////////////////////////
         mainPane.add(Box.createRigidArea(new Dimension(1, 10)), c);
 
         // ADD Button
         // /////////////////////////////////////////////////////////////////
-        c.anchor = GridBagConstraints.WEST;
-        c.gridwidth = GridBagConstraints.REMAINDER;
+
+        JPanel bottomButtons = new JPanel();
+        bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.LINE_AXIS));
+        bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+
         final String add = TCPMon.getMessage("add00", "Add");
-        mainPane.add(addButton = new JButton(add), c);
+        bottomButtons.add(addButton = new JButton(add), c);
+        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
+        bottomButtons.add(serverButton = new JButton("Server"), DEF_GRID_BAG);
+
+        mainPane.add(bottomButtons, DEF_GRID_BAG);
+
         this.add(new JScrollPane(mainPane), BorderLayout.CENTER);
 
         // addButton.setEnabled( false );
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                LOG.info(event.toString());
+                LOG.info(event.getActionCommand().toString());
                 if (add.equals(event.getActionCommand())) {
                     String text;
                     Listener l = null;
@@ -413,6 +455,53 @@ class AdminPane extends JPanel {
                 }
             }
         });
+
+        serverButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                LOG.info(event.getActionCommand().toString());
+                if (!event.getActionCommand().equals("Server")) return;;
+                int lPort = port.getValue(0);
+                if (lPort == 0) return;
+                LocalTestServer server = new LocalTestServer(lPort);
+                if (!StringUtils.isEmpty(fileLabel.getText())) {
+                    httpHandler.setFile(fileLabel.getText());
+                }
+                server.register(httpPath.getText(), httpHandler);
+                try {
+                    server.start();
+                    LOG.info("Listening on localhost:" + lPort);
+                } catch (Exception e) {
+                    LOG.warn(e.getMessage(), e);
+                }
+
+            }
+        });
+
+        AdminPane sender = this;
+        fileChooseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch (fileChooser.showOpenDialog(sender))
+                {
+                    case JFileChooser.APPROVE_OPTION:
+                        try {
+                            String respFile = fileChooser.getSelectedFile().getAbsolutePath();
+                            LOG.info("Read File: " + respFile);
+                            fileLabel.setText(respFile);
+                            httpHandler.setFile(respFile);
+                        } catch (Exception ex) {
+                            LOG.warn(ex.getMessage(), ex);
+                        }
+                        break;
+                    case JFileChooser.CANCEL_OPTION:
+                        JOptionPane.showMessageDialog(sender, "Cancelled", "TCPMon", JOptionPane.OK_OPTION);
+                        break;
+                    case JFileChooser.ERROR_OPTION:
+                        JOptionPane.showMessageDialog(sender, "Error", "TCPMon", JOptionPane.OK_OPTION);
+                }
+            }
+        });
+
         notebook.addTab(name, this);
         
         new Sender(noteb);
