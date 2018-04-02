@@ -9,12 +9,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import java.io.ByteArrayOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
     private static Processor proc = new Processor(false);
     private static XPathCompiler xpath = proc.newXPathCompiler();
-
+    private static Pattern pattern = Pattern.compile("^https?://[^/]+/([^/]+)/.*$");
     static {
         xpath.declareNamespace("jnet", "http://www.jnet.state.pa.us/niem/JNET/jnet-core/1");
     }
@@ -33,4 +35,18 @@ public class Utils {
         }
         return "";
     }
+
+    public static String getContextPath(String url) {
+        LOG.info(url);
+        Matcher matcher = pattern.matcher(url);
+      //  LOG.info("" + matcher.find() + matcher.groupCount());
+        if (matcher.find() && matcher.groupCount() ==1) {
+            LOG.info(matcher.group(0));
+            LOG.info(matcher.group(1));
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+
 }

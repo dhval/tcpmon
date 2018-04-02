@@ -1,9 +1,12 @@
 package org.apache.ws.commons.tcpmon;
 
+import apache.tcpmon.JUtils;
+import apache.tcpmon.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.swing.*;
 import javax.xml.transform.OutputKeys;
@@ -41,30 +44,38 @@ class Sender extends JPanel {
     private JTextArea inputText = null;
     private JTextArea outputText = null;
 
-
+    private Sender instance = null;
+    public JTextField hostNameField = null;
+    public  JFileChooser fc = new JFileChooser();
+    public JButton saveRequestdBtn =  new JButton(BTN_SAVE_REQUEST);
+    public JButton saveResponsedBtn = new JButton(BTN_SAVE_RESPONSE);
 
     JComboBox<String> selectEnvironment = null;
-    JComboBox<String> selectApplication = null;
+    JComboBox<String> selectHost = null;
     JComboBox<String> selectRequest = null;
+
+    private static final String BTN_SAVE_REQUEST = "Save Request";
+    private static final String BTN_SAVE_RESPONSE = "Save Response";
 
     public Sender(JTabbedPane _notebook) {
         notebook = _notebook;
-
+        instance = this;
+        fc.setCurrentDirectory(new File(TCPMon.CWD));
         final Map<String, String> environmentMap = new HashMap<>();
-        final Map<String, String> applicationMap = new HashMap<>();
+        final Map<String, String> hostMap = new HashMap<>();
         final Map<String, String> requestMap = new HashMap<>();
         try {
             Map readValue = new ObjectMapper().readValue(new File("config.json"), Map.class);
             environmentMap.putAll((Map<String, String>) readValue.get("environments"));
-            applicationMap.putAll((Map<String, String>) readValue.get("applications"));
+            hostMap.putAll((Map<String, String>) readValue.get("hosts"));
             requestMap.putAll((Map<String, String>) readValue.get("requests"));
         } catch (IOException io) {
             LOG.warn("config.json file not found");
         }
 
         selectEnvironment = new JComboBox<>(environmentMap.keySet().toArray(new String[0]));
-        selectApplication = new JComboBox<>(applicationMap.keySet().toArray(new String[0]));
-        selectRequest = new JComboBox<>(applicationMap.keySet().toArray(new String[0]));
+        selectHost = new JComboBox<>(hostMap.keySet().toArray(new String[0]));
+        selectRequest = new JComboBox<>(requestMap.keySet().toArray(new String[0]));
 
         this.setLayout(new BorderLayout());
 
@@ -72,6 +83,9 @@ class Sender extends JPanel {
         // ///////////////////////////////////////////////////////////////////
         JPanel top = new JPanel();
         top.setLayout(new BoxLayout(top, BoxLayout.X_AXIS));
+        top.add(selectHost);
+        top.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        top.add(hostNameField = JUtils.jTextField("", 10, 15));
         top.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         top.add(selectEnvironment);
         top.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -83,7 +97,7 @@ class Sender extends JPanel {
         top.add(actionField = new JTextField("", 4));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
 
-        JFileChooser fc = new JFileChooser();
+
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
@@ -117,7 +131,13 @@ class Sender extends JPanel {
         bottomButtons.add(sendButton = new JButton("Send"));
 
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        bottomButtons.add(fileButton = new JButton("Open"));
+        bottomButtons.add(fileButton = new JButton("Open Request"));
+
+        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
+        bottomButtons.add(saveRequestdBtn);
+
+        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
+        bottomButtons.add(saveResponsedBtn);
 
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         final String switchStr = TCPMon.getMessage("switch00", "Switch Layout");
@@ -150,12 +170,21 @@ class Sender extends JPanel {
         selectEnvironment.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                    String item = (String) selectEnvironment.getSelectedItem();//get the selected item
-
+                String item = (String) selectEnvironment.getSelectedItem();
+                String itemVal = environmentMap.get(item);
+                if (StringUtils.isEmpty(hostNameField.getText())) {
                     endpointField.setText(environmentMap.get(item));
-
+                } else {
+                    endpointField.setText(itemVal.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
                 }
+            }
+        });
+        selectHost.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String item = (String) selectHost.getSelectedItem();//get the selected item
+                hostNameField.setText(hostMap.get(item));
+            }
         });
         Sender sender = this;
         fileButton.addActionListener(new ActionListener() {
@@ -190,10 +219,53 @@ class Sender extends JPanel {
                 }
             }
         });
+        saveRequestdBtn.addActionListener(fileWritterAction);
+        saveResponsedBtn.addActionListener(fileWritterAction);
         this.add(pane2, BorderLayout.CENTER);
         outPane.setDividerLocation(250);
         notebook.addTab("Sender", this);
     }
+
+    public ActionListener fileWritterAction = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            LOG.info(e.getActionCommand());
+            LOG.info(e.paramString());
+            switch (fc.showOpenDialog(instance))
+            {
+                case JFileChooser.APPROVE_OPTION:
+                    JOptionPane.showMessageDialog(instance, "Selected: "+
+                                    fc.getSelectedFile(),
+                            "FCDemo",
+                            JOptionPane.OK_OPTION);
+                    try {
+                        JTextArea textArea = (e.getActionCommand().equals(BTN_SAVE_REQUEST)) ? inputText : outputText;
+                        String filePath = fc.getSelectedFile().getAbsolutePath();
+                        filePath += (filePath.endsWith(".xml")) ? "" : ".xml";
+                        LOG.info("Write request to file: " + filePath);
+                        String text = prettyXML(textArea.getText());
+                        try(FileWriter fw = new FileWriter(filePath)) {
+                            fw.write(text);
+                        }
+                    } catch (Exception ex) {
+                        LOG.warn(ex.getMessage(), ex);
+                    }
+                    break;
+
+                case JFileChooser.CANCEL_OPTION:
+                    JOptionPane.showMessageDialog(instance, "Cancelled",
+                            "FCDemo",
+                            JOptionPane.OK_OPTION);
+                    break;
+
+                case JFileChooser.ERROR_OPTION:
+                    JOptionPane.showMessageDialog(instance, "Error",
+                            "FCDemo",
+                            JOptionPane.OK_OPTION);
+            }
+        }
+    };
+
     /**
      * Method setLeft
      *

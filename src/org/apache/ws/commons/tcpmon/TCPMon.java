@@ -16,6 +16,7 @@
 
 package org.apache.ws.commons.tcpmon;
 
+import apache.tcpmon.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,7 +35,7 @@ import java.util.ResourceBundle;
 @SpringBootApplication
 public class TCPMon extends JFrame {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);
     /**
      * Field notebook
      */
@@ -69,6 +70,8 @@ public class TCPMon extends JFrame {
      * Field DEFAULT_PORT
      */
     static final int DEFAULT_PORT = 8888;
+
+    public static final String CWD = System.getProperty("user.dir");
 
     //@Bean
     public AdminPane createAdminPane() {
@@ -186,6 +189,7 @@ public class TCPMon extends JFrame {
         });
 
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
+        LOG.info("GMT: " + DateUtils.gmt());
 
  /*       try {
 

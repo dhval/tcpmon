@@ -2,16 +2,18 @@
     "name": "CCF Client",
     "environments": {
       "Echo": "http://localhost:8080/echo/services/XYZ",
+      "Offender-Internal" : "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",
+      "Offender-CDWS-DOC" : "http://10.182.70.250:50180/CorrectionsInquiryDoc",
       "Test": "1",
       "Internal Test": "2",
       "Prod": "3",
       "Internal Prod": "4"
     },
-    "applications": {
-      "Test": "1",
-      "Internal Test": "2",
-      "Prod": "3",
-      "Internal Prod": "4"
+    "hosts": {
+      "None": "",
+      "DP_Test": "10.182.70.250",
+      "DP_Prod": "3",
+      "localhost": "127.0.0.1"
     },
     "requests": {
       "Test": "1",
