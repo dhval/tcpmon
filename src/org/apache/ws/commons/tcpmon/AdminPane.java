@@ -115,6 +115,8 @@ class AdminPane extends JPanel {
 
     public JTextField httpPath = JUtils.jTextField("/echo/*", 25, 100);
 
+    public JComboBox<String> httpPaths;
+
     private final EchoHandler httpHandler = new EchoHandler();
     /**
      * Constructor AdminPage
@@ -380,7 +382,7 @@ class AdminPane extends JPanel {
         JButton fileChooseButton =  new JButton("File");
         opts2.add(new JLabel("Path: "), DEF_GRID_1);
         opts2.add(httpPath, DEF_GRID_1);
-        opts2.add(new JComboBox<String> (new String[] {"Echo", "Canned"}), DEF_GRID_1);
+        opts2.add(httpPaths = new JComboBox<String> (new String[] {"/echo1/*", "/api/*"}), DEF_GRID_1);
         opts2.add(fileChooseButton, DEF_GRID_BAG);
         opts2.add(fileLabel = new JLabel("File"), DEF_GRID_BAG);
 
@@ -474,6 +476,14 @@ class AdminPane extends JPanel {
                     LOG.warn(e.getMessage(), e);
                 }
 
+            }
+        });
+
+        httpPaths.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String item = (String) httpPaths.getSelectedItem();//get the selected item
+                httpPath.setText(item);
             }
         });
 
