@@ -14,9 +14,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -61,6 +59,7 @@ class Sender extends JPanel {
         notebook = _notebook;
         instance = this;
         fc.setCurrentDirectory(new File(TCPMon.CWD));
+
         final Map<String, String> environmentMap = new HashMap<>();
         final Map<String, String> hostMap = new HashMap<>();
         final Map<String, String> requestMap = new HashMap<>();
@@ -97,11 +96,15 @@ class Sender extends JPanel {
         top.add(actionField = new JTextField("", 4));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
 
-
+        JPanel top2 = new JPanel();
+        top2.setLayout(new BoxLayout(top2, BoxLayout.LINE_AXIS));
+        top2.add(new JLabel("hjgj"));
+        top2.add(new JLabel("hjgj"));
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
         this.add(top, BorderLayout.NORTH);
+        top.add(top2, BorderLayout.SOUTH);
         inputText = new JTextArea(null, null, 20, 80);
         JScrollPane inputScroll = new JScrollPane(inputText);
         outputText = new JTextArea(null, null, 20, 80);
