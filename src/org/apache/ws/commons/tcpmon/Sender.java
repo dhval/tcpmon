@@ -4,6 +4,9 @@ import apache.tcpmon.JUtils;
 import apache.tcpmon.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -39,9 +42,10 @@ class Sender extends JPanel {
     public JPanel leftPanel = null;
     public JPanel rightPanel = null;
     public JTabbedPane notebook = null;
-    private JTextArea inputText = null;
-    private JTextArea outputText = null;
+    private RSyntaxTextArea inputText = null;
+    private RSyntaxTextArea outputText = null;
 
+    private JLabel requestFileLabel;
     private Sender instance = null;
     public JTextField hostNameField = null;
     public  JFileChooser fc = new JFileChooser();
@@ -59,6 +63,13 @@ class Sender extends JPanel {
         notebook = _notebook;
         instance = this;
         fc.setCurrentDirectory(new File(TCPMon.CWD));
+        RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
+        inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
+        inputText.setCodeFoldingEnabled(true);
+        RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
+        outputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
+        outputText.setCodeFoldingEnabled(true);
+
 
         final Map<String, String> environmentMap = new HashMap<>();
         final Map<String, String> hostMap = new HashMap<>();
@@ -97,18 +108,15 @@ class Sender extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
 
         JPanel top2 = new JPanel();
-        top2.setLayout(new BoxLayout(top2, BoxLayout.LINE_AXIS));
-        top2.add(new JLabel("hjgj"));
-        top2.add(new JLabel("hjgj"));
+        top2.setLayout(new BoxLayout(top2, BoxLayout.X_AXIS));
+        top2.add(new JLabel("File:"));
+        top.add(Box.createRigidArea(new Dimension(5, 0)));
+        top2.add(requestFileLabel = new JLabel(""));
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
         this.add(top, BorderLayout.NORTH);
-        top.add(top2, BorderLayout.SOUTH);
-        inputText = new JTextArea(null, null, 20, 80);
-        JScrollPane inputScroll = new JScrollPane(inputText);
-        outputText = new JTextArea(null, null, 20, 80);
-        JScrollPane outputScroll = new JScrollPane(outputText);
+        this.add(top2, BorderLayout.SOUTH);
 
         // Add Request/Response Section
         // ///////////////////////////////////////////////////////////////////
@@ -117,10 +125,13 @@ class Sender extends JPanel {
         leftPanel = new JPanel();
         leftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.add(inputScroll);
+
+        leftPanel.add(new RTextScrollPane(inputText));
+
+
         rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        rightPanel.add(outputScroll);
+        rightPanel.add(new RTextScrollPane(outputText));
         outPane = new JSplitPane(0, leftPanel, rightPanel);
         outPane.setDividerSize(4);
         pane2.add(outPane, BorderLayout.CENTER);
@@ -202,7 +213,8 @@ class Sender extends JPanel {
                         try {
                             LOG.info("Read File: " + fc.getSelectedFile().getAbsolutePath());
                             String text = FileUtils.readFileToString(fc.getSelectedFile());
-                            inputText.setText(prettyXML(text));
+                            requestFileLabel.setText(fc.getSelectedFile().getCanonicalPath());
+                            if (!StringUtils.isEmpty(text)) inputText.setText(prettyXML(text));
                         } catch (Exception ex) {
 
                         }
@@ -244,7 +256,7 @@ class Sender extends JPanel {
         public void actionPerformed(ActionEvent e) {
             LOG.info(e.getActionCommand());
             LOG.info(e.paramString());
-            switch (fc.showOpenDialog(instance))
+            switch (fc.showSaveDialog(Sender.this))
             {
                 case JFileChooser.APPROVE_OPTION:
                     JOptionPane.showMessageDialog(instance, "Selected: "+
@@ -345,9 +357,9 @@ class Sender extends JPanel {
     
     public String prettyXML(String input) throws Exception {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        try {transformerFactory.setAttribute("indent-number", new Integer(2)); } catch (Exception e){}
+        try {transformerFactory.setAttribute("indent-number", new Integer(1)); } catch (Exception e){}
         Transformer transformer = transformerFactory.newTransformer();
-        try {transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2"); } catch (Exception e){}
+        try {transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "1"); } catch (Exception e){}
         transformer.setOutputProperty(OutputKeys.INDENT , "yes");
         StringWriter writer = new StringWriter();
         transformer.transform(new StreamSource(new StringReader(input)), new StreamResult(writer));
