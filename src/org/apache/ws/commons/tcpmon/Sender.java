@@ -175,18 +175,17 @@ class Sender extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String item = (String) selectEnvironment.getSelectedItem();
                 String itemVal = environmentMap.get(item);
-                if (StringUtils.isEmpty(hostNameField.getText())) {
-                    endpointField.setText(environmentMap.get(item));
-                } else {
-                    endpointField.setText(itemVal.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
-                }
+                endpointField.setText(itemVal);
             }
         });
         selectHost.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String item = (String) selectHost.getSelectedItem();//get the selected item
-                hostNameField.setText(hostMap.get(item));
+                String selHost = (String) selectHost.getSelectedItem();
+                hostNameField.setText(hostMap.get(selHost));
+                if (StringUtils.isEmpty(selHost)) return;
+                String selectEndPoint = endpointField.getText();
+                endpointField.setText(selectEndPoint.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
             }
         });
         Sender sender = this;
@@ -219,6 +218,17 @@ class Sender extends JPanel {
                         JOptionPane.showMessageDialog(sender, "Error",
                                 "FCDemo",
                                 JOptionPane.OK_OPTION);
+                }
+            }
+        });
+        xmlFormatBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (!StringUtils.isEmpty(outputText.getText())) outputText.setText(prettyXML(outputText.getText()));
+                    if (!StringUtils.isEmpty(inputText.getText())) inputText.setText(prettyXML(inputText.getText()));
+                } catch (Exception e1) {
+                    LOG.warn(e1.getMessage(), e1);
                 }
             }
         });

@@ -4,16 +4,16 @@
       "Echo": "http://localhost:8080/echo/services/XYZ",
       "Offender-Internal" : "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",
       "Offender-CDWS-DOC" : "http://10.182.70.250:50180/CorrectionsInquiryDoc",
-      "Test": "1",
-      "Internal Test": "2",
-      "Prod": "3",
+      "OffenderInquiry-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
+      "OffenderInquiry-Old": "http://10.182.70.250:50061/JNETInquiry/OffenderInquiry",
+      "AddressSearch": "http://10.182.70.250:51010/JNET/AddressSearch",
       "Internal Prod": "4"
     },
     "hosts": {
       "None": "",
-      "DP_Test": "10.182.70.250",
-      "DP_Prod": "3",
-      "localhost": "127.0.0.1"
+      "Test": "10.182.70.250",
+      "Prod": "10.182.68.247",
+      "Localhost": "127.0.0.1"
     },
     "requests": {
       "Test": "1",

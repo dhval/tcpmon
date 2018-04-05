@@ -23,8 +23,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>TCPMon</name>
 	<artifactId>tcpmon</artifactId>
-	<groupId>at.robertbachmann</groupId>
-	<version>1.2.0-SNAPSHOT</version>
+	<groupId>m.dhval</groupId>
+	<version>2.0</version>
 	<description>TCPMon is a utility for viewing HTTP requests and responses. It is based on Apache's TCPMon 1.0</description>
 	<url>https://github.com/robertbachmann/tcpmon/</url>
 	<properties>
@@ -107,6 +107,20 @@
 							<mainClass>org.apache.ws.commons.tcpmon.TCPMon</mainClass>
 						</manifest>
 					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20.1</version>
+				<configuration>
+					<useUnlimitedThreads>true</useUnlimitedThreads>
+					<threadCount>10</threadCount>
+					<perCoreThreadCount>true</perCoreThreadCount>
 				</configuration>
 			</plugin>
 		</plugins>
