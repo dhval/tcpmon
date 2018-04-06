@@ -1,6 +1,8 @@
 package org.apache.ws.commons.tcpmon;
 
 import apache.tcpmon.JUtils;
+import apache.tcpmon.OpenFileAction;
+import apache.tcpmon.SelectTextAction;
 import apache.tcpmon.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
@@ -42,8 +44,8 @@ class Sender extends JPanel {
     public JPanel leftPanel = null;
     public JPanel rightPanel = null;
     public JTabbedPane notebook = null;
-    private RSyntaxTextArea inputText = null;
-    private RSyntaxTextArea outputText = null;
+    private RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
+    private RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
 
     private JLabel requestFileLabel;
     private Sender instance = null;
@@ -63,10 +65,15 @@ class Sender extends JPanel {
         notebook = _notebook;
         instance = this;
         fc.setCurrentDirectory(new File(TCPMon.CWD));
-        RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
+
         inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         inputText.setCodeFoldingEnabled(true);
-        RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
+        JPopupMenu popup = inputText.getPopupMenu();
+        popup.addSeparator();
+        popup.add(new JMenuItem(new SelectTextAction()));
+        popup.addSeparator();
+        popup.add(new JMenuItem(new OpenFileAction("Open File", this, requestFileLabel, inputText)));
+
         outputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         outputText.setCodeFoldingEnabled(true);
 
@@ -214,7 +221,7 @@ class Sender extends JPanel {
                             LOG.info("Read File: " + fc.getSelectedFile().getAbsolutePath());
                             String text = FileUtils.readFileToString(fc.getSelectedFile());
                             requestFileLabel.setText(fc.getSelectedFile().getCanonicalPath());
-                            if (!StringUtils.isEmpty(text)) inputText.setText(prettyXML(text));
+                            if (!StringUtils.isEmpty(text)) inputText.setText(Utils.prettyXML(text));
                         } catch (Exception ex) {
 
                         }
@@ -237,8 +244,8 @@ class Sender extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (!StringUtils.isEmpty(outputText.getText())) outputText.setText(prettyXML(outputText.getText()));
-                    if (!StringUtils.isEmpty(inputText.getText())) inputText.setText(prettyXML(inputText.getText()));
+                    if (!StringUtils.isEmpty(outputText.getText())) outputText.setText(Utils.prettyXML(outputText.getText()));
+                    if (!StringUtils.isEmpty(inputText.getText())) inputText.setText(Utils.prettyXML(inputText.getText()));
                 } catch (Exception e1) {
                     LOG.warn(e1.getMessage(), e1);
                 }
@@ -268,7 +275,7 @@ class Sender extends JPanel {
                         String filePath = fc.getSelectedFile().getAbsolutePath();
                         filePath += (filePath.endsWith(".xml")) ? "" : ".xml";
                         LOG.info("Write request to file: " + filePath);
-                        String text = prettyXML(textArea.getText());
+                        String text = Utils.prettyXML(textArea.getText());
                         try(FileWriter fw = new FileWriter(filePath)) {
                             fw.write(text);
                         }
@@ -346,23 +353,14 @@ class Sender extends JPanel {
                 outputText.append(line);
             }
             if(xmlFormatBox.isSelected()){
-                outputText.setText(prettyXML(outputText.getText()));        
+                outputText.setText(Utils.prettyXML(outputText.getText()));
             }
         } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
             StringWriter w = new StringWriter();
             e.printStackTrace(new PrintWriter(w));
             outputText.setText(w.toString());
         }
     }
-    
-    public String prettyXML(String input) throws Exception {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        try {transformerFactory.setAttribute("indent-number", new Integer(1)); } catch (Exception e){}
-        Transformer transformer = transformerFactory.newTransformer();
-        try {transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "1"); } catch (Exception e){}
-        transformer.setOutputProperty(OutputKeys.INDENT , "yes");
-        StringWriter writer = new StringWriter();
-        transformer.transform(new StreamSource(new StringReader(input)), new StreamResult(writer));
-        return writer.toString();
-    }
+
 }

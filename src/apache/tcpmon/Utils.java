@@ -8,7 +8,14 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,5 +55,14 @@ public class Utils {
         return null;
     }
 
-
+    public static String prettyXML(String input) throws Exception {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        try {transformerFactory.setAttribute("indent-number", new Integer(1)); } catch (Exception e){}
+        Transformer transformer = transformerFactory.newTransformer();
+        try {transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "1"); } catch (Exception e){}
+        transformer.setOutputProperty(OutputKeys.INDENT , "yes");
+        StringWriter writer = new StringWriter();
+        transformer.transform(new StreamSource(new StringReader(input)), new StreamResult(writer));
+        return writer.toString();
+    }
 }
