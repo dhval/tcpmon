@@ -1,9 +1,6 @@
 package org.apache.ws.commons.tcpmon;
 
-import apache.tcpmon.JUtils;
-import apache.tcpmon.OpenFileAction;
-import apache.tcpmon.SelectTextAction;
-import apache.tcpmon.Utils;
+import apache.tcpmon.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -39,7 +36,6 @@ class Sender extends JPanel {
     public JCheckBox xmlFormatBox = null;
     public JButton sendButton = null;
     public JButton switchButton = null;
-    public JButton fileButton = null;
     public JSplitPane outPane = null;
     public JPanel leftPanel = null;
     public JPanel rightPanel = null;
@@ -47,19 +43,14 @@ class Sender extends JPanel {
     private RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
     private RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
 
-    private JLabel requestFileLabel;
+    private JLabel requestFileLabel= new JLabel("");
     private Sender instance = null;
     public JTextField hostNameField = null;
     public  JFileChooser fc = new JFileChooser();
-    public JButton saveRequestdBtn =  new JButton(BTN_SAVE_REQUEST);
-    public JButton saveResponsedBtn = new JButton(BTN_SAVE_RESPONSE);
 
     JComboBox<String> selectEnvironment = null;
     JComboBox<String> selectHost = null;
     JComboBox<String> selectRequest = null;
-
-    private static final String BTN_SAVE_REQUEST = "Save Request";
-    private static final String BTN_SAVE_RESPONSE = "Save Response";
 
     public Sender(JTabbedPane _notebook) {
         notebook = _notebook;
@@ -68,12 +59,17 @@ class Sender extends JPanel {
 
         inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         inputText.setCodeFoldingEnabled(true);
-        JPopupMenu popup = inputText.getPopupMenu();
-        popup.addSeparator();
-        popup.add(new JMenuItem(new SelectTextAction()));
-        popup.addSeparator();
-        popup.add(new JMenuItem(new OpenFileAction("Open File", this, requestFileLabel, inputText)));
+        JPopupMenu popupIn = inputText.getPopupMenu();
+        popupIn.addSeparator();
+        popupIn.add(new JMenuItem(new SelectTextAction()));
+        popupIn.addSeparator();
+        popupIn.add(new JMenuItem(new OpenFileAction("Open", this, requestFileLabel, inputText)));
 
+        JPopupMenu popupOut = outputText.getPopupMenu();
+        popupOut.addSeparator();
+        popupOut.add(new JMenuItem(new SelectTextAction()));
+        popupOut.addSeparator();
+        popupOut.add(new JMenuItem(new SaveFileAction("Save", this, outputText)));
         outputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         outputText.setCodeFoldingEnabled(true);
 
@@ -118,7 +114,7 @@ class Sender extends JPanel {
         top2.setLayout(new BoxLayout(top2, BoxLayout.X_AXIS));
         top2.add(new JLabel("File:"));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top2.add(requestFileLabel = new JLabel(""));
+        top2.add(requestFileLabel);
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
@@ -150,15 +146,6 @@ class Sender extends JPanel {
                 new JCheckBox(TCPMon.getMessage("xmlFormat00", "XML Format")));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         bottomButtons.add(sendButton = new JButton("Send"));
-
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        bottomButtons.add(fileButton = new JButton("Open Request"));
-
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        bottomButtons.add(saveRequestdBtn);
-
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        bottomButtons.add(saveResponsedBtn);
 
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         final String switchStr = TCPMon.getMessage("switch00", "Switch Layout");
@@ -207,39 +194,7 @@ class Sender extends JPanel {
             }
         });
         Sender sender = this;
-        fileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switch (fc.showOpenDialog(sender))
-                {
-                    case JFileChooser.APPROVE_OPTION:
-                        JOptionPane.showMessageDialog(sender, "Selected: "+
-                                        fc.getSelectedFile(),
-                                "FCDemo",
-                                JOptionPane.OK_OPTION);
-                        try {
-                            LOG.info("Read File: " + fc.getSelectedFile().getAbsolutePath());
-                            String text = FileUtils.readFileToString(fc.getSelectedFile());
-                            requestFileLabel.setText(fc.getSelectedFile().getCanonicalPath());
-                            if (!StringUtils.isEmpty(text)) inputText.setText(Utils.prettyXML(text));
-                        } catch (Exception ex) {
 
-                        }
-                        break;
-
-                    case JFileChooser.CANCEL_OPTION:
-                        JOptionPane.showMessageDialog(sender, "Cancelled",
-                                "FCDemo",
-                                JOptionPane.OK_OPTION);
-                        break;
-
-                    case JFileChooser.ERROR_OPTION:
-                        JOptionPane.showMessageDialog(sender, "Error",
-                                "FCDemo",
-                                JOptionPane.OK_OPTION);
-                }
-            }
-        });
         xmlFormatBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -251,52 +206,11 @@ class Sender extends JPanel {
                 }
             }
         });
-        saveRequestdBtn.addActionListener(fileWritterAction);
-        saveResponsedBtn.addActionListener(fileWritterAction);
+
         this.add(pane2, BorderLayout.CENTER);
         outPane.setDividerLocation(250);
         notebook.addTab("Sender", this);
     }
-
-    public ActionListener fileWritterAction = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            LOG.info(e.getActionCommand());
-            LOG.info(e.paramString());
-            switch (fc.showSaveDialog(Sender.this))
-            {
-                case JFileChooser.APPROVE_OPTION:
-                    JOptionPane.showMessageDialog(instance, "Selected: "+
-                                    fc.getSelectedFile(),
-                            "FCDemo",
-                            JOptionPane.OK_OPTION);
-                    try {
-                        JTextArea textArea = (e.getActionCommand().equals(BTN_SAVE_REQUEST)) ? inputText : outputText;
-                        String filePath = fc.getSelectedFile().getAbsolutePath();
-                        filePath += (filePath.endsWith(".xml")) ? "" : ".xml";
-                        LOG.info("Write request to file: " + filePath);
-                        String text = Utils.prettyXML(textArea.getText());
-                        try(FileWriter fw = new FileWriter(filePath)) {
-                            fw.write(text);
-                        }
-                    } catch (Exception ex) {
-                        LOG.warn(ex.getMessage(), ex);
-                    }
-                    break;
-
-                case JFileChooser.CANCEL_OPTION:
-                    JOptionPane.showMessageDialog(instance, "Cancelled",
-                            "FCDemo",
-                            JOptionPane.OK_OPTION);
-                    break;
-
-                case JFileChooser.ERROR_OPTION:
-                    JOptionPane.showMessageDialog(instance, "Error",
-                            "FCDemo",
-                            JOptionPane.OK_OPTION);
-            }
-        }
-    };
 
     /**
      * Method setLeft
