@@ -25,6 +25,7 @@
 	<artifactId>tcpmon</artifactId>
 	<groupId>m.dhval</groupId>
 	<version>2.0</version>
+	<packaging>jar</packaging>
 	<description>TCPMon is a utility for viewing HTTP requests and responses. It is based on Apache's TCPMon 1.0</description>
 	<url>https://github.com/robertbachmann/tcpmon/</url>
 	<properties>

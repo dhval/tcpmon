@@ -64,11 +64,13 @@ class Sender extends JPanel {
         popupIn.add(new JMenuItem(new SelectTextAction()));
         popupIn.addSeparator();
         popupIn.add(new JMenuItem(new OpenFileAction("Open", this, requestFileLabel, inputText)));
+        popupIn.add(new JMenuItem(new FormatXMLAction(this, inputText)));
 
         JPopupMenu popupOut = outputText.getPopupMenu();
         popupOut.addSeparator();
         popupOut.add(new JMenuItem(new SelectTextAction()));
         popupOut.addSeparator();
+        popupIn.add(new JMenuItem(new FormatXMLAction(this, outputText)));
         popupOut.add(new JMenuItem(new SaveFileAction("Save", this, outputText)));
         outputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         outputText.setCodeFoldingEnabled(true);
