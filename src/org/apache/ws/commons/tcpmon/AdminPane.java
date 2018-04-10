@@ -19,6 +19,7 @@ package org.apache.ws.commons.tcpmon;
 import apache.tcpmon.EchoHandler;
 import apache.tcpmon.JUtils;
 import apache.tcpmon.LocalTestServer;
+import apache.tcpmon.LogPanel;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

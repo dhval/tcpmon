@@ -17,6 +17,7 @@
 package org.apache.ws.commons.tcpmon;
 
 import apache.tcpmon.DateUtils;
+import apache.tcpmon.LogPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -78,6 +79,8 @@ public class TCPMon extends JFrame {
         return new AdminPane(notebook, getMessage("admin00", "Admin"));
     }
 
+    public static LogPanel logPanel = null;
+
     /**
      * Constructor
      *
@@ -92,6 +95,7 @@ public class TCPMon extends JFrame {
 
         this.getContentPane().add(notebook);
         componentToDisplay = new AdminPane(notebook, getMessage("admin00", "Admin"));
+        logPanel = new LogPanel(notebook);
         if (listenPort != 0) {
             Listener l = null;
             if (targetHost == null) {
