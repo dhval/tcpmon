@@ -21,7 +21,13 @@ public class LogPanel extends JPanel {
     }
 
     public void append(String string) {
-        textArea.write(string.getBytes(StandardCharsets.UTF_8));
+        SwingUtilities.invokeLater(new Runnable() {
+                                       @Override
+                                       public void run() {
+                                           textArea.write(string.getBytes(StandardCharsets.UTF_8));
+                                       }
+                                   });
+
     }
 
 }
