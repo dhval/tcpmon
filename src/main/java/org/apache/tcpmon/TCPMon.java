@@ -14,29 +14,49 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.tcpmon;
 
 import apache.tcpmon.DateUtils;
 import apache.tcpmon.LogPanel;
+import com.dhval.jpa.TransactionLog;
+import com.dhval.jpa.TransactionTable;
+import com.dhval.ui.TransactionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
+import java.util.List;
 
 /**
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
  */
 
 @SpringBootApplication
+@ComponentScan(basePackages = {"com.dhval.jpa", "com.dhval.ui"})
 public class TCPMon extends JFrame {
 
     private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);
+
+    @Autowired
+    TransactionLog transactionLog;
+
+    @Autowired
+    TransactionPanel transactionPanel;
+
+    @Bean
+    JTabbedPane createNotebook() {
+        return notebook;
+    }
     /**
      * Field notebook
      */
@@ -45,7 +65,7 @@ public class TCPMon extends JFrame {
     /**
      * Field STATE_COLUMN
      */
-    static final int STATE_COLUMN = 0;
+    public static final int STATE_COLUMN = 0;
 
     /**
      * Field OUTHOST_COLUMN
@@ -55,7 +75,7 @@ public class TCPMon extends JFrame {
     /**
      * Field REQ_COLUMN
      */
-    static final int REQ_COLUMN = 4;
+    public static final int REQ_COLUMN = 4;
 
     /**
      * Field ELAPSED_COLUMN
@@ -81,6 +101,10 @@ public class TCPMon extends JFrame {
 
     public static LogPanel logPanel = null;
 
+    public TCPMon() {
+        super("TCPMon2");
+    }
+
     /**
      * Constructor
      *
@@ -89,13 +113,13 @@ public class TCPMon extends JFrame {
      * @param targetPort
      * @param embedded
      */
-    public TCPMon(int listenPort, String targetHost, int targetPort, boolean embedded) {
-        super(getMessage("httptracer00","TCPMon"));
+    public void start(int listenPort, String targetHost, int targetPort, boolean embedded) {
         JComponent componentToDisplay;
 
         this.getContentPane().add(notebook);
         componentToDisplay = new AdminPane(notebook, getMessage("admin00", "Admin"));
         logPanel = new LogPanel(notebook);
+        //TransactionPanel transactionPanel = new TransactionPanel(notebook, this);
         if (listenPort != 0) {
             Listener l = null;
             if (targetHost == null) {
@@ -135,11 +159,11 @@ public class TCPMon extends JFrame {
      * @param listenPort
      * @param targetHost
      * @param targetPort
-     */
+
     public TCPMon(int listenPort, String targetHost, int targetPort) {
         this(listenPort, targetHost, targetPort, false);
     }
-
+     */
     /**
      * set up the L&F
      *
@@ -168,10 +192,6 @@ public class TCPMon extends JFrame {
         }
     }
 
-    public TCPMon() {
-        this(0, null, 0);
-    }
-
     /**
      * this is our main method
      *
@@ -190,6 +210,7 @@ public class TCPMon extends JFrame {
         EventQueue.invokeLater(() -> {
             TCPMon ex = ctx.getBean(TCPMon.class);
             ex.setVisible(true);
+            ex.start(0, null, 0, false);
         });
 
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
@@ -253,4 +274,16 @@ public class TCPMon extends JFrame {
         messages = ResourceBundle.getBundle("org.apache.ws.commons.tcpmon.tcpmon");
     }
 
+    /**
+    @Bean
+    @ConfigurationProperties(prefix = "datasource")
+    public DataSource dataSourceDev() {
+        // http://stackoverflow.com/questions/28821521/configure-datasource-programmatically-in-spring-boot
+        return DataSourceBuilder.create().build();
+    }
+    **/
+    @Bean
+    public JdbcTemplate contractJdbcTemplate(@Autowired DataSource source){
+        return new JdbcTemplate(source);
+    }
 }

@@ -27,7 +27,7 @@
 
     <!--<logger name="br.com.mobhub.fdv.sync.App" level="DEBUG"/>-->
 
-    <root level="${logging.level}">
+    <root level="INFO">
         <appender-ref ref="FILE" />
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FORM" />

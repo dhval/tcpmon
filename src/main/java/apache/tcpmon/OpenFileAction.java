@@ -1,7 +1,7 @@
 package apache.tcpmon;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.ws.commons.tcpmon.TCPMon;
+import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 
 public class LogPanel extends JPanel {
@@ -15,19 +16,16 @@ public class LogPanel extends JPanel {
 
     public LogPanel(JTabbedPane _notebook) {
         notebook = _notebook;
-        textArea = new TextAreaOutputStream(new JTextArea(), 100);
-
+        JTextArea jTextArea = new JTextArea();
+        textArea = new TextAreaOutputStream(jTextArea, 200);
         notebook.addTab("Log Viewer", this);
+        JPanel top = new JPanel();
+        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
+        top.add(jTextArea);
+        this.add(top, BorderLayout.CENTER);
     }
 
     public void append(String string) {
-        SwingUtilities.invokeLater(new Runnable() {
-                                       @Override
-                                       public void run() {
-                                           textArea.write(string.getBytes(StandardCharsets.UTF_8));
-                                       }
-                                   });
-
+        textArea.write(string.getBytes(StandardCharsets.UTF_8));
     }
-
 }

@@ -1,8 +1,7 @@
-package org.apache.ws.commons.tcpmon;
+package org.apache.tcpmon;
 
 import apache.tcpmon.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -11,11 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.swing.*;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -115,7 +109,7 @@ class Sender extends JPanel {
         JPanel top2 = new JPanel();
         top2.setLayout(new BoxLayout(top2, BoxLayout.X_AXIS));
         top2.add(new JLabel("File:"));
-        top.add(Box.createRigidArea(new Dimension(5, 0)));
+        top2.add(Box.createRigidArea(new Dimension(5, 0)));
         top2.add(requestFileLabel);
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));

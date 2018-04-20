@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.tcpmon;
 
 import javax.swing.JLabel;
 import java.awt.Color;

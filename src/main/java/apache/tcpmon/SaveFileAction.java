@@ -1,6 +1,6 @@
 package apache.tcpmon;
 
-import org.apache.ws.commons.tcpmon.TCPMon;
+import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
