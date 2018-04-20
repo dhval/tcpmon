@@ -20,6 +20,7 @@ import com.dhval.utils.DateUtils;
 import com.dhval.logger.LogPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 
+import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
@@ -36,7 +38,7 @@ import java.util.ResourceBundle;
  */
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.dhval.jpa", "com.dhval.echo"})
+@ComponentScan(basePackages = {"com.dhval"})
 public class TCPMon extends JFrame {
 
     private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);
@@ -82,12 +84,7 @@ public class TCPMon extends JFrame {
 
     public static final String CWD = System.getProperty("user.dir");
 
-    //@Bean
-    public AdminPane createAdminPane() {
-        return new AdminPane(notebook, getMessage("admin00", "Admin"));
-    }
-
-    public static LogPanel logPanel = null;
+    public static ConfigurableApplicationContext context;
 
     public TCPMon() {
         super("TCPMon2");
@@ -106,8 +103,7 @@ public class TCPMon extends JFrame {
 
         this.getContentPane().add(notebook);
         componentToDisplay = new AdminPane(notebook, getMessage("admin00", "Admin"));
-        logPanel = new LogPanel(notebook);
-        //TransactionPanel transactionPanel = new TransactionPanel(notebook, this);
+         //TransactionPanel transactionPanel = new TransactionPanel(notebook, this);
         if (listenPort != 0) {
             Listener l = null;
             if (targetHost == null) {
@@ -186,7 +182,7 @@ public class TCPMon extends JFrame {
      * @param args
      */
     public static void main(String[] args) {
-        ConfigurableApplicationContext ctx = new SpringApplicationBuilder(TCPMon.class)
+        context = new SpringApplicationBuilder(TCPMon.class)
                 .headless(false).run(args);
 
         try {
@@ -196,7 +192,7 @@ public class TCPMon extends JFrame {
         }
 
         EventQueue.invokeLater(() -> {
-            TCPMon ex = ctx.getBean(TCPMon.class);
+            TCPMon ex = context.getBean(TCPMon.class);
             ex.setVisible(true);
             ex.start(0, null, 0, false);
         });
@@ -261,6 +257,5 @@ public class TCPMon extends JFrame {
     private static void initializeMessages() {
         messages = ResourceBundle.getBundle("org.apache.ws.commons.tcpmon.tcpmon");
     }
-
 
 }

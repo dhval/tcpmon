@@ -41,8 +41,10 @@ public class OpenFileAction extends AbstractAction {
                         JOptionPane.OK_OPTION);
                 try {
                     LOG.info("Read File: " + fc.getSelectedFile().getAbsolutePath());
+
                     if (textArea != null) {
                         String text = FileUtils.readFileToString(fc.getSelectedFile());
+                        LOG.warn(text);
                         if (!StringUtils.isEmpty(text)) textArea.setText(Utils.prettyXML(text));
                     }
                     label.setText(fc.getSelectedFile().getCanonicalPath());
