@@ -1,14 +1,14 @@
-package apache.tcpmon;
+package com.dhval.logger;
 
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import com.dhval.logger.LogPanel;
 import org.apache.tcpmon.TCPMon;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author Rodrigo Garcia Lima (email: rodgarcialima@gmail.com | github: rodgarcialima)

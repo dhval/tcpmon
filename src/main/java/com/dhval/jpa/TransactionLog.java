@@ -3,6 +3,7 @@ package com.dhval.jpa;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+@Profile("db")
 public class TransactionLog {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionLog.class);

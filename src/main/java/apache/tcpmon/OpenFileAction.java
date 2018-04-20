@@ -1,5 +1,6 @@
 package apache.tcpmon;
 
+import com.dhval.utils.Utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;
@@ -25,6 +26,10 @@ public class OpenFileAction extends AbstractAction {
         this.textArea = textArea;
     }
 
+    public OpenFileAction(String action, JPanel component, JLabel label) {
+        this(action, component, label, null);
+    }
+
     public void actionPerformed(ActionEvent e) {
         LOG.info(e.paramString() + e.getActionCommand());
         switch (fc.showOpenDialog(component))
@@ -36,9 +41,11 @@ public class OpenFileAction extends AbstractAction {
                         JOptionPane.OK_OPTION);
                 try {
                     LOG.info("Read File: " + fc.getSelectedFile().getAbsolutePath());
-                    String text = FileUtils.readFileToString(fc.getSelectedFile());
+                    if (textArea != null) {
+                        String text = FileUtils.readFileToString(fc.getSelectedFile());
+                        if (!StringUtils.isEmpty(text)) textArea.setText(Utils.prettyXML(text));
+                    }
                     label.setText(fc.getSelectedFile().getCanonicalPath());
-                    if (!StringUtils.isEmpty(text)) textArea.setText(Utils.prettyXML(text));
                 } catch (Exception ex) {
 
                 }

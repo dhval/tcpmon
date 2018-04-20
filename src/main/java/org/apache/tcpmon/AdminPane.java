@@ -16,9 +16,9 @@
 
 package org.apache.tcpmon;
 
-import apache.tcpmon.EchoHandler;
-import apache.tcpmon.JUtils;
-import apache.tcpmon.LocalTestServer;
+import com.dhval.echo.EchoHandler;
+import com.dhval.utils.JUtils;
+import com.dhval.echo.LocalTestServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;

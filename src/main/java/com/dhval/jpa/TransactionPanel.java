@@ -1,11 +1,10 @@
-package com.dhval.ui;
+package com.dhval.jpa;
 
-import apache.tcpmon.JUtils;
-import com.dhval.jpa.TransactionLog;
-import com.dhval.jpa.TransactionTable;
+import com.dhval.utils.JUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Profile("db")
 public class TransactionPanel extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger(TransactionPanel.class);
 

@@ -1,4 +1,4 @@
-package apache.tcpmon;
+package com.dhval.utils;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XPathCompiler;
@@ -13,9 +13,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,5 +62,11 @@ public class Utils {
         StringWriter writer = new StringWriter();
         transformer.transform(new StreamSource(new StringReader(input)), new StreamResult(writer));
         return writer.toString();
+    }
+
+    public static boolean isFilePresent(String fileName) throws IOException {
+        if(new File(fileName).isFile())
+            return true;
+        return false;
     }
 }

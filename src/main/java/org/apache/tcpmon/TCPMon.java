@@ -16,42 +16,30 @@
 
 package org.apache.tcpmon;
 
-import apache.tcpmon.DateUtils;
-import apache.tcpmon.LogPanel;
-import com.dhval.jpa.TransactionLog;
-import com.dhval.jpa.TransactionTable;
-import com.dhval.ui.TransactionPanel;
+import com.dhval.utils.DateUtils;
+import com.dhval.logger.LogPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
-import java.util.List;
 
 /**
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
  */
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.dhval.jpa", "com.dhval.ui"})
+@ComponentScan(basePackages = {"com.dhval.jpa", "com.dhval.echo"})
 public class TCPMon extends JFrame {
 
     private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);
-
-    @Autowired
-    TransactionLog transactionLog;
-
-    @Autowired
-    TransactionPanel transactionPanel;
 
     @Bean
     JTabbedPane createNotebook() {
@@ -274,16 +262,5 @@ public class TCPMon extends JFrame {
         messages = ResourceBundle.getBundle("org.apache.ws.commons.tcpmon.tcpmon");
     }
 
-    /**
-    @Bean
-    @ConfigurationProperties(prefix = "datasource")
-    public DataSource dataSourceDev() {
-        // http://stackoverflow.com/questions/28821521/configure-datasource-programmatically-in-spring-boot
-        return DataSourceBuilder.create().build();
-    }
-    **/
-    @Bean
-    public JdbcTemplate contractJdbcTemplate(@Autowired DataSource source){
-        return new JdbcTemplate(source);
-    }
+
 }

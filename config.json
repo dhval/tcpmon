@@ -1,7 +1,7 @@
 {
     "name": "TCPmon",
     "environments": {
-      "Echo": "http://localhost:8080/echo/services/XYZ",
+      "Echo": "http://localhost:7832/echo/services/XYZ",
       "Offender-Internal" : "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",
       "Offender-CDWS-DOC" : "http://10.182.70.250:50180/CorrectionsInquiryDoc",
       "OffenderInquiry-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
