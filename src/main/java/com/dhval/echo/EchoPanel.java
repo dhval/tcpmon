@@ -1,6 +1,7 @@
 package com.dhval.echo;
 
 import apache.tcpmon.OpenFileAction;
+import com.dhval.dto.LocalServer;
 import com.dhval.utils.JUtils;
 import com.dhval.utils.Utils;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class EchoPanel extends JPanel {
     public JButton runButton = null;
     public JButton clearButton = null;
 
-    private JLabel fileLabel = new JLabel("sample.xml");
+    private JLabel fileLabel;
     private JLabel statusLabel = new JLabel(NOT_STARTED);
 
     JTextField portField;
@@ -34,7 +35,8 @@ public class EchoPanel extends JPanel {
 
     LocalTestServer server;
 
-    public EchoPanel(@Autowired JTabbedPane notebook) {
+
+    public EchoPanel(@Autowired JTabbedPane notebook, @Autowired LocalServer cfg) {
         notebook.addTab("Mock Server", this);
         this.setLayout(new BorderLayout());
 
@@ -45,11 +47,11 @@ public class EchoPanel extends JPanel {
         // Query Type
         top.add(new JLabel("Port: "));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(portField = JUtils.jTextField("7832", 5, 10));
+        top.add(portField = JUtils.jTextField(Integer.toString(cfg.getListenPort()), 5, 10));
         // Tracking Id
         top.add(new JLabel("Path: "));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(contextField = JUtils.jTextField("/echo/*", 25, 150));
+        top.add(contextField = JUtils.jTextField(cfg.getPathURI(), 25, 150));
         top.add(Box.createHorizontalGlue());
         top.add(new JButton(new OpenFileAction("Select File", this, fileLabel)));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -63,7 +65,7 @@ public class EchoPanel extends JPanel {
 
         JPanel bottom = new JPanel();
         bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
-        bottom.add(fileLabel);
+        bottom.add(fileLabel = new JLabel(cfg.getFileToServer()));
         bottom.add(Box.createRigidArea(new Dimension(5, 0)));
         bottom.add(Box.createHorizontalGlue());
         bottom.add(statusLabel);
@@ -78,6 +80,8 @@ public class EchoPanel extends JPanel {
         this.add(pane1, BorderLayout.CENTER);
         this.add(bottom, BorderLayout.SOUTH);
 
+        if (cfg.getEnabled())
+            start();
     }
 
     @PostConstruct
@@ -85,44 +89,52 @@ public class EchoPanel extends JPanel {
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    if (server != null) server.stop();
-                    int lPort = Integer.parseInt(portField.getText());
-                    String httpPath = contextField.getText();
-                    String echoFile = fileLabel.getText();
-                    if (StringUtils.isEmpty(echoFile)) {
-                        statusLabel.setText("File Not Found:" + echoFile);
-                        return;
-                    } else if (Utils.isFilePresent(echoFile)) {
-                        httpHandler.setFile(echoFile);
-                    } else if (Utils.isDirPresent(echoFile)) {
-                        httpHandler.addFiles(Utils.allFilesByType(echoFile, "xml"));
-                    } else {
-                        statusLabel.setText("Error:" + echoFile);
-                        return;
-                    }
-                    server = new LocalTestServer(lPort);
-                    server.register(httpPath, httpHandler);
-                    server.start();
-                    statusLabel.setText("Listening on localhost:" + lPort);
-                    LOG.info("Listening on localhost:" + lPort);
-                } catch (Exception ex) {
-                    LOG.warn(ex.getMessage(), ex);
-                }
+               start();
             }
         });
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (server == null) return;
-                try {
-                    server.stop();
-                    statusLabel.setText(NOT_STARTED);
-                    LOG.info("Stopping Server");
-                } catch (Exception ex) {
-                    LOG.warn(ex.getMessage(), ex);
-                }
+               stop();
             }
         });
+    }
+
+    private void start() {
+        try {
+            if (server != null) server.stop();
+            int lPort = Integer.parseInt(portField.getText());
+            String httpPath = contextField.getText();
+            String echoFile = fileLabel.getText();
+            if (StringUtils.isEmpty(echoFile)) {
+                statusLabel.setText("File Not Found:" + echoFile);
+                return;
+            } else if (Utils.isFilePresent(echoFile)) {
+                httpHandler.setFile(echoFile);
+            } else if (Utils.isDirPresent(echoFile)) {
+                httpHandler.addFiles(Utils.allFilesByType(echoFile, "xml"));
+            } else {
+                statusLabel.setText("Error:" + echoFile);
+                return;
+            }
+            server = new LocalTestServer(lPort);
+            server.register(httpPath, httpHandler);
+            server.start();
+            statusLabel.setText("Listening on localhost:" + lPort);
+            LOG.info("Listening on localhost:" + lPort);
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+        }
+    }
+
+    private void stop() {
+        if (server == null) return;
+        try {
+            server.stop();
+            statusLabel.setText(NOT_STARTED);
+            LOG.info("Stopping Server");
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+        }
     }
 }

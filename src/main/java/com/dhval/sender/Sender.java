@@ -1,6 +1,9 @@
 package com.dhval.sender;
 
-import apache.tcpmon.*;
+import apache.tcpmon.FormatXMLAction;
+import apache.tcpmon.OpenFileAction;
+import apache.tcpmon.SaveFileAction;
+import apache.tcpmon.SelectTextAction;
 import com.dhval.utils.JUtils;
 import com.dhval.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -110,27 +113,29 @@ public class Sender extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("Connection Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(endpointField = new JTextField("http://localhost:7832/echo/services/23", 50));
+        top.add(endpointField = new JTextField("http://localhost:8080/echo/services/23", 50));
+        top.add(new JLabel("SOAP Action  "));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(new JLabel("SOAP Action  ", SwingConstants.RIGHT));
         top.add(actionField = new JTextField("", 4));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
 
-        JPanel top2 = new JPanel();
-        top2.setLayout(new BoxLayout(top2, BoxLayout.X_AXIS));
-        top2.add(new JLabel("File:"));
-        top2.add(Box.createRigidArea(new Dimension(5, 0)));
-        top2.add(requestFileLabel);
+        JPanel bottom = new JPanel();
+        bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+        bottom.add(new JLabel("File:"));
+        bottom.add(Box.createRigidArea(new Dimension(5, 0)));
+        bottom.add(requestFileLabel);
+        bottom.add(Box.createHorizontalGlue());
+        bottom.add(new JLabel("Ready:"));
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
         this.add(top, BorderLayout.NORTH);
-        this.add(top2, BorderLayout.SOUTH);
+        this.add(bottom, BorderLayout.SOUTH);
 
         // Add Request/Response Section
         // ///////////////////////////////////////////////////////////////////
-        JPanel pane2 = new JPanel();
-        pane2.setLayout(new BorderLayout());
+        JPanel center = new JPanel();
+        center.setLayout(new BorderLayout());
         leftPanel = new JPanel();
         leftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
@@ -143,7 +148,7 @@ public class Sender extends JPanel {
         rightPanel.add(new RTextScrollPane(outputText));
         outPane = new JSplitPane(0, leftPanel, rightPanel);
         outPane.setDividerSize(4);
-        pane2.add(outPane, BorderLayout.CENTER);
+        center.add(outPane, BorderLayout.CENTER);
         JPanel bottomButtons = new JPanel();
         bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.LINE_AXIS));
         bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -160,7 +165,7 @@ public class Sender extends JPanel {
         bottomButtons.add(switchButton = new JButton(switchStr));
         bottomButtons.add(Box.createHorizontalGlue());
         final String close = TCPMon.getMessage("close00", "Close");
-        pane2.add(bottomButtons, BorderLayout.SOUTH);
+        center.add(bottomButtons, BorderLayout.SOUTH);
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if ("Send".equals(event.getActionCommand())) {
@@ -194,8 +199,9 @@ public class Sender extends JPanel {
         selectHost.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selHost = (String) selectHost.getSelectedItem();
-                hostNameField.setText(hostMap.get(selHost));
+                String selHostKey = (String) selectHost.getSelectedItem();
+                String selHost = hostMap.get(selHostKey);
+                hostNameField.setText(selHost);
                 if (StringUtils.isEmpty(selHost)) return;
                 String selectEndPoint = endpointField.getText();
                 endpointField.setText(selectEndPoint.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
@@ -221,7 +227,7 @@ public class Sender extends JPanel {
             }
         });
 
-        this.add(pane2, BorderLayout.CENTER);
+        this.add(center, BorderLayout.CENTER);
         outPane.setDividerLocation(250);
         notebook.addTab("Sender", this);
     }

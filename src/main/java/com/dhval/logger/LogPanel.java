@@ -17,6 +17,7 @@ public class LogPanel extends JPanel {
     public JTextPane jTextPane = new JTextPane();
 
     public LogPanel(@Autowired JTabbedPane notebook) {
+        this.setLayout(new BorderLayout());
         JTextArea jTextArea = new JTextArea();
         textArea = new TextAreaOutputStream(jTextArea, 50);
         notebook.addTab("Log Viewer", this);
@@ -27,7 +28,7 @@ public class LogPanel extends JPanel {
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
         //scrollPane.setMinimumSize(new Dimension(800, 600));
-        scrollPane.setPreferredSize(new Dimension(1000, 600));
+        //scrollPane.setPreferredSize(new Dimension(1000, 600));
         this.add(top);
     }
 

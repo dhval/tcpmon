@@ -1,22 +1,9 @@
-/*
- * Copyright 2004,2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.tcpmon;
 
+import com.dhval.dto.LocalServer;
+import com.dhval.dto.TcpProxy;
 import com.dhval.utils.DateUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,8 +13,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -41,14 +34,31 @@ public class TCPMon extends JFrame {
 
     private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);
 
-    @Bean
-    JTabbedPane createNotebook() {
-        return notebook;
+    public static Map jsonMap;
+
+    static {
+        try {
+            jsonMap = new ObjectMapper().readValue(new File("config.json"), Map.class);
+        } catch (IOException io) {
+            LOG.warn("config.json file not found");
+            jsonMap = new HashMap();
+        }
     }
+
     /**
      * Field notebook
      */
     private JTabbedPane notebook = new JTabbedPane();;
+
+    @Bean
+    JTabbedPane createNotebook() {
+        return notebook;
+    }
+
+    @Bean
+    LocalServer createLocalServer() {
+        return LocalServer.buildFromMap(jsonMap);
+    }
 
     /**
      * Field STATE_COLUMN
@@ -84,48 +94,17 @@ public class TCPMon extends JFrame {
 
     public static ConfigurableApplicationContext context;
 
+
     public TCPMon() {
         super("TCPMon2");
     }
 
-    /**
-     * Constructor
-     *
-     * @param listenPort
-     * @param targetHost
-     * @param targetPort
-     * @param embedded
-     */
-    public void start(int listenPort, String targetHost, int targetPort, boolean embedded) {
+    @PostConstruct
+    public void start() {
+        boolean embedded = false;
         JComponent componentToDisplay;
-
         this.getContentPane().add(notebook);
         componentToDisplay = new AdminPane(notebook, getMessage("admin00", "Admin"));
-         //TransactionPanel transactionPanel = new TransactionPanel(notebook, this);
-        if (listenPort != 0) {
-            Listener l = null;
-            if (targetHost == null) {
-                l = new Listener(notebook, null, listenPort, targetHost, targetPort, true, null);
-            } else {
-                l = new Listener(notebook, null, listenPort, targetHost, targetPort, false, null);
-            }
-            componentToDisplay = l;
-            l.HTTPProxyHost = System.getProperty("http.proxyHost");
-            if ((l.HTTPProxyHost != null) && l.HTTPProxyHost.equals("")) {
-                l.HTTPProxyHost = null;
-            }
-            if (l.HTTPProxyHost != null) {
-                String tmp = System.getProperty("http.proxyPort");
-                if ((tmp != null) && tmp.equals("")) {
-                    tmp = null;
-                }
-                if (tmp == null) {
-                    l.HTTPProxyPort = 80;
-                } else {
-                    l.HTTPProxyPort = Integer.parseInt(tmp);
-                }
-            }
-        }
         if (!embedded) {
             this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         }
@@ -133,20 +112,39 @@ public class TCPMon extends JFrame {
         this.setSize(1000, 700);
         notebook.setSelectedComponent(componentToDisplay);
         this.setVisible(true);
+        initializeTcpProxies(TcpProxy.buildProxies(jsonMap));
     }
 
-    /**
-     * Constructor
-     *
-     * @param listenPort
-     * @param targetHost
-     * @param targetPort
-
-    public TCPMon(int listenPort, String targetHost, int targetPort) {
-        this(listenPort, targetHost, targetPort, false);
+    private void initializeTcpProxies(List<TcpProxy> proxies) {
+        for(TcpProxy proxy : proxies) {
+            if (proxy.getListenPort() != 0) {
+                Listener l = null;
+                if (proxy.getTargetHost() == null) {
+                    l = new Listener(notebook, null, proxy.getListenPort(), proxy.getTargetHost(), proxy.getTargetPort(), true, null);
+                } else {
+                    l = new Listener(notebook, null, proxy.getListenPort(), proxy.getTargetHost(), proxy.getTargetPort(), false, null);
+                }
+                // componentToDisplay = l;
+                l.HTTPProxyHost = System.getProperty("http.proxyHost");
+                if ((l.HTTPProxyHost != null) && l.HTTPProxyHost.equals("")) {
+                    l.HTTPProxyHost = null;
+                }
+                if (l.HTTPProxyHost != null) {
+                    String tmp = System.getProperty("http.proxyPort");
+                    if ((tmp != null) && tmp.equals("")) {
+                        tmp = null;
+                    }
+                    if (tmp == null) {
+                        l.HTTPProxyPort = 80;
+                    } else {
+                        l.HTTPProxyPort = Integer.parseInt(tmp);
+                    }
+                }
+            }
+        }
     }
-     */
-    /**
+
+     /**
      * set up the L&F
      *
      * @param nativeLookAndFeel
@@ -179,7 +177,7 @@ public class TCPMon extends JFrame {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         context = new SpringApplicationBuilder(TCPMon.class)
                 .headless(false).run(args);
 
@@ -192,33 +190,10 @@ public class TCPMon extends JFrame {
         EventQueue.invokeLater(() -> {
             TCPMon ex = context.getBean(TCPMon.class);
             ex.setVisible(true);
-            ex.start(0, null, 0, false);
         });
 
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
         LOG.info("GMT: " + DateUtils.gmt());
-
- /*       try {
-
-            // switch between swing L&F here
-            setupLookAndFeel(true);
-            if (args.length == 3) {
-                int p1 = Integer.parseInt(args[0]);
-                int p2 = Integer.parseInt(args[2]);
-                new TCPMon(p1, args[1], p2);
-            } else if (args.length == 1) {
-                int p1 = Integer.parseInt(args[0]);
-                new TCPMon(p1, null, 0);
-            } else if (args.length != 0) {
-                System.err.println(
-                        getMessage("usage00", "Usage:")
-                        + " TCPMon [listenPort targetHost targetPort]\n");
-            } else {
-                new TCPMon(0, null, 0);
-            }
-        } catch (Throwable exp) {
-            exp.printStackTrace();
-        }*/
     }
 
     /**
