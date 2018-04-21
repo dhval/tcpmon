@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SOAP-ENV:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <wsa:To>https://pacfilecewstst.county.allegheny.pa.us/CCEREPLY/ReplyCceService.svc</wsa:To>
+    <wsa:Action>http://jnet.state.pa.us/service/jnet/EventMessageConsumer/1/EventMessageConsumerInterface/NotifyRequest</wsa:Action>
+    <wsa:MessageID>9ca5-a6ce-f354-c29d-162c-dd2bd0f</wsa:MessageID>
+    <wsse:Security xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <saml2:Assertion ID="b993e0b6-964e-487a-a499-6eafc660c342" IssueInstant="2018-04-20T15:42:10-04:00" Version="2.0" xmlns:saml2="urn:oasis:names:tc:saml2:2.0:assertion">
+        <saml2:AttributeStatement>
+          <saml2:Attribute Name="gfipm:2.0:entity:OwnerAgencyName" NameFormat="urn:oasis:names:tc:saml2:2.0:attrname-format:uri">
+            <saml2:AttributeValue>ALLECO_KIDS</saml2:AttributeValue>
+          </saml2:Attribute>
+        </saml2:AttributeStatement>
+      </saml2:Assertion>
+    </wsse:Security>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <m:Notify xmlns:m="http://jnet.state.pa.us/message/jnet/EventMessageConsumer/1">
+      <jnet:EventMessage xmlns:jnet="http://www.jnet.state.pa.us/niem/JNET/jnet-core/1" xmlns:nc="http://niem.gov/niem/niem-core/2.0">
+        <nc:DocumentCategoryText>EventMessage</nc:DocumentCategoryText>
+        <nc:DocumentIdentification>
+          <nc:IdentificationID>1afa-bc21-a85e-e9ef-162e-7a1408c</nc:IdentificationID>
+        </nc:DocumentIdentification>
+        <nc:DocumentPostDate>
+          <nc:DateTime>2018-04-16T14:42:11.206Z</nc:DateTime>
+        </nc:DocumentPostDate>
+        <nc:DocumentSource>
+          <nc:EntityOrganization>
+            <nc:OrganizationName>PSP</nc:OrganizationName>
+          </nc:EntityOrganization>
+        </nc:DocumentSource>
+        <nc:DocumentSubjectText>PA Arrest</nc:DocumentSubjectText>
+        <jnet:Message>
+          <Arrest ID="1523889731196" timestamp="2018-04-16 10:42:11.196">
+            <Date>02/29/2000</Date>
+            <NotifTenPrintDate>20000601</NotifTenPrintDate>
+            <DateFingerPrinted>02/29/2000</DateFingerPrinted>
+            <DateOfOffense>01/22/2000</DateOfOffense>
+            <CountyOfOffense>46</CountyOfOffense>
+            <OriginatorCaseNumber>116</OriginatorCaseNumber>
+            <LiveScanId>CRD3</LiveScanId>
+            <TransactionControlNo>4030086435</TransactionControlNo>
+            <PoliceProsecution>Y</PoliceProsecution>
+            <MagistrateDistrictNumber>38118</MagistrateDistrictNumber>
+            <ArrestingAgency/>
+            <ArrestEventNumber/>
+            <OriginatorAgency>MONTGOMERY TWP PD</OriginatorAgency>
+            <OriginatorAddress>MONTGOMERYVILLE PA 18936</OriginatorAddress>
+            <ORIPhoneNumber>2153622300</ORIPhoneNumber>
+            <OriginatorORI>PA0461800</OriginatorORI>
+            <FirearmsEnhance>N</FirearmsEnhance>
+            <AOPCOTNFileType/>
+            <ChargeList>
+              <Charge code="CC3933">UNLAWFUL USE OF COMPUTER</Charge>
+              <Charge code="CC3922">THEFT BY DECEPTION</Charge>
+              <Charge code="CC3925">RECEIVING STOLEN PROPERTY</Charge>
+              <Charge code="CC0903">CRIMINAL CONSPIRACY</Charge>
+              <Charge code="CC3933">UNLAWFUL USE OF COMPUTER</Charge>
+              <Charge code="CC0903">CRIMINAL CONSPIRACY</Charge>
+              <Charge code="CC3922">THEFT BY DECEPTION</Charge>
+              <Charge code="CC0903">CRIMINAL CONSPIRACY</Charge>
+              <Charge code="CC3925">RECEIVING STOLEN PROPERTY</Charge>
+            </ChargeList>
+            <Subject SID="27707416">
+              <Name>BARTRON,DANYA KAY</Name>
+              <OTNList>
+                <OTN>H159577-5</OTN>
+              </OTNList>
+              <FBIId>640648JB9</FBIId>
+              <SSNList>
+                <SSN>200-68-3990</SSN>
+              </SSNList>
+              <Age>19</Age>
+              <DOBList>
+                <DOB>09/11/1980</DOB>
+              </DOBList>
+              <PlaceOfBirth>PA</PlaceOfBirth>
+              <CountryOfCitizen>US</CountryOfCitizen>
+              <Sex>F</Sex>
+              <Race>W</Race>
+              <Height>508</Height>
+              <Weight>145</Weight>
+              <Eyes>HAZ</Eyes>
+              <Hair>BRO</Hair>
+              <USCitizen>Y</USCitizen>
+              <FingerprintList>
+                <Fingerprint position="01">
+                  <FingerprintPattern>SR </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="02">
+                  <FingerprintPattern>SR </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="03">
+                  <FingerprintPattern>AA</FingerprintPattern>
+                  <FingerprintPattern>LS </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="04">
+                  <FingerprintPattern>SR </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="05">
+                  <FingerprintPattern>SR </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="06">
+                  <FingerprintPattern>WW </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="07">
+                  <FingerprintPattern>WW </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="08">
+                  <FingerprintPattern>SR </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="09">
+                  <FingerprintPattern>SR </FingerprintPattern>
+                </Fingerprint>
+                <Fingerprint position="10">
+                  <FingerprintPattern>SR</FingerprintPattern>
+                </Fingerprint>
+              </FingerprintList>
+              <PhotoAvailable>Y</PhotoAvailable>
+            </Subject>
+          </Arrest>
+        </jnet:Message>
+      </jnet:EventMessage>
+    </m:Notify>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

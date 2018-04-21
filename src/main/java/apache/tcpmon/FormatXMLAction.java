@@ -24,8 +24,9 @@ public class FormatXMLAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         try {
-            if (!StringUtils.isEmpty(textArea.getText()))
+            if (Utils.isXML(textArea.getText())) {
                 textArea.setText(Utils.prettyXML(textArea.getText()));
+            }
         } catch (Exception ex) {
             LOG.warn(ex.getMessage(), ex);
         }

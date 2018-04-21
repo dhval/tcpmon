@@ -1,0 +1,29 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+	<SOAP-ENV:Header>
+		<wsa:To>https://pacfilecewstst.county.allegheny.pa.us/CCEREPLY/ReplyCceService.svc</wsa:To>
+		<wsa:Action>http://jnet.state.pa.us/service/jnet/EventMessageConsumer/1/EventMessageConsumerInterface/NotifyRequest</wsa:Action>
+		<wsa:MessageID>9ca5-a6ce-f354-c29d-162c-dd2bd0f</wsa:MessageID>
+		<wsse:Security xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<saml2:Assertion ID="b993e0b6-964e-487a-a499-6eafc660c342" IssueInstant="2018-04-20T15:42:10-04:00" Version="2.0" xmlns:saml2="urn:oasis:names:tc:saml2:2.0:assertion">
+				<saml2:AttributeStatement>
+					<saml2:Attribute Name="gfipm:2.0:entity:OwnerAgencyName" NameFormat="urn:oasis:names:tc:saml2:2.0:attrname-format:uri">
+						<saml2:AttributeValue>ALLECO_KIDS</saml2:AttributeValue>
+					</saml2:Attribute>
+				</saml2:AttributeStatement>
+			</saml2:Assertion>
+		</wsse:Security>
+	</SOAP-ENV:Header>
+	<SOAP-ENV:Body>
+		<m:ReceiveCourtCaseEventReply xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:aopc="http://jnet.state.pa.us/jxdm/aopc" xmlns:jnet="http://www.jnet.state.pa.us/niem/JNET/jnet-core/1" xmlns:jnet-m="http://www.jnet.state.pa.us/niem/jnet/metadata/1" xmlns:jxdm="http://www.it.ojp.gov/jxdm/3.0" xmlns:m="http://jnet.state.pa.us/message/aopc/CCERequestReply/1" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<jnet-m:ResponseMetadata>
+				<jnet-m:UserDefinedTrackingID>local.test</jnet-m:UserDefinedTrackingID>
+				<jnet-m:BackendSystemReturn>
+					<jnet-m:BackendSystemName>AOPC</jnet-m:BackendSystemName>
+					<jnet-m:BackendSystemStatusCode>NO RECORD</jnet-m:BackendSystemStatusCode>
+					<jnet-m:BackendSystemReturnCode>E00</jnet-m:BackendSystemReturnCode>
+					<jnet-m:BackendSystemReturnText>DOCKET NOT FOUND: CP-02-DP-851789-2017</jnet-m:BackendSystemReturnText>
+				</jnet-m:BackendSystemReturn>
+			</jnet-m:ResponseMetadata>
+		</m:ReceiveCourtCaseEventReply>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

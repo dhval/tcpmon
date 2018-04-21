@@ -1,11 +1,15 @@
 package com.dhval.jpa;
 
+import java.util.Objects;
+
 public class TransactionTable {
     String id;
     String txnId;
     String userTrackingId;
     String requestDateTime;
     String queryType;
+    String requestData;
+    String responseData;
 
     public String getId() {
         return id;
@@ -45,5 +49,35 @@ public class TransactionTable {
 
     public void setQueryType(String queryType) {
         this.queryType = queryType;
+    }
+
+    public String getRequestData() {
+        return requestData;
+    }
+
+    public void setRequestData(String requestData) {
+        this.requestData = requestData;
+    }
+
+    public String getResponseData() {
+        return responseData;
+    }
+
+    public void setResponseData(String responseData) {
+        this.responseData = responseData;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TransactionTable that = (TransactionTable) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(txnId, that.txnId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, txnId);
     }
 }

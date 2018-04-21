@@ -17,18 +17,15 @@
 package org.apache.tcpmon;
 
 import com.dhval.utils.DateUtils;
-import com.dhval.logger.LogPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-
-import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
@@ -39,6 +36,7 @@ import java.util.ResourceBundle;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.dhval"})
+@EnableScheduling
 public class TCPMon extends JFrame {
 
     private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);

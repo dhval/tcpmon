@@ -14,6 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class EchoPanel extends JPanel {
@@ -49,8 +51,12 @@ public class EchoPanel extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(contextField = JUtils.jTextField("/echo/*", 25, 150));
         top.add(Box.createHorizontalGlue());
-        top.add(new JButton(new OpenFileAction("Open", this, fileLabel)));
+        top.add(new JButton(new OpenFileAction("Select File", this, fileLabel)));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
+        OpenFileAction fileAction = new OpenFileAction("Select Dir", this, fileLabel);
+        fileAction.setSelectionModeDir();
+        top.add(Box.createRigidArea(new Dimension(5, 0)));
+        top.add(new JButton(fileAction));
         top.add(runButton = new JButton("Run"));
         top.add(Box.createHorizontalGlue());
         top.add(clearButton = new JButton("Stop"));
@@ -84,12 +90,18 @@ public class EchoPanel extends JPanel {
                     int lPort = Integer.parseInt(portField.getText());
                     String httpPath = contextField.getText();
                     String echoFile = fileLabel.getText();
-                    if (StringUtils.isEmpty(echoFile) || !Utils.isFilePresent(echoFile)) {
+                    if (StringUtils.isEmpty(echoFile)) {
                         statusLabel.setText("File Not Found:" + echoFile);
+                        return;
+                    } else if (Utils.isFilePresent(echoFile)) {
+                        httpHandler.setFile(echoFile);
+                    } else if (Utils.isDirPresent(echoFile)) {
+                        httpHandler.addFiles(Utils.allFilesByType(echoFile, "xml"));
+                    } else {
+                        statusLabel.setText("Error:" + echoFile);
                         return;
                     }
                     server = new LocalTestServer(lPort);
-                    httpHandler.setFile(echoFile);
                     server.register(httpPath, httpHandler);
                     server.start();
                     statusLabel.setText("Listening on localhost:" + lPort);

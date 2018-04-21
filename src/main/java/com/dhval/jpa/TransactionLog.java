@@ -40,6 +40,8 @@ public class TransactionLog {
                 response.setUserTrackingId(rs.getString("userTrackingNumber"));
                 response.setQueryType(rs.getString("queryType"));
                 response.setRequestDateTime(rs.getString("requestDateTime"));
+                response.setRequestData(rs.getString("request"));
+                response.setResponseData(rs.getString("response"));
             } catch (SQLException sqe) {
                 LOG.warn(sqe.getMessage(), sqe);
             }
@@ -49,25 +51,44 @@ public class TransactionLog {
 
     @Transactional(readOnly=true)
     public List<TransactionTable> byQueryType(String user) {
-        String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType FROM Audit_Log.dbo.TransactionLog" +
-                " where queryType = ? order by requestDateTime desc";
-        List<TransactionTable> list =  jdbcTemplate.query(sql, new Object[] {user}, tableRowMapper);
+        String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType, LEN(ISNULL(requestData,'')) as request, LEN(ISNULL(responseData,'')) as response FROM Audit_Log.dbo.TransactionLog" +
+                " where queryType LIKE ? order by requestDateTime desc";
+        List<TransactionTable> list =  jdbcTemplate.query(sql, new Object[] {"%" + user + "%"}, tableRowMapper);
         return list;
     }
 
     @Transactional(readOnly=true)
     public List<TransactionTable> byTrackingId(String trackingId) {
-        String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType FROM Audit_Log.dbo.TransactionLog" +
-                " where userTrackingNumber = ? order by requestDateTime desc";
-        List<TransactionTable> list =  jdbcTemplate.query(sql, new Object[] {trackingId}, tableRowMapper);
+        String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType, LEN(ISNULL(requestData,'')) as request, LEN(ISNULL(responseData,'')) as response FROM Audit_Log.dbo.TransactionLog" +
+                " where userTrackingNumber LIKE ? order by requestDateTime desc";
+        List<TransactionTable> list =  jdbcTemplate.query(sql, new Object[] {"%" + trackingId + "%"}, tableRowMapper);
         return list;
     }
 
     @Transactional(readOnly=true)
     public List<TransactionTable> byTrackingIdAndQueryType(String trackingId, String queryType) {
-        String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType FROM Audit_Log.dbo.TransactionLog" +
+        String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType, LEN(ISNULL(requestData,'')) as request, LEN(ISNULL(responseData,'')) as response FROM Audit_Log.dbo.TransactionLog" +
                 " where userTrackingNumber = ? and queryType = ? order by requestDateTime desc";
         List<TransactionTable> list =  jdbcTemplate.query(sql, new Object[] {trackingId, queryType}, tableRowMapper);
+        return list;
+    }
+
+    @Transactional(readOnly=true)
+    public String queryById1(int id) {
+        return jdbcTemplate.queryForObject(
+                "SELECT TOP 1 requestData FROM Audit_Log.dbo.TransactionLog where id = ?", new Object[] { id }, String.class);
+    }
+
+    @Transactional(readOnly=true)
+    public String queryById2(int id) {
+        return jdbcTemplate.queryForObject(
+                "SELECT TOP 1 responseData FROM Audit_Log.dbo.TransactionLog where id = ?", new Object[] { id }, String.class);
+    }
+
+    @Transactional(readOnly=true)
+    public List<TransactionTable>  query(String sql) {
+        LOG.info("Exec  SQL: " + sql);
+        List<TransactionTable> list =  jdbcTemplate.query(sql, tableRowMapper);
         return list;
     }
 }

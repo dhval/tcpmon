@@ -7,7 +7,8 @@
       "OffenderInquiry-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
       "OffenderInquiry-Old": "http://10.182.70.250:50061/JNETInquiry/OffenderInquiry",
       "AddressSearch": "http://10.182.70.250:51010/JNET/AddressSearch",
-      "AOPC-CourtFiling": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit"
+      "AOPC-CourtFiling": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit",
+      "DP-Router": "http://10.182.70.250:55000/EventMessageConsumer/1"
     },
     "hosts": {
       "None": "",

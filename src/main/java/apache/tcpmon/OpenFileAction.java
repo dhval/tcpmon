@@ -30,6 +30,11 @@ public class OpenFileAction extends AbstractAction {
         this(action, component, label, null);
     }
 
+    public void setSelectionModeDir() {
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setAcceptAllFileFilterUsed(false);
+    }
+
     public void actionPerformed(ActionEvent e) {
         LOG.info(e.paramString() + e.getActionCommand());
         switch (fc.showOpenDialog(component))
@@ -44,7 +49,6 @@ public class OpenFileAction extends AbstractAction {
 
                     if (textArea != null) {
                         String text = FileUtils.readFileToString(fc.getSelectedFile());
-                        LOG.warn(text);
                         if (!StringUtils.isEmpty(text)) textArea.setText(Utils.prettyXML(text));
                     }
                     label.setText(fc.getSelectedFile().getCanonicalPath());

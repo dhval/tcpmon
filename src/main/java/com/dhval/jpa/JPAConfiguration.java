@@ -14,13 +14,14 @@ import javax.sql.DataSource;
 @Profile("db")
 public class JPAConfiguration {
 
-    @Bean
-    @ConfigurationProperties(prefix = "datasource")
-    public DataSource dataSourceDev() {
-        // http://stackoverflow.com/questions/28821521/configure-datasource-programmatically-in-spring-boot
-        return DataSourceBuilder.create().build();
-    }
-
+    /**
+     @Bean
+     @ConfigurationProperties(prefix = "datasource")
+     public DataSource dataSourceDev() {
+     // http://stackoverflow.com/questions/28821521/configure-datasource-programmatically-in-spring-boot
+     return DataSourceBuilder.create().build();
+     }
+     **/
     @Bean
     public JdbcTemplate contractJdbcTemplate(@Autowired DataSource source){
         return new JdbcTemplate(source);

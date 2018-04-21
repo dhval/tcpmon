@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
+import com.dhval.utils.Utils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -24,20 +28,17 @@ import org.apache.http.util.EntityUtils;
  */
 public class EchoHandler implements  HttpRequestHandler {
 
-    public EchoHandler() {}
-    public EchoHandler(String file) {
-        this.file = file;
-    }
+    private List<String> files = new ArrayList<>();
+    private Random random = new Random();
 
-    private String file;
-
-    public String getFile() {
-        return file;
+    public void addFiles(List<String> list) {
+        files.addAll(list);
     }
 
     public void setFile(String file) {
-        this.file = file;
+        files.add(file);
     }
+
 
     /**
      * Handles a request by echoing the incoming request entity.
@@ -67,8 +68,8 @@ public class EchoHandler implements  HttpRequestHandler {
             entity = ((HttpEntityEnclosingRequest) request).getEntity();
 
         byte[] data;
-        if (file != null) {
-            Path path = Paths.get(file);
+        if (!files.isEmpty()) {
+            Path path = Paths.get(pickFile());
             data = Files.readAllBytes(path);
         } else if (entity == null) {
             data = new byte[0];
@@ -85,6 +86,10 @@ public class EchoHandler implements  HttpRequestHandler {
         response.setStatusCode(HttpStatus.SC_OK);
         response.setEntity(entity);
 
+    }
+
+    private String pickFile() {
+       return files.get(random.nextInt(files.size()));
     }
 
 }

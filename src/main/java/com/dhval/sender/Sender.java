@@ -1,20 +1,25 @@
-package org.apache.tcpmon;
+package com.dhval.sender;
 
 import apache.tcpmon.*;
 import com.dhval.utils.JUtils;
 import com.dhval.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.tcpmon.TCPMon;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,11 +30,14 @@ import java.util.Map;
 /**
  * Allows one to send an arbitrary soap message to a specific url with a specified soap action
  */
-class Sender extends JPanel {
+@org.springframework.stereotype.Component
+public class Sender extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
+    private boolean enableScheduler = false;
     public JTextField endpointField = null;
     public JTextField actionField = null;
     public JCheckBox xmlFormatBox = null;
+    public JCheckBox retryBox = null;
     public JButton sendButton = null;
     public JButton switchButton = null;
     public JSplitPane outPane = null;
@@ -48,7 +56,7 @@ class Sender extends JPanel {
     JComboBox<String> selectHost = null;
     JComboBox<String> selectRequest = null;
 
-    public Sender(JTabbedPane _notebook) {
+    public Sender(@Autowired JTabbedPane _notebook) {
         notebook = _notebook;
         instance = this;
         fc.setCurrentDirectory(new File(TCPMon.CWD));
@@ -102,7 +110,7 @@ class Sender extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("Connection Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(endpointField = new JTextField("http://localhost:8080/axis2/services/XYZ", 50));
+        top.add(endpointField = new JTextField("http://localhost:7832/echo/services/23", 50));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("SOAP Action  ", SwingConstants.RIGHT));
         top.add(actionField = new JTextField("", 4));
@@ -139,9 +147,11 @@ class Sender extends JPanel {
         JPanel bottomButtons = new JPanel();
         bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.LINE_AXIS));
         bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        bottomButtons.add(retryBox = new JCheckBox("Retry"));
+        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         bottomButtons.add(
                 xmlFormatBox =
-                new JCheckBox(TCPMon.getMessage("xmlFormat00", "XML Format")));
+                        new JCheckBox(TCPMon.getMessage("xmlFormat00", "XML Format")));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         bottomButtons.add(sendButton = new JButton("Send"));
 
@@ -204,6 +214,12 @@ class Sender extends JPanel {
                 }
             }
         });
+        retryBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+               enableScheduler =  e.getStateChange() == ItemEvent.SELECTED;
+            }
+        });
 
         this.add(pane2, BorderLayout.CENTER);
         outPane.setDividerLocation(250);
@@ -233,6 +249,12 @@ class Sender extends JPanel {
      */
     public void close() {
         notebook.remove(this);
+    }
+
+    @Scheduled(initialDelay = 30000, fixedDelay = 15000L)
+    public void scheduler() {
+        if (!enableScheduler) return;
+        send();
     }
 
     public void send() {
