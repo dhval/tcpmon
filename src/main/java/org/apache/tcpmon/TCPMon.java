@@ -1,8 +1,8 @@
 package org.apache.tcpmon;
 
-import com.dhval.dto.LocalServer;
-import com.dhval.dto.TcpProxy;
-import com.dhval.utils.DateUtils;
+import org.apache.dhval.dto.LocalServer;
+import org.apache.dhval.dto.TcpProxy;
+import org.apache.dhval.utils.DateUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  */
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.dhval"})
+@ComponentScan(basePackages = {"org.apache.dhval"})
 @EnableScheduling
 public class TCPMon extends JFrame {
 
@@ -219,7 +219,7 @@ public class TCPMon extends JFrame {
      * verbose mode) then there is no need to read the properties file.
      */
     private static void initializeMessages() {
-        messages = ResourceBundle.getBundle("org.apache.ws.commons.tcpmon.tcpmon");
+        messages = ResourceBundle.getBundle("org.apache.tcpmon.tcpmon");
     }
 
 }

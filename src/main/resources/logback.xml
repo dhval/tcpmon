@@ -23,7 +23,7 @@
     </appender>
 
     <!-- Form -->
-    <appender name="FORM" class="com.dhval.logger.Appender" />
+    <appender name="FORM" class="org.apache.dhval.logger.Appender" />
 
     <!--<logger name="br.com.mobhub.fdv.sync.App" level="DEBUG"/>-->
 
