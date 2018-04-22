@@ -1,12 +1,12 @@
 package com.dhval.sender;
 
 import apache.tcpmon.FormatXMLAction;
-import apache.tcpmon.OpenFileAction;
 import apache.tcpmon.SaveFileAction;
 import apache.tcpmon.SelectTextAction;
 import com.dhval.utils.JUtils;
 import com.dhval.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
 import org.apache.tcpmon.TCPMon;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -47,13 +47,17 @@ public class Sender extends JPanel {
     public JPanel leftPanel = null;
     public JPanel rightPanel = null;
     public JTabbedPane notebook = null;
-    private RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
-    private RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
 
-    private JLabel requestFileLabel= new JLabel("");
+    RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
+    JPopupMenu popupIn = inputText.getPopupMenu();
+    JMenu submenu = new JMenu("Files");
+    RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
+    JPopupMenu popupOut = outputText.getPopupMenu();
+
+    JLabel requestFileLabel = new JLabel("");
     private Sender instance = null;
     public JTextField hostNameField = null;
-    public  JFileChooser fc = new JFileChooser();
+    public JFileChooser fc = new JFileChooser();
 
     JComboBox<String> selectEnvironment = null;
     JComboBox<String> selectHost = null;
@@ -66,14 +70,13 @@ public class Sender extends JPanel {
 
         inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         inputText.setCodeFoldingEnabled(true);
-        JPopupMenu popupIn = inputText.getPopupMenu();
         popupIn.addSeparator();
         popupIn.add(new JMenuItem(new SelectTextAction()));
         popupIn.addSeparator();
-        popupIn.add(new JMenuItem(new OpenFileAction("Open", this, requestFileLabel, inputText)));
+        popupIn.add(new JMenuItem(new OpenFileAction("Open", this)));
         popupIn.add(new JMenuItem(new FormatXMLAction(this, inputText)));
+        popupIn.add(submenu);
 
-        JPopupMenu popupOut = outputText.getPopupMenu();
         popupOut.addSeparator();
         popupOut.add(new JMenuItem(new SelectTextAction()));
         popupOut.addSeparator();
@@ -213,8 +216,10 @@ public class Sender extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (!StringUtils.isEmpty(outputText.getText())) outputText.setText(Utils.prettyXML(outputText.getText()));
-                    if (!StringUtils.isEmpty(inputText.getText())) inputText.setText(Utils.prettyXML(inputText.getText()));
+                    if (!StringUtils.isEmpty(outputText.getText()))
+                        outputText.setText(Utils.prettyXML(outputText.getText()));
+                    if (!StringUtils.isEmpty(inputText.getText()))
+                        inputText.setText(Utils.prettyXML(inputText.getText()));
                 } catch (Exception e1) {
                     LOG.warn(e1.getMessage(), e1);
                 }
@@ -223,7 +228,7 @@ public class Sender extends JPanel {
         retryBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-               enableScheduler =  e.getStateChange() == ItemEvent.SELECTED;
+                enableScheduler = e.getStateChange() == ItemEvent.SELECTED;
             }
         });
 
@@ -241,6 +246,7 @@ public class Sender extends JPanel {
         leftPanel.removeAll();
         leftPanel.add(left);
     }
+
     /**
      * Method setRight
      *
@@ -250,6 +256,7 @@ public class Sender extends JPanel {
         rightPanel.removeAll();
         rightPanel.add(right);
     }
+
     /**
      * Method close
      */
@@ -261,6 +268,23 @@ public class Sender extends JPanel {
     public void scheduler() {
         if (!enableScheduler) return;
         send();
+    }
+
+    void readFile(String file) {
+        try {
+            if (Utils.isFilePresent(file)) {
+                String text = FileUtils.readFileToString(new File(file));
+                if (Utils.isXML(text)) {
+                    inputText.setText(Utils.prettyXML(text));
+                    inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
+                } else {
+                    inputText.setText(text);
+                }
+                requestFileLabel.setText(file);
+            }
+        } catch (Exception e) {
+            LOG.info(e.getMessage(), e);
+        }
     }
 
     public void send() {
@@ -292,7 +316,7 @@ public class Sender extends JPanel {
             while ((line = rd.readLine()) != null) {
                 outputText.append(line);
             }
-            if(xmlFormatBox.isSelected()){
+            if (xmlFormatBox.isSelected()) {
                 outputText.setText(Utils.prettyXML(outputText.getText()));
             }
         } catch (Exception e) {

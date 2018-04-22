@@ -83,17 +83,16 @@ public class TCPMon extends JFrame {
     /**
      * Field DEFAULT_HOST
      */
-    static final String DEFAULT_HOST = "127.0.0.1";
+    public static final String DEFAULT_HOST = "127.0.0.1";
 
     /**
      * Field DEFAULT_PORT
      */
-    static final int DEFAULT_PORT = 8888;
+    public static final int DEFAULT_PORT = 8888;
 
     public static final String CWD = System.getProperty("user.dir");
 
     public static ConfigurableApplicationContext context;
-
 
     public TCPMon() {
         super("TCPMon2");
@@ -102,15 +101,12 @@ public class TCPMon extends JFrame {
     @PostConstruct
     public void start() {
         boolean embedded = false;
-        JComponent componentToDisplay;
         this.getContentPane().add(notebook);
-        componentToDisplay = new AdminPane(notebook, getMessage("admin00", "Admin"));
         if (!embedded) {
             this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         }
         this.pack();
-        this.setSize(1000, 700);
-        notebook.setSelectedComponent(componentToDisplay);
+        this.setSize(1000, 800);
         this.setVisible(true);
         initializeTcpProxies(TcpProxy.buildProxies(jsonMap));
     }
@@ -178,22 +174,17 @@ public class TCPMon extends JFrame {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        context = new SpringApplicationBuilder(TCPMon.class)
-                .headless(false).run(args);
-
+        context = new SpringApplicationBuilder(TCPMon.class).headless(false).run(args);
         try {
             TCPMon.setupLookAndFeel(true);
         } catch (Throwable exp) {
             exp.printStackTrace();
         }
-
         EventQueue.invokeLater(() -> {
-            TCPMon ex = context.getBean(TCPMon.class);
-            ex.setVisible(true);
+            TCPMon tcpMon = context.getBean(TCPMon.class);
+            tcpMon.setVisible(true);
         });
-
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
-        LOG.info("GMT: " + DateUtils.gmt());
     }
 
     /**

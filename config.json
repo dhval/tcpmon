@@ -1,5 +1,12 @@
 {
   "name": "TCPmon",
+  "mockServer": {
+    "enabled": "yes",
+    "listenPort": 7832,
+    "listenHost": "127.0.0.1",
+    "pathURI": "/echo/*",
+    "filesToServe": "soap/"
+  },
   "tcpProxies" : [
     {
       "enabled": "yes",
@@ -14,13 +21,6 @@
       "targetPort": 7832
     }
   ],
-  "mockServer": {
-    "enabled": "yes",
-    "listenPort": 7832,
-    "listenHost": "127.0.0.1",
-    "pathURI": "/echo/*",
-    "filesToServe": "soap/"
-  },
   "environments": {
     "Echo": "http://localhost:7832/echo/services/XYZ",
     "Offender-Internal": "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",

@@ -13,21 +13,16 @@ import java.io.File;
 
 public class OpenFileAction extends AbstractAction {
     private static final Logger LOG = LoggerFactory.getLogger(OpenFileAction.class);
-    private  JFileChooser fc = new JFileChooser();
+    private JFileChooser fc = new JFileChooser();
     private JPanel component;
     private JLabel label;
     private JTextArea textArea;
 
-    public OpenFileAction(String action, JPanel component, JLabel label, JTextArea textArea) {
+    public OpenFileAction(String action, JPanel component, JLabel label) {
         super(action);
         fc.setCurrentDirectory(new File(TCPMon.CWD));
         this.component = component;
         this.label = label;
-        this.textArea = textArea;
-    }
-
-    public OpenFileAction(String action, JPanel component, JLabel label) {
-        this(action, component, label, null);
     }
 
     public void setSelectionModeDir() {

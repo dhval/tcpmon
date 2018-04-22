@@ -1,26 +1,16 @@
-/*
- * Copyright 2004,2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package com.dhval.admin;
 
-package org.apache.tcpmon;
-
-import com.dhval.echo.EchoHandler;
+import com.dhval.mock.EchoHandler;
+import com.dhval.mock.MockPanel;
 import com.dhval.utils.JUtils;
-import com.dhval.echo.LocalTestServer;
+import com.dhval.mock.MockServer;
+import org.apache.tcpmon.Listener;
+import org.apache.tcpmon.SlowLinkSimulator;
+import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.swing.*;
@@ -40,7 +30,9 @@ import java.awt.event.ActionListener;
 /**
  * this is the admin page
  */
-class AdminPane extends JPanel {
+
+@Component
+public class AdminPane extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger(AdminPane.class);
 
     /**
@@ -108,33 +100,14 @@ class AdminPane extends JPanel {
      */
     public JCheckBox delayBox;
 
-    public JFileChooser fileChooser = new JFileChooser();
-
-    public JLabel fileLabel = new JLabel();
-
-    public JTextField httpPath = JUtils.jTextField("/echo/*", 25, 100);
-
-    public JComboBox<String> httpPaths;
-
-    private final EchoHandler httpHandler = new EchoHandler();
-    /**
+     /**
      * Constructor AdminPage
      *
      * @param notebook
-     * @param name
      */
-    public AdminPane(JTabbedPane notebook, String name) {
+    public AdminPane(@Autowired JTabbedPane notebook, @Autowired MockPanel mockPanel) {
         JPanel mainPane = null;
         JButton addButton = null;
-        JButton serverButton = null;
-
-        GridBagConstraints DEF_GRID_BAG = new GridBagConstraints();
-        DEF_GRID_BAG.anchor = GridBagConstraints.WEST;
-        DEF_GRID_BAG.gridwidth = GridBagConstraints.REMAINDER;
-
-        GridBagConstraints DEF_GRID_1 = new GridBagConstraints();
-        DEF_GRID_1.anchor = GridBagConstraints.WEST;
-        DEF_GRID_1.gridwidth = 1;
 
         this.setLayout(new BorderLayout());
         noteb = notebook;
@@ -375,15 +348,7 @@ class AdminPane extends JPanel {
 
         // Act as Server section
         // /////////////////////////////////////////////////////////////////
-        JPanel opts2 = new JPanel(new GridBagLayout());
-        opts2.setBorder(new TitledBorder("Server"));
-        mainPane.add(opts2, DEF_GRID_BAG);
-        JButton fileChooseButton =  new JButton("File");
-        opts2.add(new JLabel("Path: "), DEF_GRID_1);
-        opts2.add(httpPath, DEF_GRID_1);
-        opts2.add(httpPaths = new JComboBox<String> (new String[] {"/echo1/*", "/api/*"}), DEF_GRID_1);
-        opts2.add(fileChooseButton, DEF_GRID_BAG);
-        opts2.add(fileLabel = new JLabel("File"), DEF_GRID_BAG);
+        mainPane.add(mockPanel, JUtils.createGridEndElement());
 
         // Spacer
         // ////////////////////////////////////////////////////////////////
@@ -397,12 +362,10 @@ class AdminPane extends JPanel {
         bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 
-        final String add = TCPMon.getMessage("add00", "Add");
+        final String add = TCPMon.getMessage("add00", "Add Listener");
         bottomButtons.add(addButton = new JButton(add), c);
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        bottomButtons.add(serverButton = new JButton("Server"), DEF_GRID_BAG);
 
-        mainPane.add(bottomButtons, DEF_GRID_BAG);
+        mainPane.add(bottomButtons, JUtils.createGridElement());
 
         this.add(new JScrollPane(mainPane), BorderLayout.CENTER);
 
@@ -457,61 +420,8 @@ class AdminPane extends JPanel {
             }
         });
 
-        serverButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                LOG.info(event.getActionCommand().toString());
-                if (!event.getActionCommand().equals("Server")) return;;
-                int lPort = port.getValue(0);
-                if (lPort == 0) return;
-                LocalTestServer server = new LocalTestServer(lPort);
-                if (!StringUtils.isEmpty(fileLabel.getText())) {
-                    httpHandler.setFile(fileLabel.getText());
-                }
-                server.register(httpPath.getText(), httpHandler);
-                try {
-                    server.start();
-                    LOG.info("Listening on localhost:" + lPort);
-                } catch (Exception e) {
-                    LOG.warn(e.getMessage(), e);
-                }
-
-            }
-        });
-
-        httpPaths.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String item = (String) httpPaths.getSelectedItem();//get the selected item
-                httpPath.setText(item);
-            }
-        });
-
-        AdminPane sender = this;
-        fileChooseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switch (fileChooser.showOpenDialog(sender))
-                {
-                    case JFileChooser.APPROVE_OPTION:
-                        try {
-                            String respFile = fileChooser.getSelectedFile().getAbsolutePath();
-                            LOG.info("Read File: " + respFile);
-                            fileLabel.setText(respFile);
-                            httpHandler.setFile(respFile);
-                        } catch (Exception ex) {
-                            LOG.warn(ex.getMessage(), ex);
-                        }
-                        break;
-                    case JFileChooser.CANCEL_OPTION:
-                        JOptionPane.showMessageDialog(sender, "Cancelled", "TCPMon", JOptionPane.OK_OPTION);
-                        break;
-                    case JFileChooser.ERROR_OPTION:
-                        JOptionPane.showMessageDialog(sender, "Error", "TCPMon", JOptionPane.OK_OPTION);
-                }
-            }
-        });
-
-        notebook.addTab(name, this);
+        notebook.addTab("Admin", this);
+        notebook.setSelectedComponent(this);
         notebook.repaint();
         notebook.setSelectedIndex(notebook.getTabCount() - 1);
     }

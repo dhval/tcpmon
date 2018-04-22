@@ -19,7 +19,7 @@ package org.apache.tcpmon;
 /**
  * class to simulate slow connections by slowing down the system
  */
-class SlowLinkSimulator {
+public class SlowLinkSimulator {
 
 	/**
      * Field delayBytes
