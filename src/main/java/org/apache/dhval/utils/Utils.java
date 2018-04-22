@@ -15,7 +15,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -92,4 +91,5 @@ public class Utils {
     public static boolean isXML(String text) throws IOException {
         return !StringUtils.isEmpty(text) && text.charAt(0) == '<';
     }
+
 }
