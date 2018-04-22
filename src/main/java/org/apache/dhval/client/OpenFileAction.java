@@ -1,6 +1,5 @@
-package org.apache.dhval.sender;
+package org.apache.dhval.client;
 
-import org.apache.dhval.utils.Utils;
 import org.apache.dhval.utils.Utils;
 import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;

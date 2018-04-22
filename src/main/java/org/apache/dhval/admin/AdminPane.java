@@ -1,6 +1,6 @@
 package org.apache.dhval.admin;
 
-import org.apache.dhval.mock.MockPanel;
+import org.apache.dhval.server.MockPanel;
 import org.apache.dhval.utils.JUtils;
 import org.apache.tcpmon.Listener;
 import org.apache.tcpmon.SlowLinkSimulator;

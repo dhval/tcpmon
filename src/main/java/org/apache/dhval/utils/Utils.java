@@ -30,6 +30,12 @@ public class Utils {
         xpath.declareNamespace("jnet", "http://www.jnet.state.pa.us/niem/JNET/jnet-core/1");
     }
 
+    public static String printStackTrace(Exception e) {
+        StringWriter w = new StringWriter();
+        e.printStackTrace(new PrintWriter(w));
+        return w.toString();
+    }
+
     public static List<String> allFilesByType(String path, String type) throws IOException{
         String[] files = new File(path).list(new FilenameFilter() {
             @Override

@@ -1,4 +1,4 @@
-package org.apache.dhval.sender;
+package org.apache.dhval.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
@@ -321,9 +321,7 @@ public class Sender extends JPanel {
             }
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
-            StringWriter w = new StringWriter();
-            e.printStackTrace(new PrintWriter(w));
-            outputText.setText(w.toString());
+            outputText.setText(Utils.printStackTrace(e));
         }
     }
 

@@ -1,4 +1,4 @@
-package org.apache.dhval.mock;
+package org.apache.dhval.server;
 
 import java.io.IOException;
 import java.nio.file.Files;

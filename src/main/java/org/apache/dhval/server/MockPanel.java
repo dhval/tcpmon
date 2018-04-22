@@ -1,9 +1,5 @@
-package org.apache.dhval.mock;
+package org.apache.dhval.server;
 
-import org.apache.dhval.action.OpenFileAction;
-import org.apache.dhval.dto.LocalServer;
-import org.apache.dhval.utils.JUtils;
-import org.apache.dhval.utils.Utils;
 import org.apache.dhval.action.OpenFileAction;
 import org.apache.dhval.dto.LocalServer;
 import org.apache.dhval.utils.JUtils;

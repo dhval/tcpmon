@@ -7,8 +7,8 @@ no longer maintained. Since the code base has not been updated for a while, it i
 
 - There are not many open source tools available for testing SOAP/WS-Security based web services, SOAP UI Pro is now 
 mostly a paid version and it is not being actively contributed by developers on github. Undoubtedly it has comprehensive
-functionally yet it is hard to customize, hence there are not many free plugins. There are really outstanding tools like
- Postman but they cater to mostly REST style web service. 
+functionally available in market yet it is hard to customize from development perspective, hence there are not many free 
+plugins. There are really outstanding tools like Postman but they cater to mostly REST style web service. 
 
 #### TCPMon 2.0 Features
 
