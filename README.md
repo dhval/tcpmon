@@ -1,7 +1,7 @@
 ### TCPMon
 
-TCPMon [v1.0](http://ws.apache.org/tcpmon/) was a classic utility for viewing HTTP requests and responses. However it is 
-no longer maintained. Since the code base has not been updated for a while, it is hard to extend.
+TCPMon [v1.0](http://ws.apache.org/tcpmon/) was a classic utility for viewing HTTP requests and responses. The code base
+was not maintained for a while, I was surprised to see people still successfully using it for common WS troubleshooting.
 
 #### Why 2.0
 
@@ -24,6 +24,42 @@ unless you need it and ready to configure.
 - There are many more minor changes like; client sending request at regular interval, open file with right click in
 request editor pane.
 
-## Change log  
+#### Change log  
 
-## Contact
+#### Contact
+
+
+#### Collaborate
+
+Any kind of help with the project will be well received, and there are two main ways to give such help:
+
+- Reporting errors and asking for extensions through the issues management
+- or forking the repository and extending the project
+
+#### Issues management
+
+Issues are managed at the GitHub [project issues tracker][issues], where any Github user may report bugs or ask for new features.
+
+#### Getting the code
+
+If you wish to fork or modify the code, visit the [GitHub project page][scm], where the latest versions are always kept.
+Check the 'master' branch for the latest release, and the 'develop' for the current, and stable, development version.
+
+#### Similar projects
+
+- [TCPMon on Github](https://github.com/search?l=Java&q=tcpmon&type=Repositories)
+
+#### License
+
+The project has been released under the [MIT License][license].
+
+[issues]: https://github.com/dhval/tcpmon/issues
+[license]: http://www.opensource.org/licenses/mit-license.php
+[scm]: https://github.com/dhval/tcpmon
+
+[ws-security]: https://www.oasis-open.org/committees/wss/
+[xwss]: https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.6/tutorial/doc/XWS-SecurityIntro4.html
+[wss4j]: https://ws.apache.org/wss4j/
+
+[spring-ws]: http://projects.spring.io/spring-ws/
+
