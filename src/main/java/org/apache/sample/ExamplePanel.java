@@ -1,7 +1,7 @@
-package com.dhval.sample;
+package org.apache.sample;
 
-import apache.tcpmon.OpenFileAction;
-import com.dhval.utils.JUtils;
+import org.apache.dhval.action.OpenFileAction;
+import org.apache.dhval.utils.JUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

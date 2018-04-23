@@ -2,6 +2,9 @@ package org.apache.dhval.wss;
 
 import org.apache.tcpmon.TCPMon;
 import org.apache.wss4j.dom.WSConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 import org.springframework.ws.soap.security.wss4j.support.CryptoFactoryBean;
@@ -17,8 +20,9 @@ import org.springframework.core.io.ClassPathResource;
  */
 public class WSS4JInterceptor {
 
-    public static ClientInterceptor userNameTokenInterceptor() throws Exception {
-        Map<String, String> map = getWSS4JProfile("UserNameToken");
+    private static final Logger LOG = LoggerFactory.getLogger(WSS4JInterceptor.class);
+
+    public static ClientInterceptor userNameTokenInterceptor(Map<String, String> map) throws Exception {
         Wss4jSecurityInterceptor wss4jInterceptor = new Wss4jSecurityInterceptor();
         wss4jInterceptor.setSecurementActions(map.get("action"));
         wss4jInterceptor.setSecurementUsername(map.get("user"));
@@ -32,37 +36,64 @@ public class WSS4JInterceptor {
         return wss4jInterceptor;
     }
 
-    /**
-     * @return
-     * @throws Exception
-     */
-    public static ClientInterceptor signedSAMLAssertion() throws Exception {
-        Map<String, String> map = getWSS4JProfile("SAMLTokenSigned");
+    public static ClientInterceptor signedX509(Map<String, String> map) throws Exception {
 
         Wss4jSecurityInterceptor securityInterceptor = new Wss4jSecurityInterceptor();
 
         CryptoFactoryBean cryptoFactory = new CryptoFactoryBean();
-        cryptoFactory.setKeyStoreLocation(new ClassPathResource("keystore.jks"));
-        cryptoFactory.setKeyStorePassword("changeit");
+        cryptoFactory.setKeyStoreLocation(new FileSystemResource(map.get("keystore-location")));
+        cryptoFactory.setKeyStorePassword(map.get("keystore-password"));
+        cryptoFactory.afterPropertiesSet();
+        Crypto crypto = cryptoFactory.getObject();
+        // set security actions: Timestamp Signature SAMLTokenSigned SAMLTokenUnsigned
+        securityInterceptor.setSecurementActions(map.get("action"));
+        // sign the request
+        securityInterceptor.setSecurementUsername(map.get("keystore-alias"));
+        securityInterceptor.setSecurementPassword(map.get("keystore-password"));
+        securityInterceptor.setSecurementSignatureCrypto(crypto);
+        securityInterceptor.setSecurementSignatureParts(
+                "{Element}{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Timestamp;" +
+                        "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body"
+        );
+        // X509KeyIdentifier, DirectReference
+        securityInterceptor.setSecurementSignatureKeyIdentifier("DirectReference");
+        // initialize
+        securityInterceptor.afterPropertiesSet();
+        return securityInterceptor;
+    }
+
+    /**
+     * @return
+     * @throws Exception
+     */
+    public static ClientInterceptor signedSAMLAssertion(Map<String, String> map) throws Exception {
+
+        Wss4jSecurityInterceptor securityInterceptor = new Wss4jSecurityInterceptor();
+        FileSystemResource resource = new FileSystemResource(map.get("keystore-location"));
+        LOG.info(resource.toString() + resource.exists());
+        CryptoFactoryBean cryptoFactory = new CryptoFactoryBean();
+        cryptoFactory.setKeyStoreLocation(resource);
+        cryptoFactory.setKeyStorePassword(map.get("keystore-password"));
         cryptoFactory.afterPropertiesSet();
         Crypto crypto = cryptoFactory.getObject();
 
-        SAML2CallbackHandler samlCallbackHandler = new SAML2CallbackHandler(crypto, "selfsigned");
+        //SAML2CallbackHandler samlCallbackHandler = new SAML2CallbackHandler(crypto, map.get("keystore-alias"));
 
+        /**
         SAMLIssuerImpl issuer = new SAMLIssuerImpl();
         issuer.setIssuerCrypto(crypto);
-        issuer.setIssuerKeyName("selfsigned");
-        issuer.setIssuerKeyPassword("password");
-        issuer.setIssuerName("selfsigned");
+        issuer.setIssuerKeyName(map.get("keystore-alias"));
+        issuer.setIssuerKeyPassword(map.get("password"));
+        issuer.setIssuerName(map.get("user"));
         issuer.setSendKeyValue(false);
         issuer.setSignAssertion(true);
         issuer.setCallbackHandler(samlCallbackHandler);
-
-        securityInterceptor.setSecurementActions("Timestamp SAMLTokenSigned");
+**/
+        securityInterceptor.setSecurementActions(map.get("action"));
         securityInterceptor.setSecurementSignatureCrypto(crypto);
-        securityInterceptor.setSecurementUsername("selfsigned");
-        securityInterceptor.setSecurementPassword("password");
-        securityInterceptor.setSamlIssuer(issuer);
+        securityInterceptor.setSecurementUsername(map.get("keystore-alias"));
+        securityInterceptor.setSecurementPassword(map.get("keystore-password"));
+     //   securityInterceptor.setSamlIssuer(issuer);
         securityInterceptor.afterPropertiesSet();
 
         securityInterceptor.afterPropertiesSet();

@@ -295,11 +295,20 @@ public class Sender extends JPanel {
     public void send() {
         try {
             String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
-            if (selWSS4JProfile.equals("UserNameToken")) {
-                 ClientInterceptor interceptor = WSS4JInterceptor.userNameTokenInterceptor();
-                new WSSClient().post(endpointField.getText(), inputText.getText(), interceptor);
-                return;
+            Map jsonMap = TCPMon.jsonMap;
+            if (jsonMap != null && jsonMap.containsKey("wss4j-profiles")) {
+                Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
+                if (map != null && map.containsKey(selWSS4JProfile)) {
+                    String result = new WSSClient().post(endpointField.getText(), inputText.getText(), (Map<String, String>) map.get(selWSS4JProfile));
+                    if (Utils.isXML(result)) {
+                        outputText.setText(Utils.prettyXML(result));
+                    } else {
+                        outputText.setText(result);
+                    }
+                    return;
+                }
             }
+            // Use vanilla HTTP Post
             URL u = new URL(endpointField.getText());
             URLConnection uc = u.openConnection();
             HttpURLConnection connection = (HttpURLConnection) uc;

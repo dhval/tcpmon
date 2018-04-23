@@ -5,7 +5,7 @@ local:
     port: 8081
 spring:
   profiles:
-    active: default
+    active: db
 ---
 spring:
   profiles: default
