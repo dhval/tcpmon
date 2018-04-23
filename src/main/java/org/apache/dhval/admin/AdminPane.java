@@ -1,46 +1,28 @@
-/*
- * Copyright 2004,2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package org.apache.dhval.admin;
 
-package org.apache.tcpmon;
-
-import com.dhval.echo.EchoHandler;
-import com.dhval.utils.JUtils;
-import com.dhval.echo.LocalTestServer;
+import org.apache.dhval.server.MockPanel;
+import org.apache.dhval.utils.JUtils;
+import org.apache.tcpmon.Listener;
+import org.apache.tcpmon.SlowLinkSimulator;
+import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.PlainDocument;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ActionListener;;
+import static org.apache.dhval.utils.JUtils.*;
 
 /**
  * this is the admin page
  */
-class AdminPane extends JPanel {
+
+@Component
+public class AdminPane extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger(AdminPane.class);
 
     /**
@@ -108,33 +90,14 @@ class AdminPane extends JPanel {
      */
     public JCheckBox delayBox;
 
-    public JFileChooser fileChooser = new JFileChooser();
-
-    public JLabel fileLabel = new JLabel();
-
-    public JTextField httpPath = JUtils.jTextField("/echo/*", 25, 100);
-
-    public JComboBox<String> httpPaths;
-
-    private final EchoHandler httpHandler = new EchoHandler();
-    /**
+     /**
      * Constructor AdminPage
      *
      * @param notebook
-     * @param name
      */
-    public AdminPane(JTabbedPane notebook, String name) {
+    public AdminPane(@Autowired JTabbedPane notebook, @Autowired MockPanel mockPanel) {
         JPanel mainPane = null;
         JButton addButton = null;
-        JButton serverButton = null;
-
-        GridBagConstraints DEF_GRID_BAG = new GridBagConstraints();
-        DEF_GRID_BAG.anchor = GridBagConstraints.WEST;
-        DEF_GRID_BAG.gridwidth = GridBagConstraints.REMAINDER;
-
-        GridBagConstraints DEF_GRID_1 = new GridBagConstraints();
-        DEF_GRID_1.anchor = GridBagConstraints.WEST;
-        DEF_GRID_1.gridwidth = 1;
 
         this.setLayout(new BorderLayout());
         noteb = notebook;
@@ -375,15 +338,7 @@ class AdminPane extends JPanel {
 
         // Act as Server section
         // /////////////////////////////////////////////////////////////////
-        JPanel opts2 = new JPanel(new GridBagLayout());
-        opts2.setBorder(new TitledBorder("Server"));
-        mainPane.add(opts2, DEF_GRID_BAG);
-        JButton fileChooseButton =  new JButton("File");
-        opts2.add(new JLabel("Path: "), DEF_GRID_1);
-        opts2.add(httpPath, DEF_GRID_1);
-        opts2.add(httpPaths = new JComboBox<String> (new String[] {"/echo1/*", "/api/*"}), DEF_GRID_1);
-        opts2.add(fileChooseButton, DEF_GRID_BAG);
-        opts2.add(fileLabel = new JLabel("File"), DEF_GRID_BAG);
+        mainPane.add(mockPanel, JUtils.createGridEndElement());
 
         // Spacer
         // ////////////////////////////////////////////////////////////////
@@ -397,12 +352,10 @@ class AdminPane extends JPanel {
         bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 
-        final String add = TCPMon.getMessage("add00", "Add");
+        final String add = TCPMon.getMessage("add00", "Add Listener");
         bottomButtons.add(addButton = new JButton(add), c);
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        bottomButtons.add(serverButton = new JButton("Server"), DEF_GRID_BAG);
 
-        mainPane.add(bottomButtons, DEF_GRID_BAG);
+        mainPane.add(bottomButtons, JUtils.createGridElement());
 
         this.add(new JScrollPane(mainPane), BorderLayout.CENTER);
 
@@ -457,267 +410,10 @@ class AdminPane extends JPanel {
             }
         });
 
-        serverButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                LOG.info(event.getActionCommand().toString());
-                if (!event.getActionCommand().equals("Server")) return;;
-                int lPort = port.getValue(0);
-                if (lPort == 0) return;
-                LocalTestServer server = new LocalTestServer(lPort);
-                if (!StringUtils.isEmpty(fileLabel.getText())) {
-                    httpHandler.setFile(fileLabel.getText());
-                }
-                server.register(httpPath.getText(), httpHandler);
-                try {
-                    server.start();
-                    LOG.info("Listening on localhost:" + lPort);
-                } catch (Exception e) {
-                    LOG.warn(e.getMessage(), e);
-                }
-
-            }
-        });
-
-        httpPaths.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String item = (String) httpPaths.getSelectedItem();//get the selected item
-                httpPath.setText(item);
-            }
-        });
-
-        AdminPane sender = this;
-        fileChooseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switch (fileChooser.showOpenDialog(sender))
-                {
-                    case JFileChooser.APPROVE_OPTION:
-                        try {
-                            String respFile = fileChooser.getSelectedFile().getAbsolutePath();
-                            LOG.info("Read File: " + respFile);
-                            fileLabel.setText(respFile);
-                            httpHandler.setFile(respFile);
-                        } catch (Exception ex) {
-                            LOG.warn(ex.getMessage(), ex);
-                        }
-                        break;
-                    case JFileChooser.CANCEL_OPTION:
-                        JOptionPane.showMessageDialog(sender, "Cancelled", "TCPMon", JOptionPane.OK_OPTION);
-                        break;
-                    case JFileChooser.ERROR_OPTION:
-                        JOptionPane.showMessageDialog(sender, "Error", "TCPMon", JOptionPane.OK_OPTION);
-                }
-            }
-        });
-
-        notebook.addTab(name, this);
+        notebook.addTab("Admin", this);
+        notebook.setSelectedComponent(this);
         notebook.repaint();
         notebook.setSelectedIndex(notebook.getTabCount() - 1);
     }
-    
-    /**
-     * a text field with a restricted set of characters
-     */
-    static class RestrictedTextField extends JTextField {
-        /**
-         * Field validText
-         */
-        protected String validText;
-
-        /**
-         * Constructor RestrictedTextField
-         *
-         * @param validText
-         */
-        public RestrictedTextField(String validText) {
-            setValidText(validText);
-        }
-
-        /**
-         * Constructor RestrictedTextField
-         *
-         * @param columns
-         * @param validText
-         */
-        public RestrictedTextField(int columns, String validText) {
-            super(columns);
-            setValidText(validText);
-        }
-
-        /**
-         * Constructor RestrictedTextField
-         *
-         * @param text
-         * @param validText
-         */
-        public RestrictedTextField(String text, String validText) {
-            super(text);
-            setValidText(validText);
-        }
-
-        /**
-         * Constructor RestrictedTextField
-         *
-         * @param text
-         * @param columns
-         * @param validText
-         */
-        public RestrictedTextField(String text, int columns, String validText) {
-            super(text, columns);
-            setValidText(validText);
-        }
-
-        /**
-         * Method setValidText
-         *
-         * @param validText
-         */
-        private void setValidText(String validText) {
-            this.validText = validText;
-        }
-
-        /**
-         * fascinatingly, this method is called in the super() constructor,
-         * meaning before we are fully initialized. C++ doesnt actually permit
-         * such a situation, but java clearly does...
-         *
-         * @return a new document
-         */
-        public Document createDefaultModel() {
-            return new RestrictedDocument();
-        }
-
-        /**
-         * this class strips out invaid chars
-         */
-        class RestrictedDocument extends PlainDocument {
-            /**
-             * Constructs a plain text document.  A default model using
-             * <code>GapContent</code> is constructed and set.
-             */
-            public RestrictedDocument() {
-            }
-
-            /**
-             * add a string; only those chars in the valid text list are allowed
-             *
-             * @param offset
-             * @param string
-             * @param attributes
-             * @throws BadLocationException
-             */
-            public void insertString(int offset,
-                                     String string,
-                                     AttributeSet attributes)
-                    throws BadLocationException {
-                if (string == null) {
-                    return;
-                }
-                int len = string.length();
-                StringBuffer buffer = new StringBuffer(string.length());
-                for (int i = 0; i < len; i++) {
-                    char ch = string.charAt(i);
-                    if (validText.indexOf(ch) >= 0) {
-                        buffer.append(ch);
-                    }
-                }
-                super.insertString(offset, new String(buffer), attributes);
-            }
-        }    // end class NumericDocument
-    }
-
-    /**
-     * because we cant use Java1.4's JFormattedTextField, here is
-     * a class that accepts numbers only
-     */
-    static class NumberField extends RestrictedTextField {
-        /**
-         * Field VALID_TEXT
-         */
-        private static final String VALID_TEXT = "0123456789";
-
-        /**
-         * Constructs a new <code>TextField</code>.  A default model is created,
-         * the initial string is <code>null</code>,
-         * and the number of columns is set to 0.
-         */
-        public NumberField() {
-            super(VALID_TEXT);
-        }
-
-        /**
-         * Constructs a new empty <code>TextField</code> with the specified
-         * number of columns.
-         * A default model is created and the initial string is set to
-         * <code>null</code>.
-         *
-         * @param columns the number of columns to use to calculate
-         *                the preferred width; if columns is set to zero, the
-         *                preferred width will be whatever naturally results from
-         *                the component implementation
-         */
-        public NumberField(int columns) {
-            super(columns, VALID_TEXT);
-        }
-
-        /**
-         * get the int value of a field, any invalid (non int) field returns
-         * the default
-         *
-         * @param def default value
-         * @return the field contents
-         */
-        public int getValue(int def) {
-            int result = def;
-            String text = getText();
-            if ((text != null) && (text.length() != 0)) {
-                try {
-                    result = Integer.parseInt(text);
-                } catch (NumberFormatException e) {
-                }
-            }
-            return result;
-        }
-
-        /**
-         * set the text to a numeric value
-         *
-         * @param value number to assign
-         */
-        public void setValue(int value) {
-            setText(Integer.toString(value));
-        }
-    }    // end class NumericTextField
-
-    /**
-     * hostname fields
-     */
-    static class HostnameField extends RestrictedTextField {
-
-        // list of valid chars in a hostname
-
-        /**
-         * Field VALID_TEXT
-         */
-        private static final String VALID_TEXT =
-                "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWZYZ-.";
-
-        /**
-         * Constructor HostnameField
-         *
-         * @param columns
-         */
-        public HostnameField(int columns) {
-            super(columns, VALID_TEXT);
-        }
-
-        /**
-         * Constructor HostnameField
-         */
-        public HostnameField() {
-            super(VALID_TEXT);
-        }
-    }    
-}
+  }
 

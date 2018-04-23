@@ -1,4 +1,4 @@
-package com.dhval.echo;
+package org.apache.dhval.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -37,12 +37,8 @@ import org.apache.http.protocol.ResponseServer;
 /**
  * Local HTTP server for tests that require one.
  * Based on the <code>ElementalHttpServer</code> example in HttpCore.
- *
- *
- *
- * <!-- empty lines to avoid 'svn diff' problems -->
  */
-public class LocalTestServer {
+public class MockServer {
     /**
      * The local address to bind to.
      * The host is an IP number rather than "localhost" to avoid surprises
@@ -98,9 +94,9 @@ public class LocalTestServer {
      * @param sslcontext optional SSL context if the server is to leverage
      *                   SSL/TLS transport security
      */
-    public LocalTestServer(BasicHttpProcessor proc,
-                           ConnectionReuseStrategy reuseStrat, HttpParams params,
-                           SSLContext sslcontext, int port) {
+    public MockServer(BasicHttpProcessor proc,
+                      ConnectionReuseStrategy reuseStrat, HttpParams params,
+                      SSLContext sslcontext, int port) {
         super ();
         this .handlerRegistry = new HttpRequestHandlerRegistry();
         this .reuseStrategy = (reuseStrat != null) ? reuseStrat
@@ -122,15 +118,15 @@ public class LocalTestServer {
      *                  <code>null</code> to use
      *                  {@link #newDefaultParams default} parameters
      */
-    public LocalTestServer(BasicHttpProcessor proc, HttpParams params) {
+    public MockServer(BasicHttpProcessor proc, HttpParams params) {
         this (proc, null, params, null, 8080);
     }
 
-    public LocalTestServer() {
+    public MockServer() {
         this (null, null, null, null, 8080);
     }
 
-    public LocalTestServer(int listenPort) {
+    public MockServer(int listenPort) {
         this (null, null, null, null, listenPort);
     }
 
@@ -340,7 +336,7 @@ public class LocalTestServer {
                     } catch (Exception e) {
                         ServerSocket ssock = servicedSocket;
                         if ((ssock != null) && !ssock.isClosed()) {
-                            System.out.println(LocalTestServer.this
+                            System.out.println(MockServer.this
                                     .toString()
                                     + " could not accept");
                             e.printStackTrace(System.out);

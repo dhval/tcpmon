@@ -1,6 +1,5 @@
-package com.dhval.echo;
+package org.apache.dhval.server;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import com.dhval.utils.Utils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -22,11 +20,14 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A handler that echos the incoming request entity.
  */
 public class EchoHandler implements  HttpRequestHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(EchoHandler.class);
 
     private List<String> files = new ArrayList<>();
     private Random random = new Random();
@@ -35,7 +36,7 @@ public class EchoHandler implements  HttpRequestHandler {
         files.addAll(list);
     }
 
-    public void setFile(String file) {
+    public void addFile(String file) {
         files.add(file);
     }
 
@@ -89,7 +90,9 @@ public class EchoHandler implements  HttpRequestHandler {
     }
 
     private String pickFile() {
-       return files.get(random.nextInt(files.size()));
+       String file =  files.get(random.nextInt(files.size()));
+       LOG.info("Serving file: " + file);
+       return file;
     }
 
 }

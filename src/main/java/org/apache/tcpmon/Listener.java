@@ -54,7 +54,7 @@ import java.util.Vector;
 /**
  * this is one of the tabbed panels that acts as the actual proxy
  */
-class Listener extends JPanel {
+public class Listener extends JPanel {
 
 	/**
      * Field inputSocket

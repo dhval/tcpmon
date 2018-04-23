@@ -1,10 +1,16 @@
-package com.dhval.sender;
+package org.apache.dhval.client;
 
-import apache.tcpmon.*;
-import com.dhval.utils.JUtils;
-import com.dhval.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
+import org.apache.dhval.action.FormatXMLAction;
+import org.apache.dhval.action.SaveFileAction;
+import org.apache.dhval.action.SelectTextAction;
+import org.apache.dhval.utils.JUtils;
+import org.apache.dhval.utils.Utils;
 import org.apache.tcpmon.TCPMon;
+import org.apache.dhval.wss.WSSClient;
+import org.apache.dhval.wss.WSS4JInterceptor;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -24,7 +30,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +41,7 @@ public class Sender extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
     private boolean enableScheduler = false;
     public JTextField endpointField = null;
-    public JTextField actionField = null;
+    public JTextField actionField = JUtils.jTextField("", 4, 4);
     public JCheckBox xmlFormatBox = null;
     public JCheckBox retryBox = null;
     public JButton sendButton = null;
@@ -44,17 +50,21 @@ public class Sender extends JPanel {
     public JPanel leftPanel = null;
     public JPanel rightPanel = null;
     public JTabbedPane notebook = null;
-    private RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
-    private RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
 
-    private JLabel requestFileLabel= new JLabel("");
+    RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
+    JPopupMenu popupIn = inputText.getPopupMenu();
+    JMenu submenu = new JMenu("Files");
+    RSyntaxTextArea outputText = new RSyntaxTextArea(20, 60);
+    JPopupMenu popupOut = outputText.getPopupMenu();
+
+    JLabel requestFileLabel = new JLabel("");
     private Sender instance = null;
     public JTextField hostNameField = null;
-    public  JFileChooser fc = new JFileChooser();
+    public JFileChooser fc = new JFileChooser();
 
     JComboBox<String> selectEnvironment = null;
     JComboBox<String> selectHost = null;
-    JComboBox<String> selectRequest = null;
+    JComboBox<String> selectWSS4J = null;
 
     public Sender(@Autowired JTabbedPane _notebook) {
         notebook = _notebook;
@@ -63,14 +73,13 @@ public class Sender extends JPanel {
 
         inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         inputText.setCodeFoldingEnabled(true);
-        JPopupMenu popupIn = inputText.getPopupMenu();
         popupIn.addSeparator();
         popupIn.add(new JMenuItem(new SelectTextAction()));
         popupIn.addSeparator();
-        popupIn.add(new JMenuItem(new OpenFileAction("Open", this, requestFileLabel, inputText)));
+        popupIn.add(new JMenuItem(new OpenFileAction("Open", this)));
         popupIn.add(new JMenuItem(new FormatXMLAction(this, inputText)));
+        popupIn.add(submenu);
 
-        JPopupMenu popupOut = outputText.getPopupMenu();
         popupOut.addSeparator();
         popupOut.add(new JMenuItem(new SelectTextAction()));
         popupOut.addSeparator();
@@ -80,21 +89,24 @@ public class Sender extends JPanel {
         outputText.setCodeFoldingEnabled(true);
 
 
-        final Map<String, String> environmentMap = new HashMap<>();
-        final Map<String, String> hostMap = new HashMap<>();
-        final Map<String, String> requestMap = new HashMap<>();
+        final Map<String, String> environmentMap = new LinkedHashMap<>();
+        final Map<String, String> hostMap = new LinkedHashMap<>();
+        final Map<String, String> requestWSS4J = new LinkedHashMap<>();
         try {
+            environmentMap.put("Select", "http://localhost:8080/echo/services/23");
+            hostMap.put("None", "");
+            requestWSS4J.put("None", "");
             Map readValue = new ObjectMapper().readValue(new File("config.json"), Map.class);
             environmentMap.putAll((Map<String, String>) readValue.get("environments"));
             hostMap.putAll((Map<String, String>) readValue.get("hosts"));
-            requestMap.putAll((Map<String, String>) readValue.get("requests"));
+            requestWSS4J.putAll((Map<String, String>) readValue.get("WSS4J"));
         } catch (IOException io) {
             LOG.warn("config.json file not found");
         }
 
         selectEnvironment = new JComboBox<>(environmentMap.keySet().toArray(new String[0]));
         selectHost = new JComboBox<>(hostMap.keySet().toArray(new String[0]));
-        selectRequest = new JComboBox<>(requestMap.keySet().toArray(new String[0]));
+        selectWSS4J = new JComboBox<>(requestWSS4J.keySet().toArray(new String[0]));
 
         this.setLayout(new BorderLayout());
 
@@ -110,27 +122,29 @@ public class Sender extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("Connection Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(endpointField = new JTextField("http://localhost:7832/echo/services/23", 50));
+        top.add(endpointField = new JTextField("http://localhost:8080/echo/services/23", 50));
+        top.add(new JLabel("Profile"));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(new JLabel("SOAP Action  ", SwingConstants.RIGHT));
-        top.add(actionField = new JTextField("", 4));
+        top.add(selectWSS4J);
         top.add(Box.createRigidArea(new Dimension(5, 0)));
 
-        JPanel top2 = new JPanel();
-        top2.setLayout(new BoxLayout(top2, BoxLayout.X_AXIS));
-        top2.add(new JLabel("File:"));
-        top2.add(Box.createRigidArea(new Dimension(5, 0)));
-        top2.add(requestFileLabel);
+        JPanel bottom = new JPanel();
+        bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+        bottom.add(new JLabel("File:"));
+        bottom.add(Box.createRigidArea(new Dimension(5, 0)));
+        bottom.add(requestFileLabel);
+        bottom.add(Box.createHorizontalGlue());
+        bottom.add(new JLabel("Ready:"));
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
         this.add(top, BorderLayout.NORTH);
-        this.add(top2, BorderLayout.SOUTH);
+        this.add(bottom, BorderLayout.SOUTH);
 
         // Add Request/Response Section
         // ///////////////////////////////////////////////////////////////////
-        JPanel pane2 = new JPanel();
-        pane2.setLayout(new BorderLayout());
+        JPanel center = new JPanel();
+        center.setLayout(new BorderLayout());
         leftPanel = new JPanel();
         leftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
@@ -143,7 +157,7 @@ public class Sender extends JPanel {
         rightPanel.add(new RTextScrollPane(outputText));
         outPane = new JSplitPane(0, leftPanel, rightPanel);
         outPane.setDividerSize(4);
-        pane2.add(outPane, BorderLayout.CENTER);
+        center.add(outPane, BorderLayout.CENTER);
         JPanel bottomButtons = new JPanel();
         bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.LINE_AXIS));
         bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -160,7 +174,7 @@ public class Sender extends JPanel {
         bottomButtons.add(switchButton = new JButton(switchStr));
         bottomButtons.add(Box.createHorizontalGlue());
         final String close = TCPMon.getMessage("close00", "Close");
-        pane2.add(bottomButtons, BorderLayout.SOUTH);
+        center.add(bottomButtons, BorderLayout.SOUTH);
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if ("Send".equals(event.getActionCommand())) {
@@ -194,21 +208,22 @@ public class Sender extends JPanel {
         selectHost.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selHost = (String) selectHost.getSelectedItem();
-                hostNameField.setText(hostMap.get(selHost));
+                String selHostKey = (String) selectHost.getSelectedItem();
+                String selHost = hostMap.get(selHostKey);
+                hostNameField.setText(selHost);
                 if (StringUtils.isEmpty(selHost)) return;
                 String selectEndPoint = endpointField.getText();
                 endpointField.setText(selectEndPoint.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
             }
         });
-        Sender sender = this;
-
         xmlFormatBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (!StringUtils.isEmpty(outputText.getText())) outputText.setText(Utils.prettyXML(outputText.getText()));
-                    if (!StringUtils.isEmpty(inputText.getText())) inputText.setText(Utils.prettyXML(inputText.getText()));
+                    if (!StringUtils.isEmpty(outputText.getText()))
+                        outputText.setText(Utils.prettyXML(outputText.getText()));
+                    if (!StringUtils.isEmpty(inputText.getText()))
+                        inputText.setText(Utils.prettyXML(inputText.getText()));
                 } catch (Exception e1) {
                     LOG.warn(e1.getMessage(), e1);
                 }
@@ -217,13 +232,14 @@ public class Sender extends JPanel {
         retryBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-               enableScheduler =  e.getStateChange() == ItemEvent.SELECTED;
+                enableScheduler = e.getStateChange() == ItemEvent.SELECTED;
             }
         });
 
-        this.add(pane2, BorderLayout.CENTER);
+        this.add(center, BorderLayout.CENTER);
         outPane.setDividerLocation(250);
         notebook.addTab("Sender", this);
+
     }
 
     /**
@@ -235,6 +251,7 @@ public class Sender extends JPanel {
         leftPanel.removeAll();
         leftPanel.add(left);
     }
+
     /**
      * Method setRight
      *
@@ -244,6 +261,7 @@ public class Sender extends JPanel {
         rightPanel.removeAll();
         rightPanel.add(right);
     }
+
     /**
      * Method close
      */
@@ -257,8 +275,31 @@ public class Sender extends JPanel {
         send();
     }
 
+    void readFile(String file) {
+        try {
+            if (Utils.isFilePresent(file)) {
+                String text = FileUtils.readFileToString(new File(file));
+                if (Utils.isXML(text)) {
+                    inputText.setText(Utils.prettyXML(text));
+                    inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
+                } else {
+                    inputText.setText(text);
+                }
+                requestFileLabel.setText(file);
+            }
+        } catch (Exception e) {
+            LOG.info(e.getMessage(), e);
+        }
+    }
+
     public void send() {
         try {
+            String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
+            if (selWSS4JProfile.equals("UserNameToken")) {
+                 ClientInterceptor interceptor = WSS4JInterceptor.userNameTokenInterceptor();
+                new WSSClient().post(endpointField.getText(), inputText.getText(), interceptor);
+                return;
+            }
             URL u = new URL(endpointField.getText());
             URLConnection uc = u.openConnection();
             HttpURLConnection connection = (HttpURLConnection) uc;
@@ -268,7 +309,7 @@ public class Sender extends JPanel {
             String action = "\"" + (actionField.getText() == null ? "" : actionField.getText()) + "\"";
             connection.setRequestProperty("SOAPAction", action);
             connection.setRequestProperty("Content-Type", "text/xml");
-            connection.setRequestProperty("User-Agent", "Axis/2.0");
+            connection.setRequestProperty("User-Agent", "TCPMon/2.0");
             OutputStream out = connection.getOutputStream();
             Writer writer = new OutputStreamWriter(out);
             writer.write(inputText.getText());
@@ -286,14 +327,12 @@ public class Sender extends JPanel {
             while ((line = rd.readLine()) != null) {
                 outputText.append(line);
             }
-            if(xmlFormatBox.isSelected()){
+            if (xmlFormatBox.isSelected()) {
                 outputText.setText(Utils.prettyXML(outputText.getText()));
             }
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
-            StringWriter w = new StringWriter();
-            e.printStackTrace(new PrintWriter(w));
-            outputText.setText(w.toString());
+            outputText.setText(Utils.printStackTrace(e));
         }
     }
 

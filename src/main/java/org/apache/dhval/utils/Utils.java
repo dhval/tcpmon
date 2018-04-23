@@ -1,4 +1,4 @@
-package com.dhval.utils;
+package org.apache.dhval.utils;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XPathCompiler;
@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import javax.net.ssl.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -15,7 +16,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
-import java.util.ArrayList;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,6 +31,12 @@ public class Utils {
     private static Pattern pattern = Pattern.compile("^https?://[^/]+/([^/]+)/.*$");
     static {
         xpath.declareNamespace("jnet", "http://www.jnet.state.pa.us/niem/JNET/jnet-core/1");
+    }
+
+    public static String printStackTrace(Exception e) {
+        StringWriter w = new StringWriter();
+        e.printStackTrace(new PrintWriter(w));
+        return w.toString();
     }
 
     public static List<String> allFilesByType(String path, String type) throws IOException{
@@ -91,5 +99,36 @@ public class Utils {
 
     public static boolean isXML(String text) throws IOException {
         return !StringUtils.isEmpty(text) && text.charAt(0) == '<';
+    }
+
+    public static Boolean disableSSLValidation() {
+        try {
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }}, null);
+
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+            return true;
+        } catch (Exception e) {
+          LOG.warn(e.getMessage(), e);
+        }
+        return false;
     }
 }

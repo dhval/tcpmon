@@ -1,4 +1,4 @@
-package com.dhval.utils;
+package org.apache.dhval.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

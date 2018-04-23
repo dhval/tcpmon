@@ -1,4 +1,4 @@
-package com.dhval.logger;
+package org.apache.dhval.logger;
 
 import java.awt.*;
 import java.io.*;

@@ -1,36 +1,71 @@
 {
-    "name": "TCPmon",
-    "environments": {
-      "Echo": "http://localhost:7832/echo/services/XYZ",
-      "Offender-Internal" : "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",
-      "Offender-CDWS-DOC" : "http://10.182.70.250:50180/CorrectionsInquiryDoc",
-      "OffenderInquiry-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
-      "OffenderInquiry-Old": "http://10.182.70.250:50061/JNETInquiry/OffenderInquiry",
-      "AddressSearch": "http://10.182.70.250:51010/JNET/AddressSearch",
-      "AOPC-CourtFiling": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit",
-      "DP-Router": "http://10.182.70.250:55000/EventMessageConsumer/1"
+  "name": "TCPmon",
+  "mockServer": {
+    "enabled": "yes",
+    "listenPort": 7832,
+    "listenHost": "127.0.0.1",
+    "pathURI": "/echo/*",
+    "filesToServe": "soap/"
+  },
+  "tcpProxies" : [
+    {
+      "enabled": "yes",
+      "listenPort": 8080,
+      "targetHost": "127.0.0.1",
+      "targetPort": 7832
     },
-    "hosts": {
-      "None": "",
-      "Test": "10.182.70.250",
-      "Prod": "10.182.68.247",
-      "Localhost": "127.0.0.1"
+    {
+      "enabled": "no",
+      "listenPort": 443,
+      "targetHost": "127.0.0.1",
+      "targetPort": 7832
+    }
+  ],
+  "environments": {
+    "Echo": "http://localhost:7832/echo/services/XYZ",
+    "Offender-Internal": "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",
+    "Offender-CDWS-DOC": "http://10.182.70.250:50180/CorrectionsInquiryDoc",
+    "OffenderInquiry-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
+    "OffenderInquiry-Old": "http://10.182.70.250:50061/JNETInquiry/OffenderInquiry",
+    "AddressSearch": "http://10.182.70.250:51010/JNET/AddressSearch",
+    "AOPC-CourtFiling": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit",
+    "DP-Router": "http://10.182.70.250:55000/EventMessageConsumer/1"
+  },
+  "hosts": {
+    "Test": "10.182.70.250",
+    "Prod": "10.182.68.247",
+    "Localhost": "127.0.0.1"
+  },
+  "WSS4J": {
+    "UserNameToken": "1",
+    "DigitalSignature": "2"
+  },
+  "wss4j-profiles": {
+    "UserNameToken": {
+      "user": "user",
+      "password": "password",
+      "action": "UsernameToken Timestamp",
+      "encrypt": "no"
     },
-    "requests": {
-      "Test": "1",
-      "Internal Test": "2",
-      "Prod": "3",
-      "Internal Prod": "4"
+    "DigitalSignature": {
+      "profile": "JNET"
     },
-    "cf-xpath-expression": [
-      "//*[local-name()='CourtFiling']"
-    ],
-      "profiles": [
-      {
-        "profile": "JNET"
-      },
-      {
-        "profile": "ALLECO"
-      }
-    ]
+    "PROD": {
+      "profile": "ALLECO"
+    }
+  },
+  "cf-xpath-expression": [
+    "//*[local-name()='CourtFiling']"
+  ],
+  "profiles": {
+    "TranLog": {
+      "profile": "JNET"
+    },
+    "TEST": {
+      "profile": "JNET"
+    },
+    "PROD": {
+      "profile": "ALLECO"
+    }
+  }
 }

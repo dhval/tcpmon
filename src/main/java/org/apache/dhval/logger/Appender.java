@@ -1,4 +1,4 @@
-package com.dhval.logger;
+package org.apache.dhval.logger;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;

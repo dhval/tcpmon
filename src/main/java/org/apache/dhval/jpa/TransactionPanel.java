@@ -1,8 +1,8 @@
-package com.dhval.jpa;
+package org.apache.dhval.jpa;
 
-import apache.tcpmon.OpenFileAction;
-import com.dhval.utils.JUtils;
-import com.dhval.utils.Utils;
+import org.apache.dhval.action.OpenFileAction;
+import org.apache.dhval.utils.JUtils;
+import org.apache.dhval.utils.Utils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -18,16 +18,13 @@ import javax.annotation.PostConstruct;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

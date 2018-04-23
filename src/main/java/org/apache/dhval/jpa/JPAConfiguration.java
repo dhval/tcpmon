@@ -1,4 +1,4 @@
-package com.dhval.jpa;
+package org.apache.dhval.jpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;

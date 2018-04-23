@@ -1,4 +1,4 @@
-package com.dhval.jpa;
+package org.apache.dhval.jpa;
 
 import java.util.Objects;
 
