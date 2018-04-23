@@ -13,7 +13,8 @@ plugins. There are really outstanding tools like Postman but they cater to mostl
 #### TCPMon 2.0 Features
 
 - XML syntax and code editor support.
-- Uses Java Swing with Spring making it is easy to add your own custom tabs/panes. This works on most platforms with 
+- Support various SOAP & WS-Security profiles using WSS4J.
+- Uses Swing UI with Spring making it is easy to add your own custom tabs/panes. This works on most platforms with 
 least efforts. It is most practical solution for IDE like tools.
 - Instead of passing dozen of arguments from CLI, uses a JSON configuration file.
 - Add Mock Server for serving canned responses from a directory.
@@ -23,11 +24,6 @@ helpful to monitor that DB while developing. Since DB is tied to DB type specifi
 unless you need it and ready to configure.
 - There are many more minor changes like; client sending request at regular interval, open file with right click in
 request editor pane.
-
-#### Change log  
-
-#### Contact
-
 
 #### Collaborate
 
@@ -44,6 +40,8 @@ Issues are managed at the GitHub [project issues tracker][issues], where any Git
 
 If you wish to fork or modify the code, visit the [GitHub project page][scm], where the latest versions are always kept.
 Check the 'master' branch for the latest release, and the 'develop' for the current, and stable, development version.
+
+#### Change log  
 
 #### Similar projects
 

@@ -8,6 +8,9 @@ import org.apache.dhval.action.SelectTextAction;
 import org.apache.dhval.utils.JUtils;
 import org.apache.dhval.utils.Utils;
 import org.apache.tcpmon.TCPMon;
+import org.apache.dhval.wss.WSSClient;
+import org.apache.dhval.wss.WSS4JInterceptor;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -27,7 +30,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -38,7 +41,7 @@ public class Sender extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
     private boolean enableScheduler = false;
     public JTextField endpointField = null;
-    public JTextField actionField = null;
+    public JTextField actionField = JUtils.jTextField("", 4, 4);
     public JCheckBox xmlFormatBox = null;
     public JCheckBox retryBox = null;
     public JButton sendButton = null;
@@ -61,7 +64,7 @@ public class Sender extends JPanel {
 
     JComboBox<String> selectEnvironment = null;
     JComboBox<String> selectHost = null;
-    JComboBox<String> selectRequest = null;
+    JComboBox<String> selectWSS4J = null;
 
     public Sender(@Autowired JTabbedPane _notebook) {
         notebook = _notebook;
@@ -86,21 +89,24 @@ public class Sender extends JPanel {
         outputText.setCodeFoldingEnabled(true);
 
 
-        final Map<String, String> environmentMap = new HashMap<>();
-        final Map<String, String> hostMap = new HashMap<>();
-        final Map<String, String> requestMap = new HashMap<>();
+        final Map<String, String> environmentMap = new LinkedHashMap<>();
+        final Map<String, String> hostMap = new LinkedHashMap<>();
+        final Map<String, String> requestWSS4J = new LinkedHashMap<>();
         try {
+            environmentMap.put("Select", "http://localhost:8080/echo/services/23");
+            hostMap.put("None", "");
+            requestWSS4J.put("None", "");
             Map readValue = new ObjectMapper().readValue(new File("config.json"), Map.class);
             environmentMap.putAll((Map<String, String>) readValue.get("environments"));
             hostMap.putAll((Map<String, String>) readValue.get("hosts"));
-            requestMap.putAll((Map<String, String>) readValue.get("requests"));
+            requestWSS4J.putAll((Map<String, String>) readValue.get("WSS4J"));
         } catch (IOException io) {
             LOG.warn("config.json file not found");
         }
 
         selectEnvironment = new JComboBox<>(environmentMap.keySet().toArray(new String[0]));
         selectHost = new JComboBox<>(hostMap.keySet().toArray(new String[0]));
-        selectRequest = new JComboBox<>(requestMap.keySet().toArray(new String[0]));
+        selectWSS4J = new JComboBox<>(requestWSS4J.keySet().toArray(new String[0]));
 
         this.setLayout(new BorderLayout());
 
@@ -117,9 +123,9 @@ public class Sender extends JPanel {
         top.add(new JLabel("Connection Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(endpointField = new JTextField("http://localhost:8080/echo/services/23", 50));
-        top.add(new JLabel("SOAP Action  "));
+        top.add(new JLabel("Profile"));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(actionField = new JTextField("", 4));
+        top.add(selectWSS4J);
         top.add(Box.createRigidArea(new Dimension(5, 0)));
 
         JPanel bottom = new JPanel();
@@ -210,8 +216,6 @@ public class Sender extends JPanel {
                 endpointField.setText(selectEndPoint.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
             }
         });
-        Sender sender = this;
-
         xmlFormatBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -235,6 +239,7 @@ public class Sender extends JPanel {
         this.add(center, BorderLayout.CENTER);
         outPane.setDividerLocation(250);
         notebook.addTab("Sender", this);
+
     }
 
     /**
@@ -289,6 +294,12 @@ public class Sender extends JPanel {
 
     public void send() {
         try {
+            String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
+            if (selWSS4JProfile.equals("UserNameToken")) {
+                 ClientInterceptor interceptor = WSS4JInterceptor.userNameTokenInterceptor();
+                new WSSClient().post(endpointField.getText(), inputText.getText(), interceptor);
+                return;
+            }
             URL u = new URL(endpointField.getText());
             URLConnection uc = u.openConnection();
             HttpURLConnection connection = (HttpURLConnection) uc;
@@ -298,7 +309,7 @@ public class Sender extends JPanel {
             String action = "\"" + (actionField.getText() == null ? "" : actionField.getText()) + "\"";
             connection.setRequestProperty("SOAPAction", action);
             connection.setRequestProperty("Content-Type", "text/xml");
-            connection.setRequestProperty("User-Agent", "Axis/2.0");
+            connection.setRequestProperty("User-Agent", "TCPMon/2.0");
             OutputStream out = connection.getOutputStream();
             Writer writer = new OutputStreamWriter(out);
             writer.write(inputText.getText());

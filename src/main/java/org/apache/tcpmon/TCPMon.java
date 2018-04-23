@@ -38,6 +38,10 @@ public class TCPMon extends JFrame {
     public static Map jsonMap;
 
     static {
+        System.setProperty("javax.xml.soap.MessageFactory", "com.sun.xml.internal.messaging.saaj.soap.ver1_2.SOAPMessageFactory1_2Impl");
+        System.setProperty("javax.xml.bind.JAXBContext", "com.sun.xml.internal.bind.v2.ContextFactory");
+
+
         try {
             jsonMap = new ObjectMapper().readValue(new File("config.json"), Map.class);
         } catch (IOException io) {

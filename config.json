@@ -32,16 +32,27 @@
     "DP-Router": "http://10.182.70.250:55000/EventMessageConsumer/1"
   },
   "hosts": {
-    "None": "",
     "Test": "10.182.70.250",
     "Prod": "10.182.68.247",
     "Localhost": "127.0.0.1"
   },
-  "requests": {
-    "Test": "1",
-    "Internal Test": "2",
-    "Prod": "3",
-    "Internal Prod": "4"
+  "WSS4J": {
+    "UserNameToken": "1",
+    "DigitalSignature": "2"
+  },
+  "wss4j-profiles": {
+    "UserNameToken": {
+      "user": "user",
+      "password": "password",
+      "action": "UsernameToken Timestamp",
+      "encrypt": "no"
+    },
+    "DigitalSignature": {
+      "profile": "JNET"
+    },
+    "PROD": {
+      "profile": "ALLECO"
+    }
   },
   "cf-xpath-expression": [
     "//*[local-name()='CourtFiling']"
