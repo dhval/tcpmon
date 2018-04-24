@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -244,6 +245,25 @@ public class Sender extends JPanel {
         notebook.addTab("Sender", this);
     }
 
+    @PostConstruct
+    void init() {
+        // Load previously opened files
+        db.getFileHistory().forEach(item ->  {
+            JMenuItem menuItem;
+            submenu.add(menuItem = new JMenuItem(item));
+            menuItem.addActionListener(itemListener);
+        });
+    }
+
+    private ActionListener itemListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            LOG.info(e.paramString());
+            readFile(e.getActionCommand());
+            LOG.info(e.getSource().toString());
+        }
+    };
+
     /**
      * Method setLeft
      *
@@ -295,9 +315,8 @@ public class Sender extends JPanel {
     }
 
     public void send() {
+        // update file history cache
         db.saveFileHistory(requestFileLabel.getText());
-        //data.put("file", inputText.getText());
-        //db.commit();
         LOG.info("Hi" + db.getFileHistory().size());
         try {
             String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();

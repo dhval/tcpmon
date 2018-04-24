@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.dhval.dto.LocalServer;
 import org.apache.dhval.dto.TcpProxy;
 import org.apache.dhval.utils.Utils;
+import org.apache.dhval.wss.FaultResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
@@ -63,6 +65,11 @@ public class TCPMon extends JFrame {
     @Bean
     LocalServer createLocalServer() {
         return LocalServer.buildFromMap(jsonMap);
+    }
+
+    @Bean
+    SoapFaultMappingExceptionResolver createSoapFaultResolver() {
+        return new FaultResolver();
     }
 
     /**
