@@ -5,12 +5,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.dhval.action.FormatXMLAction;
 import org.apache.dhval.action.SaveFileAction;
 import org.apache.dhval.action.SelectTextAction;
+import org.apache.dhval.storage.LocalDB;
 import org.apache.dhval.utils.JUtils;
 import org.apache.dhval.utils.Utils;
-import org.apache.tcpmon.TCPMon;
 import org.apache.dhval.wss.WSSClient;
-import org.apache.dhval.wss.WSS4JInterceptor;
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.apache.tcpmon.TCPMon;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -66,9 +65,13 @@ public class Sender extends JPanel {
     JComboBox<String> selectHost = null;
     JComboBox<String> selectWSS4J = null;
 
-    public Sender(@Autowired JTabbedPane _notebook) {
+
+    private LocalDB db;
+
+    public Sender(@Autowired JTabbedPane _notebook, @Autowired LocalDB db) {
         notebook = _notebook;
         instance = this;
+        this.db = db;
         fc.setCurrentDirectory(new File(TCPMon.CWD));
 
         inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
@@ -239,7 +242,6 @@ public class Sender extends JPanel {
         this.add(center, BorderLayout.CENTER);
         outPane.setDividerLocation(250);
         notebook.addTab("Sender", this);
-
     }
 
     /**
@@ -293,6 +295,10 @@ public class Sender extends JPanel {
     }
 
     public void send() {
+        db.saveFileHistory(requestFileLabel.getText());
+        //data.put("file", inputText.getText());
+        //db.commit();
+        LOG.info("Hi" + db.getFileHistory().size());
         try {
             String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
             Map jsonMap = TCPMon.jsonMap;

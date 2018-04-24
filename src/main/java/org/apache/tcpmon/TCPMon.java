@@ -1,9 +1,8 @@
 package org.apache.tcpmon;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.dhval.dto.LocalServer;
 import org.apache.dhval.dto.TcpProxy;
-import org.apache.dhval.utils.DateUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.dhval.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
