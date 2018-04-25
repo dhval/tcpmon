@@ -248,11 +248,7 @@ public class Sender extends JPanel {
     @PostConstruct
     void init() {
         // Load previously opened files
-        db.getFileHistory().forEach(item ->  {
-            JMenuItem menuItem;
-            submenu.add(menuItem = new JMenuItem(item));
-            menuItem.addActionListener(itemListener);
-        });
+        db.getFileHistory().forEach(item -> addFileMenuItem(item));
     }
 
     private ActionListener itemListener = new ActionListener() {
@@ -263,6 +259,12 @@ public class Sender extends JPanel {
             LOG.info(e.getSource().toString());
         }
     };
+
+    private void addFileMenuItem(String file) {
+        JMenuItem menuItem;
+        submenu.add(menuItem = new JMenuItem(file));
+        menuItem.addActionListener(itemListener);
+    }
 
     /**
      * Method setLeft
@@ -316,58 +318,67 @@ public class Sender extends JPanel {
 
     public void send() {
         // update file history cache
-        db.saveFileHistory(requestFileLabel.getText());
+        if (!db.getFileHistory().contains(requestFileLabel.getText())) {
+            db.saveFileHistory(requestFileLabel.getText());
+            addFileMenuItem(requestFileLabel.getText());
+        }
         LOG.info("Hi" + db.getFileHistory().size());
-        try {
-            String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
-            Map jsonMap = TCPMon.jsonMap;
-            if (jsonMap != null && jsonMap.containsKey("wss4j-profiles")) {
-                Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
-                if (map != null && map.containsKey(selWSS4JProfile)) {
-                    String result = new WSSClient().post(endpointField.getText(), inputText.getText(), (Map<String, String>) map.get(selWSS4JProfile));
-                    if (Utils.isXML(result)) {
-                        outputText.setText(Utils.prettyXML(result));
-                    } else {
-                        outputText.setText(result);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
+                    Map jsonMap = TCPMon.jsonMap;
+                    if (jsonMap != null && jsonMap.containsKey("wss4j-profiles")) {
+                        Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
+                        if (map != null && map.containsKey(selWSS4JProfile)) {
+                            String result = new WSSClient().post(endpointField.getText(), inputText.getText(), (Map<String, String>) map.get(selWSS4JProfile));
+                            if (Utils.isXML(result)) {
+                                outputText.setText(Utils.prettyXML(result));
+                            } else {
+                                outputText.setText(result);
+                            }
+                            return;
+                        }
                     }
-                    return;
+                    // Use vanilla HTTP Post
+                    URL u = new URL(endpointField.getText());
+                    URLConnection uc = u.openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) uc;
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+                    connection.setRequestMethod("POST");
+                    String action = "\"" + (actionField.getText() == null ? "" : actionField.getText()) + "\"";
+                    connection.setRequestProperty("SOAPAction", action);
+                    connection.setRequestProperty("Content-Type", "text/xml");
+                    connection.setRequestProperty("User-Agent", "TCPMon/2.0");
+                    OutputStream out = connection.getOutputStream();
+                    Writer writer = new OutputStreamWriter(out);
+                    writer.write(inputText.getText());
+                    writer.flush();
+                    writer.close();
+                    String line;
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = connection.getInputStream();
+                    } catch (IOException e) {
+                        inputStream = connection.getErrorStream();
+                    }
+                    outputText.setText("");
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
+                    while ((line = rd.readLine()) != null) {
+                        outputText.append(line);
+                    }
+                    if (xmlFormatBox.isSelected()) {
+                        outputText.setText(Utils.prettyXML(outputText.getText()));
+                    }
+                } catch (Exception e) {
+                    LOG.warn(e.getMessage(), e);
+                    outputText.setText(Utils.printStackTrace(e));
                 }
             }
-            // Use vanilla HTTP Post
-            URL u = new URL(endpointField.getText());
-            URLConnection uc = u.openConnection();
-            HttpURLConnection connection = (HttpURLConnection) uc;
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setRequestMethod("POST");
-            String action = "\"" + (actionField.getText() == null ? "" : actionField.getText()) + "\"";
-            connection.setRequestProperty("SOAPAction", action);
-            connection.setRequestProperty("Content-Type", "text/xml");
-            connection.setRequestProperty("User-Agent", "TCPMon/2.0");
-            OutputStream out = connection.getOutputStream();
-            Writer writer = new OutputStreamWriter(out);
-            writer.write(inputText.getText());
-            writer.flush();
-            writer.close();
-            String line;
-            InputStream inputStream = null;
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                inputStream = connection.getErrorStream();
-            }
-            outputText.setText("");
-            BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
-            while ((line = rd.readLine()) != null) {
-                outputText.append(line);
-            }
-            if (xmlFormatBox.isSelected()) {
-                outputText.setText(Utils.prettyXML(outputText.getText()));
-            }
-        } catch (Exception e) {
-            LOG.warn(e.getMessage(), e);
-            outputText.setText(Utils.printStackTrace(e));
-        }
+        });
+
     }
 
 }

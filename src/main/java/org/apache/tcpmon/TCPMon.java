@@ -3,6 +3,7 @@ package org.apache.tcpmon;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.dhval.dto.LocalServer;
 import org.apache.dhval.dto.TcpProxy;
+import org.apache.dhval.storage.LocalDB;
 import org.apache.dhval.utils.Utils;
 import org.apache.dhval.wss.FaultResolver;
 import org.slf4j.Logger;
@@ -187,14 +188,22 @@ public class TCPMon extends JFrame {
      */
     public static void main(String[] args) throws Exception {
         context = new SpringApplicationBuilder(TCPMon.class).headless(false).run(args);
+        context.registerShutdownHook();
         try {
             TCPMon.setupLookAndFeel(true);
         } catch (Throwable exp) {
             exp.printStackTrace();
         }
         EventQueue.invokeLater(() -> {
+            final LocalDB localDB = context.getBean(LocalDB.class);
             TCPMon tcpMon = context.getBean(TCPMon.class);
             tcpMon.setVisible(true);
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    if (localDB != null) localDB.close();
+                }
+            });
         });
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
     }
