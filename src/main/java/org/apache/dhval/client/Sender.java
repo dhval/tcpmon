@@ -32,6 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Allows one to send an arbitrary soap message to a specific url with a specified soap action
@@ -58,6 +59,8 @@ public class Sender extends JPanel {
     JPopupMenu popupOut = outputText.getPopupMenu();
 
     JLabel requestFileLabel = new JLabel("");
+    JLabel statusLabel = new JLabel("Ready");
+
     private Sender instance = null;
     public JTextField hostNameField = null;
     public JFileChooser fc = new JFileChooser();
@@ -138,7 +141,7 @@ public class Sender extends JPanel {
         bottom.add(Box.createRigidArea(new Dimension(5, 0)));
         bottom.add(requestFileLabel);
         bottom.add(Box.createHorizontalGlue());
-        bottom.add(new JLabel("Ready:"));
+        bottom.add(statusLabel);
 
         endpointField.setMaximumSize(new Dimension(300, Short.MAX_VALUE));
         actionField.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
@@ -323,9 +326,12 @@ public class Sender extends JPanel {
             addFileMenuItem(requestFileLabel.getText());
         }
         LOG.info("Hi" + db.getFileHistory().size());
-        SwingUtilities.invokeLater(new Runnable() {
+        statusLabel.setText("Pending...");
+        outputText.setText("");
+        SwingWorker worker = new SwingWorker<String, Integer>() {
             @Override
-            public void run() {
+            protected String doInBackground() {
+                // Background work
                 try {
                     String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
                     Map jsonMap = TCPMon.jsonMap;
@@ -333,12 +339,7 @@ public class Sender extends JPanel {
                         Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
                         if (map != null && map.containsKey(selWSS4JProfile)) {
                             String result = new WSSClient().post(endpointField.getText(), inputText.getText(), (Map<String, String>) map.get(selWSS4JProfile));
-                            if (Utils.isXML(result)) {
-                                outputText.setText(Utils.prettyXML(result));
-                            } else {
-                                outputText.setText(result);
-                            }
-                            return;
+                            return result;
                         }
                     }
                     // Use vanilla HTTP Post
@@ -357,6 +358,7 @@ public class Sender extends JPanel {
                     writer.write(inputText.getText());
                     writer.flush();
                     writer.close();
+                    StringBuffer sb = new StringBuffer();
                     String line;
                     InputStream inputStream = null;
                     try {
@@ -364,18 +366,44 @@ public class Sender extends JPanel {
                     } catch (IOException e) {
                         inputStream = connection.getErrorStream();
                     }
-                    outputText.setText("");
                     BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
                     while ((line = rd.readLine()) != null) {
-                        outputText.append(line);
+                        sb.append(line);
                     }
-                    if (xmlFormatBox.isSelected()) {
-                        outputText.setText(Utils.prettyXML(outputText.getText()));
-                    }
+                    return sb.toString();
                 } catch (Exception e) {
                     LOG.warn(e.getMessage(), e);
-                    outputText.setText(Utils.printStackTrace(e));
+                    return Utils.printStackTrace(e);
                 }
+            }
+
+            @Override
+            protected void process(List<Integer> chunks) {
+                // Process results
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    String result = get();
+                    LOG.info(result);
+                    if (Utils.isXML(result)) {
+                        outputText.setText(Utils.prettyXML(result));
+                    } else {
+                        outputText.setText(result);
+                    }
+                } catch (Exception e) {
+                    outputText.setText(Utils.printStackTrace(e));
+                } finally {
+                    statusLabel.setText("Ready");
+                }
+            }
+        };
+        worker.execute();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+
             }
         });
 

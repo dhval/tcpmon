@@ -8,7 +8,6 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.soap.security.wss4j.Wss4jSecuritySecurementException;
 import org.springframework.xml.transform.StringResult;
 
 import javax.xml.transform.stream.StreamSource;
@@ -45,10 +44,13 @@ public class WSSClient {
         switch (profile.get("name")) {
             case "UserNameToken":
                 interceptor = WSS4JInterceptor.userNameTokenInterceptor(profile);
+                break;
             case "SAMLTokenSigned":
                 interceptor = WSS4JInterceptor.signedSAMLAssertion(profile);
+                break;
             case "DigitalSignature":
                 interceptor = WSS4JInterceptor.signedX509(profile);
+                break;
         }
        if (interceptor != null)
            template.setInterceptors(new ClientInterceptor[]{interceptor});

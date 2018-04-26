@@ -50,7 +50,7 @@ public class LocalDB {
         db.commit();
     }
 
-    public String getFromHistory(String k) {
+    public String getHistory(String k) {
         return history.get(k);
     }
 

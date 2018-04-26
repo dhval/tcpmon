@@ -1,15 +1,12 @@
 package org.apache.dhval.client;
 
-import org.apache.dhval.utils.Utils;
 import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.List;
 
 class OpenFileAction extends AbstractAction {
     private static final Logger LOG = LoggerFactory.getLogger(OpenFileAction.class);
