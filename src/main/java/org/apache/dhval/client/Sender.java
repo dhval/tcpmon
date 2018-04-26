@@ -30,6 +30,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
@@ -69,6 +71,7 @@ public class Sender extends JPanel {
     JComboBox<String> selectHost = null;
     JComboBox<String> selectWSS4J = null;
 
+    private SwingWorker clientWorker;
 
     private LocalDB db;
 
@@ -320,6 +323,10 @@ public class Sender extends JPanel {
     }
 
     public void send() {
+        if (clientWorker != null && clientWorker.getState().equals(SwingWorker.StateValue.PENDING)) {
+            LOG.warn("Query already in progress.");
+            return;
+        }
         // update file history cache
         if (!db.getFileHistory().contains(requestFileLabel.getText())) {
             db.saveFileHistory(requestFileLabel.getText());
@@ -328,7 +335,8 @@ public class Sender extends JPanel {
         LOG.info("Hi" + db.getFileHistory().size());
         statusLabel.setText("Pending...");
         outputText.setText("");
-        SwingWorker worker = new SwingWorker<String, Integer>() {
+        Instant start = Instant.now();
+        clientWorker = new SwingWorker<String, Integer>() {
             @Override
             protected String doInBackground() {
                 // Background work
@@ -386,7 +394,7 @@ public class Sender extends JPanel {
             protected void done() {
                 try {
                     String result = get();
-                    LOG.info(result);
+                    LOG.debug(result);
                     if (Utils.isXML(result)) {
                         outputText.setText(Utils.prettyXML(result));
                     } else {
@@ -395,11 +403,12 @@ public class Sender extends JPanel {
                 } catch (Exception e) {
                     outputText.setText(Utils.printStackTrace(e));
                 } finally {
-                    statusLabel.setText("Ready");
+                    statusLabel.setText("Ready: " + Duration.between(start, Instant.now()));
                 }
             }
         };
-        worker.execute();
+        //worker.isDon
+        clientWorker.execute();
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

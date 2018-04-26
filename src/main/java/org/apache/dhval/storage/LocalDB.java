@@ -25,8 +25,12 @@ public class LocalDB {
     private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
 
     public static String LAST_OPEN_DIRECTORY;
+    public static String KEY_STORE_LOCATION;
+    public static String KEY_STORE_ALIAS;
 
-    private DB db = DBMaker.fileDB("tcpmon.db").make();
+    private int opnCounter = 0;
+
+    private DB db = DBMaker.fileDB("tcpmon.db").closeOnJvmShutdown().checksumHeaderBypass().make();
     private Set<String> fileHistory;
     private Map<String, String> history;
 
@@ -38,7 +42,7 @@ public class LocalDB {
 
     public void saveFileHistory(String fileName) {
         fileHistory.add(fileName);
-        db.commit();
+        commit();
     }
 
     public Set<String> getFileHistory() {
@@ -47,11 +51,18 @@ public class LocalDB {
 
     public void saveHistory(String k, String v) {
         history.put(k, v);
-        db.commit();
+        commit();
     }
 
     public String getHistory(String k) {
         return history.get(k);
+    }
+
+    private void commit() {
+        if (++opnCounter >= 10) {
+            opnCounter = 0;
+            db.commit();
+        }
     }
 
     // ConcurrentMap map = db.hashMap("map").createOrOpen();
@@ -67,6 +78,7 @@ public class LocalDB {
         for(String f : getFileHistory())
             LOG.info(f);
         LOG.info("Closing file store.");
+        db.commit();
         db.close();
     }
 }

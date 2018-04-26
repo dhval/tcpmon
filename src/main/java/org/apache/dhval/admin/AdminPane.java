@@ -2,6 +2,7 @@ package org.apache.dhval.admin;
 
 import org.apache.dhval.server.MockPanel;
 import org.apache.dhval.utils.JUtils;
+import org.apache.dhval.wss.WSSPanel;
 import org.apache.tcpmon.Listener;
 import org.apache.tcpmon.SlowLinkSimulator;
 import org.apache.tcpmon.TCPMon;
@@ -95,7 +96,8 @@ public class AdminPane extends JPanel {
      *
      * @param notebook
      */
-    public AdminPane(@Autowired JTabbedPane notebook, @Autowired MockPanel mockPanel) {
+    public AdminPane(@Autowired JTabbedPane notebook, @Autowired MockPanel mockPanel
+            , @Autowired WSSPanel wssPanel) {
         JPanel mainPane = null;
         JButton addButton = null;
 
@@ -336,10 +338,6 @@ public class AdminPane extends JPanel {
 
         mainPane.add(Box.createRigidArea(new Dimension(1, 10)), c);
 
-        // Act as Server section
-        // /////////////////////////////////////////////////////////////////
-        mainPane.add(mockPanel, JUtils.createGridEndElement());
-
         // Spacer
         // ////////////////////////////////////////////////////////////////
         mainPane.add(Box.createRigidArea(new Dimension(1, 10)), c);
@@ -356,6 +354,15 @@ public class AdminPane extends JPanel {
         bottomButtons.add(addButton = new JButton(add), c);
 
         mainPane.add(bottomButtons, JUtils.createGridElement());
+        mainPane.add(Box.createRigidArea(new Dimension(1, 10)), c);
+
+        // Act as Server section
+        // /////////////////////////////////////////////////////////////////
+        c.anchor = GridBagConstraints.WEST;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        mainPane.add(mockPanel, c);
+        //mainPane.add(mockPanel, JUtils.createGridEndElement());
+         mainPane.add(wssPanel, c);
 
         this.add(new JScrollPane(mainPane), BorderLayout.CENTER);
 

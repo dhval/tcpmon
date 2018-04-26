@@ -56,9 +56,9 @@
     "DigitalSignature": {
       "name": "DigitalSignature",
       "action": "Timestamp Signature",
-      "keystore-location": "C:/keystore/keystore.jks",
+      "keystore-location": "keystore.jks",
       "keystore-password": "changeit",
-      "keystore-alias": "lehighcoda"
+      "keystore-alias": "client"
     },
     "SAMLTokenSigned": {
       "name": "SAMLTokenSigned",
@@ -70,6 +70,13 @@
       "password": "password"
     }
   },
+  "KeyStores": [{
+    "location": "keystore.jks",
+    "aliases": [
+      "client",
+      "lehighcoda"
+    ]
+  }],
   "cf-xpath-expression": [
     "//*[local-name()='CourtFiling']"
   ],
