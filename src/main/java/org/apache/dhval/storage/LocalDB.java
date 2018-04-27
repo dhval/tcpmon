@@ -1,20 +1,20 @@
 package org.apache.dhval.storage;
 
-import org.apache.dhval.client.Sender;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
-import org.mapdb.QueueLong;
 import org.mapdb.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import rx.Subscriber;
+import rx.subjects.PublishSubject;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.List;
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -22,11 +22,11 @@ import java.util.concurrent.ConcurrentMap;
  */
 @Configuration
 public class LocalDB {
-    private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalDB.class);
 
-    public static String LAST_OPEN_DIRECTORY;
-    public static String KEY_STORE_LOCATION;
-    public static String KEY_STORE_ALIAS;
+    public static String LAST_OPEN_DIRECTORY = "LAST_OPEN_DIRECTORY";
+    public static String KEY_STORE_LOCATION = "KEY_STORE_LOCATION";
+    public static String KEY_STORE_ALIAS = "KEY_STORE_ALIAS";
 
     private int opnCounter = 0;
 
@@ -34,10 +34,30 @@ public class LocalDB {
     private Set<String> fileHistory;
     private Map<String, String> history;
 
+    private PublishSubject<Map.Entry<String, String>> publishSubject =  PublishSubject.create();
+
     @PostConstruct
     void initDB() {
         fileHistory = db.hashSet("file-history", Serializer.STRING).expireMaxSize(10).expireAfterGet().createOrOpen();
         history = db.hashMap("history", Serializer.STRING, Serializer.STRING).createOrOpen();
+        publishSubject.debounce(2, TimeUnit.SECONDS).subscribe(new Subscriber<Map.Entry<String, String>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onNext(Map.Entry<String, String> entry) {
+                LOG.info(entry.getKey() + ":" + entry.getValue());
+                saveHistory(entry.getKey(), entry.getValue());
+            }
+        });
+        LOG.info(history.get(KEY_STORE_LOCATION));
     }
 
     public void saveFileHistory(String fileName) {
@@ -65,6 +85,11 @@ public class LocalDB {
         }
     }
 
+    public void publish(String k, String v) {
+        Map.Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(k, v);
+        publishSubject.onNext(entry);
+    }
+
     // ConcurrentMap map = db.hashMap("map").createOrOpen();
     // LOG.info(map.get("json").toString());
     //map.put("json", jsonMap);
@@ -77,6 +102,7 @@ public class LocalDB {
             return;
         for(String f : getFileHistory())
             LOG.info(f);
+        LOG.info(history.get(KEY_STORE_LOCATION));
         LOG.info("Closing file store.");
         db.commit();
         db.close();

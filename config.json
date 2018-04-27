@@ -76,7 +76,14 @@
       "client",
       "lehighcoda"
     ]
-  }],
+  },
+    {
+      "location": "mystore.jks",
+      "aliases": [
+        "client1",
+        "lehighcoda1"
+      ]
+    }],
   "cf-xpath-expression": [
     "//*[local-name()='CourtFiling']"
   ],
