@@ -14,7 +14,9 @@ import javax.annotation.PreDestroy;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -35,6 +37,10 @@ public class LocalDB {
     private DB db = DBMaker.fileDB("tcpmon.db").closeOnJvmShutdown().checksumHeaderBypass().make();
     private Set<String> fileHistory;
     private Map<String, String> history;
+    private Map<Integer, String> requesthistory;
+    private Map<Integer, String> responsehistory;
+
+    private int reqRespCounter = 0;
 
     private PublishSubject<Map.Entry<String, String>> publishSubject =  PublishSubject.create();
 
@@ -42,16 +48,16 @@ public class LocalDB {
     void initDB() {
         fileHistory = db.hashSet("file-history", Serializer.STRING).expireMaxSize(10).expireAfterGet().createOrOpen();
         history = db.hashMap("history", Serializer.STRING, Serializer.STRING).createOrOpen();
+        requesthistory = db.hashMap("request-history", Serializer.INTEGER, Serializer.STRING).expireMaxSize(100).counterEnable().createOrOpen();
+        responsehistory = db.hashMap("response-history", Serializer.INTEGER, Serializer.STRING).expireMaxSize(100).counterEnable().createOrOpen();
+        reqRespCounter = requesthistory.size();
+
         publishSubject.debounce(2, TimeUnit.SECONDS).subscribe(new Subscriber<Map.Entry<String, String>>() {
             @Override
-            public void onCompleted() {
-
-            }
+            public void onCompleted() { }
 
             @Override
-            public void onError(Throwable throwable) {
-
-            }
+            public void onError(Throwable throwable) { }
 
             @Override
             public void onNext(Map.Entry<String, String> entry) {
@@ -85,6 +91,24 @@ public class LocalDB {
         return v != null ?  v:def;
     }
 
+    public void saveRequestResponse(String r1, String r2) {
+        if (++reqRespCounter >= 98) reqRespCounter =0;
+        requesthistory.put(reqRespCounter, r1);
+        responsehistory.put(reqRespCounter, r2);
+    }
+
+    public List<Integer> getAvailableRequestResponse() {
+        return requesthistory.keySet().stream().collect(Collectors.toList());
+    }
+
+    public String getRequestHistory(Integer id) {
+        return requesthistory.get(id);
+    }
+
+    public String getResponseHistory(Integer id) {
+        return responsehistory.get(id);
+    }
+
     private void commit() {
         if (++opnCounter >= 10) {
             opnCounter = 0;
@@ -97,20 +121,10 @@ public class LocalDB {
         publishSubject.onNext(entry);
     }
 
-    // ConcurrentMap map = db.hashMap("map").createOrOpen();
-    // LOG.info(map.get("json").toString());
-    //map.put("json", jsonMap);
-    //db.commit();
-
-
     @PreDestroy
     public void close() {
         if (db.isClosed())
             return;
-        for(String f : getFileHistory())
-            LOG.info(f);
-        LOG.info(history.get(KEY_STORE_LOCATION));
-        LOG.info("Closing file store.");
         db.commit();
         db.close();
     }

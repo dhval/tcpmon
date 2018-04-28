@@ -1,8 +1,10 @@
 package org.apache.dhval.utils;
 
 import net.sf.saxon.s9api.*;
+import net.sf.saxon.trans.XPathException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -10,6 +12,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +38,28 @@ public class SaxonUtils {
         XPathSelector selector = xpath.compile(expression).load();
         selector.setContextItem(xmlDoc);
         return selector;
+    }
+
+    public static XPathSelector getXPathSelectorFromString(String input, String expression)
+            throws SaxonApiException {
+        DocumentBuilder builder = proc.newDocumentBuilder();
+        builder.setLineNumbering(true);
+        builder.setWhitespaceStrippingPolicy(WhitespaceStrippingPolicy.ALL);
+
+        StringReader reader = new StringReader(input);
+        XdmNode xmlDoc = builder.build(new StreamSource(reader));
+
+        XPathSelector selector = xpath.compile(expression).load();
+        selector.setContextItem(xmlDoc);
+        return selector;
+    }
+
+    public static String extractSoapBody(String xml) throws SaxonApiException {
+        XPathSelector selector = getXPathSelectorFromString(xml, "//*[local-name()='Body']/*[1]");
+        XdmValue xdmValue = selector.evaluate();
+        if (xdmValue != null && xdmValue.iterator().hasNext())
+            return  xdmValue.toString();
+        return xml;
     }
 
     public static Element createDOMElement(String file, String xPath)

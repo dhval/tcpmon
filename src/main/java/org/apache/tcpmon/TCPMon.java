@@ -5,7 +5,6 @@ import org.apache.dhval.dto.LocalServer;
 import org.apache.dhval.dto.TcpProxy;
 import org.apache.dhval.storage.LocalDB;
 import org.apache.dhval.utils.Utils;
-import org.apache.dhval.wss.FaultResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -66,11 +65,6 @@ public class TCPMon extends JFrame {
     @Bean
     LocalServer createLocalServer() {
         return LocalServer.buildFromMap(jsonMap);
-    }
-
-    @Bean
-    SoapFaultMappingExceptionResolver createSoapFaultResolver() {
-        return new FaultResolver();
     }
 
     /**

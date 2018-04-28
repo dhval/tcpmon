@@ -22,23 +22,24 @@
     }
   ],
   "environments": {
-    "Echo": "http://localhost:7832/echo/services/XYZ",
-    "Offender-Internal": "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",
-    "Offender-CDWS-DOC": "http://10.182.70.250:50180/CorrectionsInquiryDoc",
-    "OffenderInquiry-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
-    "OffenderInquiry-Old": "http://10.182.70.250:50061/JNETInquiry/OffenderInquiry",
-    "OffenderInquiry-Beta": "https://ws.jnet.beta.pa.gov/JNETInquiry/OffenderInquiry/1",
     "AddressSearch": "http://10.182.70.250:51010/JNET/AddressSearch",
     "AOPC-CourtFiling": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit",
-    "DP-Router": "http://10.182.70.250:55000/EventMessageConsumer/1",
     "CCF": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit",
     "CCF-Public": "https://ws.jnet.beta.pa.gov/AOPC/CourtFiling/Submit",
-    "PDriver-Public": "https://ws.jnet.beta.pa.gov/PennDOT/Driver"
+    "Driver-Beta": "https://ws.jnet.beta.pa.gov/PennDOT/Driver",
+    "DP-Router": "http://10.182.70.250:55000/EventMessageConsumer/1",
+    "Echo": "http://localhost:7832/echo/services/XYZ",
+    "Offender-Internal": "http://10.182.70.250:50178/JNETInquiry/OffenderInquiry",
+    "Offender-CDWS": "http://10.182.70.250:50180/CorrectionsInquiryDoc",
+    "Offender-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
+    "Offender-Old": "http://10.182.70.250:50061/JNETInquiry/OffenderInquiry",
+    "Offender-Beta": "https://ws.jnet.beta.pa.gov/JNETInquiry/OffenderInquiry/1"
   },
   "hosts": {
-    "Test": "10.182.70.250",
+    "Beta": "ws.jnet.beta.pa.gov",
+    "Local": "127.0.0.1",
     "Prod": "10.182.68.247",
-    "Localhost": "127.0.0.1"
+    "Test": "10.182.70.250"
   },
   "WSS4J": {
     "UserNameToken": "1",

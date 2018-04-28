@@ -22,32 +22,30 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Allows one to send an arbitrary soap message to a specific url with a specified soap action
  */
 @org.springframework.stereotype.Component
 public class Sender extends JPanel {
-    private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
     public static final String SWITCH_LAYOUT = "Switch Layout";
-    private boolean enableScheduler = false;
+    private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
     public JTextField endpointField = null;
     public JTextField actionField = JUtils.jTextField("", 4, 4);
     public JCheckBox xmlFormatBox = null;
@@ -58,7 +56,8 @@ public class Sender extends JPanel {
     public JPanel leftPanel = null;
     public JPanel rightPanel = null;
     public JTabbedPane notebook = null;
-
+    //   public JTextField hostNameField = null;
+    public JFileChooser fc = new JFileChooser();
     RSyntaxTextArea inputText = new RSyntaxTextArea(20, 60);
     JPopupMenu popupIn = inputText.getPopupMenu();
     JMenu submenu = new JMenu("Files");
@@ -67,22 +66,43 @@ public class Sender extends JPanel {
 
     JLabel requestFileLabel = new JLabel("");
     JLabel statusLabel = new JLabel("Ready");
-
-
-
-    private JMenuItem saveMenuItem = new JMenuItem("Save");
-    public JTextField hostNameField = null;
-    public JFileChooser fc = new JFileChooser();
-
     JComboBox<String> selectEnvironment = null;
     JComboBox<String> selectHost = null;
     JComboBox<String> selectWSS4J = null;
-
+    private boolean enableScheduler = false;
+    private JMenuItem saveMenuItem = new JMenuItem("Save");
     private SwingWorker clientWorker;
     private Map<String, String> environmentMap;
     private Map<String, String> hostMap;
 
     private LocalDB db;
+    private AbstractAction saveInputFileListener = new AbstractAction("Save") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String fileName = requestFileLabel.getText();
+            try {
+                if (Utils.isFilePresent(fileName)) {
+                    try (FileWriter fw = new FileWriter(fileName)) {
+                        fw.write(inputText.getText());
+                    }
+                    LOG.info("Save: " + fileName);
+                } else {
+                    JOptionPane.showMessageDialog(Sender.this, "Cannot write to disk.", "Use Save as:",
+                            JOptionPane.OK_OPTION);
+                }
+            } catch (Exception ex) {
+                LOG.warn(ex.getMessage(), ex);
+            }
+        }
+    };
+    private ActionListener itemListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            LOG.info(e.paramString());
+            readFile(e.getActionCommand());
+            LOG.info(e.getSource().toString());
+        }
+    };
 
     public Sender(@Autowired JTabbedPane _notebook, @Autowired LocalDB db) {
         notebook = _notebook;
@@ -140,14 +160,13 @@ public class Sender extends JPanel {
         top.setLayout(new BoxLayout(top, BoxLayout.X_AXIS));
         top.add(selectHost);
         top.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        top.add(hostNameField = JUtils.jTextField("", 10, 15));
-        top.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         top.add(selectEnvironment);
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(new JLabel("Connection Endpoint", SwingConstants.RIGHT));
+        top.add(new JLabel("Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(endpointField = new JTextField(db.getHistory(LocalDB.LAST_WS_ENDPOINT, "http://localhost:8080/echo/services/23"), 50));
-        top.add(new JLabel("Profile"));
+        top.add(Box.createRigidArea(new Dimension(5, 0)));
+        top.add(new JLabel("WS-Security"));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(selectWSS4J);
         top.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -244,10 +263,9 @@ public class Sender extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String selHostKey = (String) selectHost.getSelectedItem();
                 String selHost = hostMap.get(selHostKey);
-                hostNameField.setText(selHost);
                 if (StringUtils.isEmpty(selHost)) return;
                 String selectEndPoint = endpointField.getText();
-                endpointField.setText(selectEndPoint.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
+                endpointField.setText(Utils.replaceHost(selectEndPoint, selHost));
             }
         });
         endpointField.getDocument().addDocumentListener(
@@ -280,35 +298,6 @@ public class Sender extends JPanel {
             }
         });
     }
-
-    private AbstractAction saveInputFileListener = new AbstractAction("Save") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String fileName = requestFileLabel.getText();
-            try {
-                if (Utils.isFilePresent(fileName)) {
-                    try (FileWriter fw = new FileWriter(fileName)) {
-                        fw.write(inputText.getText());
-                    }
-                    LOG.info("Save: " + fileName);
-                } else {
-                    JOptionPane.showMessageDialog(Sender.this, "Cannot write to disk.", "Use Save as:",
-                            JOptionPane.OK_OPTION);
-                }
-            } catch (Exception ex) {
-                LOG.warn(ex.getMessage(), ex);
-            }
-        }
-    };
-
-    private ActionListener itemListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            LOG.info(e.paramString());
-            readFile(e.getActionCommand());
-            LOG.info(e.getSource().toString());
-        }
-    };
 
     private void addFileMenuItem(String file) {
         JMenuItem menuItem;
@@ -343,7 +332,7 @@ public class Sender extends JPanel {
         notebook.remove(this);
     }
 
-    @Scheduled(initialDelay = 30000, fixedDelay = 15000L)
+    @Scheduled(initialDelay = 30000, fixedDelay = 20000L)
     public void scheduler() {
         if (!enableScheduler) return;
         send();
@@ -385,44 +374,18 @@ public class Sender extends JPanel {
             protected String doInBackground() {
                 // Background work
                 try {
+                    String url = endpointField.getText();
+                    String action = actionField.getText();
+                    String data = inputText.getText();
                     String selWSS4JProfile = selectWSS4J.getSelectedItem().toString();
-                    Map jsonMap = TCPMon.jsonMap;
-                    if (jsonMap != null && jsonMap.containsKey("wss4j-profiles")) {
-                        Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
-                        if (map != null && map.containsKey(selWSS4JProfile)) {
-                            String result = new WSSClient().post(endpointField.getText(), inputText.getText(), (Map<String, String>) map.get(selWSS4JProfile));
-                            return result;
-                        }
-                    }
-                    // Use vanilla HTTP Post
-                    URL u = new URL(endpointField.getText());
-                    URLConnection uc = u.openConnection();
-                    HttpURLConnection connection = (HttpURLConnection) uc;
-                    connection.setDoOutput(true);
-                    connection.setDoInput(true);
-                    connection.setRequestMethod("POST");
-                    String action = "\"" + (actionField.getText() == null ? "" : actionField.getText()) + "\"";
-                    connection.setRequestProperty("SOAPAction", action);
-                    connection.setRequestProperty("Content-Type", "text/xml");
-                    connection.setRequestProperty("User-Agent", "TCPMon/2.0");
-                    OutputStream out = connection.getOutputStream();
-                    Writer writer = new OutputStreamWriter(out);
-                    writer.write(inputText.getText());
-                    writer.flush();
-                    writer.close();
-                    StringBuffer sb = new StringBuffer();
-                    String line;
-                    InputStream inputStream = null;
-                    try {
-                        inputStream = connection.getInputStream();
-                    } catch (IOException e) {
-                        inputStream = connection.getErrorStream();
-                    }
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
-                    while ((line = rd.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    return sb.toString();
+
+                    Map<String, String> headers = Stream.of(
+                            new AbstractMap.SimpleEntry<>("SOAPAction", action),
+                            new AbstractMap.SimpleEntry<>("Content-Type", "text/xml; charset=utf-8"),
+                            new AbstractMap.SimpleEntry<>("User-Agent", "TCPMon/2.0")
+                    ).collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue()));
+
+                    return WSSClient.post(url, data, headers, selWSS4JProfile);
                 } catch (Exception e) {
                     LOG.warn(e.getMessage(), e);
                     return Utils.printStackTrace(e);
@@ -444,6 +407,7 @@ public class Sender extends JPanel {
                     } else {
                         outputText.setText(result);
                     }
+                    db.saveRequestResponse(inputText.getText(), outputText.getText());
                 } catch (Exception e) {
                     outputText.setText(Utils.printStackTrace(e));
                 } finally {

@@ -28,7 +28,8 @@ public class Utils {
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
     private static Processor proc = new Processor(false);
     private static XPathCompiler xpath = proc.newXPathCompiler();
-    private static Pattern pattern = Pattern.compile("^https?://[^/]+/([^/]+)/.*$");
+    private static Pattern patternURL = Pattern.compile("^(http[s]?):\\/\\/([^:\\/]*)([^\\/]*)\\/(.*)$");
+
     static {
         xpath.declareNamespace("jnet", "http://www.jnet.state.pa.us/niem/JNET/jnet-core/1");
     }
@@ -66,16 +67,28 @@ public class Utils {
         return "";
     }
 
-    public static String getContextPath(String url) {
-        LOG.info(url);
-        Matcher matcher = pattern.matcher(url);
-      //  LOG.info("" + matcher.find() + matcher.groupCount());
-        if (matcher.find() && matcher.groupCount() ==1) {
+    public static String replaceHost(String url, String host) {
+        LOG.info(url + host);
+        Matcher matcher = patternURL.matcher(url);
+        if (!matcher.find())
+            return url;
+        LOG.info("" + matcher.groupCount());
+        if (matcher.groupCount() ==3) {
+            LOG.info(matcher.group(0));
+            LOG.info(matcher.group(2));
+            return matcher.group(1) + "://" + host + "/" + matcher.group(3);
+        } else if (matcher.groupCount() ==4) {
             LOG.info(matcher.group(0));
             LOG.info(matcher.group(1));
-            return matcher.group(1);
+            LOG.info(matcher.group(2));
+            LOG.info(matcher.group(3));
+            LOG.info(matcher.group(4));
+            if (host.matches("^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}$"))
+                return matcher.group(1) + "://" + host + matcher.group(3) + "/" + matcher.group(4);
+            else
+                return matcher.group(1) + "://" + host + "/" + matcher.group(4);
         }
-        return null;
+        return url;
     }
 
     public static String prettyXML(String input) throws Exception {
