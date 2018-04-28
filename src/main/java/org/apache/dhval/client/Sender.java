@@ -3,6 +3,7 @@ package org.apache.dhval.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.dhval.action.FormatXMLAction;
+import org.apache.dhval.action.JFieldDocumentListener;
 import org.apache.dhval.action.SaveFileAction;
 import org.apache.dhval.action.SelectTextAction;
 import org.apache.dhval.storage.LocalDB;
@@ -21,6 +22,8 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +38,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Allows one to send an arbitrary soap message to a specific url with a specified soap action
@@ -42,6 +46,7 @@ import java.util.List;
 @org.springframework.stereotype.Component
 public class Sender extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
+    public static final String SWITCH_LAYOUT = "Switch Layout";
     private boolean enableScheduler = false;
     public JTextField endpointField = null;
     public JTextField actionField = JUtils.jTextField("", 4, 4);
@@ -63,7 +68,9 @@ public class Sender extends JPanel {
     JLabel requestFileLabel = new JLabel("");
     JLabel statusLabel = new JLabel("Ready");
 
-    private Sender instance = null;
+
+
+    private JMenuItem saveMenuItem = new JMenuItem("Save");
     public JTextField hostNameField = null;
     public JFileChooser fc = new JFileChooser();
 
@@ -72,12 +79,13 @@ public class Sender extends JPanel {
     JComboBox<String> selectWSS4J = null;
 
     private SwingWorker clientWorker;
+    private Map<String, String> environmentMap;
+    private Map<String, String> hostMap;
 
     private LocalDB db;
 
     public Sender(@Autowired JTabbedPane _notebook, @Autowired LocalDB db) {
         notebook = _notebook;
-        instance = this;
         this.db = db;
         fc.setCurrentDirectory(new File(TCPMon.CWD));
 
@@ -87,20 +95,22 @@ public class Sender extends JPanel {
         popupIn.add(new JMenuItem(new SelectTextAction()));
         popupIn.addSeparator();
         popupIn.add(new JMenuItem(new OpenFileAction("Open", this)));
+        popupIn.add(new JMenuItem(saveInputFileListener));
+        popupIn.add(new JMenuItem(new SaveFileAction("Save As", this, inputText)));
         popupIn.add(new JMenuItem(new FormatXMLAction(this, inputText)));
         popupIn.add(submenu);
 
         popupOut.addSeparator();
         popupOut.add(new JMenuItem(new SelectTextAction()));
         popupOut.addSeparator();
-        popupIn.add(new JMenuItem(new FormatXMLAction(this, outputText)));
+        popupOut.add(new JMenuItem(new FormatXMLAction(this, outputText)));
         popupOut.add(new JMenuItem(new SaveFileAction("Save", this, outputText)));
         outputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         outputText.setCodeFoldingEnabled(true);
 
 
-        final Map<String, String> environmentMap = new LinkedHashMap<>();
-        final Map<String, String> hostMap = new LinkedHashMap<>();
+        environmentMap = new LinkedHashMap<>();
+        hostMap = new LinkedHashMap<>();
         final Map<String, String> requestWSS4J = new LinkedHashMap<>();
         try {
             environmentMap.put("Select", "http://localhost:8080/echo/services/23");
@@ -118,6 +128,10 @@ public class Sender extends JPanel {
         selectHost = new JComboBox<>(hostMap.keySet().toArray(new String[0]));
         selectWSS4J = new JComboBox<>(requestWSS4J.keySet().toArray(new String[0]));
 
+        String lastWSSProfile = db.getHistory(LocalDB.LAST_WSS_PROFILE);
+        for (int i=1; i< selectWSS4J.getItemCount(); i++)
+            if(selectWSS4J.getItemAt(i).equals(lastWSSProfile)) selectWSS4J.setSelectedIndex(i);
+
         this.setLayout(new BorderLayout());
 
         // 1st component is just a row of labels and 1-line entry fields
@@ -132,7 +146,7 @@ public class Sender extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("Connection Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(endpointField = new JTextField("http://localhost:8080/echo/services/23", 50));
+        top.add(endpointField = new JTextField(db.getHistory(LocalDB.LAST_WS_ENDPOINT, "http://localhost:8080/echo/services/23"), 50));
         top.add(new JLabel("Profile"));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(selectWSS4J);
@@ -180,11 +194,21 @@ public class Sender extends JPanel {
         bottomButtons.add(sendButton = new JButton("Send"));
 
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String switchStr = TCPMon.getMessage("switch00", "Switch Layout");
-        bottomButtons.add(switchButton = new JButton(switchStr));
+        bottomButtons.add(switchButton = new JButton(SWITCH_LAYOUT));
         bottomButtons.add(Box.createHorizontalGlue());
         final String close = TCPMon.getMessage("close00", "Close");
         center.add(bottomButtons, BorderLayout.SOUTH);
+
+        this.add(center, BorderLayout.CENTER);
+        outPane.setDividerLocation(250);
+        notebook.addTab("Sender", this);
+    }
+
+    @PostConstruct
+    void init() {
+        // Load previously opened files
+        db.getFileHistory().forEach(item -> addFileMenuItem(item));
+        // Register event listeners
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if ("Send".equals(event.getActionCommand())) {
@@ -194,7 +218,7 @@ public class Sender extends JPanel {
         });
         switchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (switchStr.equals(event.getActionCommand())) {
+                if (SWITCH_LAYOUT.equals(event.getActionCommand())) {
                     int v = outPane.getOrientation();
                     if (v == 0) {
                         // top/bottom
@@ -226,6 +250,16 @@ public class Sender extends JPanel {
                 endpointField.setText(selectEndPoint.replaceAll("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}", hostNameField.getText()));
             }
         });
+        endpointField.getDocument().addDocumentListener(
+                new JFieldDocumentListener(endpointField, LocalDB.LAST_WS_ENDPOINT, db)
+        );
+        selectWSS4J.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String item = (String) selectWSS4J.getSelectedItem();
+                db.publish(LocalDB.LAST_WSS_PROFILE, item);
+            }
+        });
         xmlFormatBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -245,17 +279,27 @@ public class Sender extends JPanel {
                 enableScheduler = e.getStateChange() == ItemEvent.SELECTED;
             }
         });
-
-        this.add(center, BorderLayout.CENTER);
-        outPane.setDividerLocation(250);
-        notebook.addTab("Sender", this);
     }
 
-    @PostConstruct
-    void init() {
-        // Load previously opened files
-        db.getFileHistory().forEach(item -> addFileMenuItem(item));
-    }
+    private AbstractAction saveInputFileListener = new AbstractAction("Save") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String fileName = requestFileLabel.getText();
+            try {
+                if (Utils.isFilePresent(fileName)) {
+                    try (FileWriter fw = new FileWriter(fileName)) {
+                        fw.write(inputText.getText());
+                    }
+                    LOG.info("Save: " + fileName);
+                } else {
+                    JOptionPane.showMessageDialog(Sender.this, "Cannot write to disk.", "Use Save as:",
+                            JOptionPane.OK_OPTION);
+                }
+            } catch (Exception ex) {
+                LOG.warn(ex.getMessage(), ex);
+            }
+        }
+    };
 
     private ActionListener itemListener = new ActionListener() {
         @Override

@@ -25,6 +25,8 @@ public class LocalDB {
     private static final Logger LOG = LoggerFactory.getLogger(LocalDB.class);
 
     public static String LAST_OPEN_DIRECTORY = "LAST_OPEN_DIRECTORY";
+    public static String LAST_WS_ENDPOINT = "LAST_WS_ENDPOINT";
+    public static String LAST_WSS_PROFILE = "LAST_WSS_PROFILE";
     public static String KEY_STORE_LOCATION = "KEY_STORE_LOCATION";
     public static String KEY_STORE_ALIAS = "KEY_STORE_ALIAS";
 
@@ -76,6 +78,11 @@ public class LocalDB {
 
     public String getHistory(String k) {
         return history.get(k);
+    }
+
+    public String getHistory(String k, String def) {
+        String v = history.get(k);
+        return v != null ?  v:def;
     }
 
     private void commit() {

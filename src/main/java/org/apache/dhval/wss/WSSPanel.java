@@ -1,5 +1,6 @@
 package org.apache.dhval.wss;
 
+import org.apache.dhval.action.JFieldDocumentListener;
 import org.apache.dhval.storage.LocalDB;
 import org.apache.dhval.utils.JUtils;
 import org.apache.tcpmon.TCPMon;
@@ -91,27 +92,9 @@ public class WSSPanel extends JPanel {
                 });
             }
         });
-        ksLocationField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                doSomething();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                doSomething();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                doSomething();
-            }
-
-            public void doSomething() {
-                LOG.info(ksLocationField.getText());
-                localDB.publish(LocalDB.KEY_STORE_LOCATION, ksLocationField.getText());
-            }
-        });
+        ksLocationField.getDocument().addDocumentListener(
+                new JFieldDocumentListener(ksLocationField, LocalDB.KEY_STORE_LOCATION, localDB)
+        );
         ksAliases.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -119,27 +102,8 @@ public class WSSPanel extends JPanel {
                 ksAliasField.setText(item);
             }
         });
-        ksAliasField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                doSomething();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                doSomething();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                doSomething();
-            }
-
-            public void doSomething() {
-                LOG.info(ksAliasField.getText());
-                localDB.publish(LocalDB.KEY_STORE_ALIAS, ksAliasField.getText());
-            }
-        });
-
+        ksAliasField.getDocument().addDocumentListener(
+                new JFieldDocumentListener(ksAliasField, LocalDB.KEY_STORE_ALIAS, localDB)
+        );
     }
 }
