@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items>
+    <about>xyz</about>
+    <item>
+        <title>t1</title>
+        <body>b1</body>
+    </item>
+    <item>
+        <title>t2</title>
+        <body>b2</body>
+    </item>
+    <item>
+        <title>t3</title>
+        <body>b3</body>
+    </item>
+</items>
