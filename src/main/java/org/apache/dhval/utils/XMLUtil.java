@@ -1,5 +1,7 @@
 package org.apache.dhval.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,19 +13,25 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility class for working with XML documents and XPath expressions.
  */
 public class XMLUtil {
 
-    public static Node createDOMNode(String file)
+    private static final Logger LOG = LoggerFactory.getLogger(XMLUtil.class);
+
+    public static Document createDOMNode(String file)
             throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         dbFactory.setNamespaceAware(true);
@@ -32,7 +40,16 @@ public class XMLUtil {
         Document doc = dBuilder.parse(new InputSource(new FileInputStream(new File(file))));
         doc.getDocumentElement().normalize();
 
-        return doc.getFirstChild();
+        return doc;
+    }
+
+    public static void saveDOMNode(Document doc, String file)
+            throws ParserConfigurationException, SAXException, IOException, TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(new File(file));
+        transformer.transform(source, result);
     }
 
     public static NamespaceContext createNamespaceContext() {
@@ -40,8 +57,10 @@ public class XMLUtil {
             public String getNamespaceURI(String prefix) {
                 if (prefix == null)
                     throw new IllegalArgumentException("No prefix provided!");
-                else if ("spreadsheet".equals(prefix)) return "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-                else if ("xml".equals(prefix)) return XMLConstants.XML_NS_URI;
+                else if ("soap".equals(prefix))
+                    return "http://schemas.xmlsoap.org/wsdl/soap/";
+                else if ("xml".equals(prefix))
+                    return XMLConstants.XML_NS_URI;
                 return XMLConstants.NULL_NS_URI;
             }
 
@@ -55,6 +74,34 @@ public class XMLUtil {
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    public static Document transform(Document document, Map<String, String> map) throws Exception {
+       XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+
+        NamespaceContext namespaceContext = new NamespaceCache(document, false);
+        xpath.setNamespaceContext(namespaceContext);
+
+        map.entrySet().stream().forEach(
+                entry -> {
+                    try {
+                        XPathExpression expression = xpath.compile(entry.getKey());
+                        Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+                        if (node != null) node.setTextContent(entry.getValue());
+                    } catch (XPathExpressionException exp) {
+                        LOG.warn(exp.getMessage());
+                    }
+                }
+        );
+        return document;
+    }
+
+    public static String toString(Document document) throws Exception {
+        StringWriter writer = new StringWriter();
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.transform(new DOMSource(document), new StreamResult(writer));
+        return writer.toString();
     }
 
     /**

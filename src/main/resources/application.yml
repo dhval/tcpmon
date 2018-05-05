@@ -1,19 +1,19 @@
-
 debug: true
 local:
   server:
     port: 8081
+autoconfigure.
+autoconfigure:
+  exclude: >
+            org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,
+            org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,
+            org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 spring:
   profiles:
-    active: default
+    active: db
 ---
 spring:
   profiles: default
-  autoconfigure:
-    exclude: >
-              org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,
-              org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,
-              org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 ---
 spring:
   profiles: db

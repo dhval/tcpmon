@@ -14,10 +14,13 @@ import java.util.*;
 
 public class NamespaceCache implements NamespaceContext {
     private static final Logger LOG = LoggerFactory.getLogger(NamespaceCache.class);
-
-    private static final String DEFAULT_NS = "DEFAULT";
     private Map<String, String> prefix2Uri = new HashMap<String, String>();
     private Map<String, String> uri2Prefix = new HashMap<String, String>();
+    // First name space encountered, however there can be multiple namespaces w/o prefix making this less reliable.
+    private static final String DEFAULT_NS = "DEFAULT";
+    // When no prefix is found then it will be automatically generated.
+    private String tmpNsPrefix = "ns";
+    private Integer tmpNsCount = 1;
 
     /**
      * This constructor parses the document and stores all namespaces it can
@@ -30,10 +33,6 @@ public class NamespaceCache implements NamespaceContext {
      */
     public NamespaceCache(Document document, boolean toplevelOnly) {
         examineNode(document.getFirstChild(), toplevelOnly);
-        System.out.println("The list of the cached namespaces:");
-        for (String key : prefix2Uri.keySet()) {
-            LOG.info("prefix " + key + ": uri " + prefix2Uri.get(key));
-        }
     }
 
     /**
@@ -56,7 +55,7 @@ public class NamespaceCache implements NamespaceContext {
             for (int i = 0; i < chields.getLength(); i++) {
                 Node chield = chields.item(i);
                 if (chield.getNodeType() == Node.ELEMENT_NODE)
-                    examineNode(chield, false);
+                    examineNode(chield, attributesOnly);
             }
         }
     }
@@ -73,12 +72,18 @@ public class NamespaceCache implements NamespaceContext {
         if (attribute.getNamespaceURI() != null
                 && attribute.getNamespaceURI().equals(
                 XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
+            String uri = attribute.getNodeValue();
+            // Root name space
+            if (!prefix2Uri.containsKey(DEFAULT_NS)) {
+                prefix2Uri.put(DEFAULT_NS, uri);
+            }
             // Default namespace xmlns="uri goes here"
             if (attribute.getNodeName().equals(XMLConstants.XMLNS_ATTRIBUTE)) {
-                putInCache(DEFAULT_NS, attribute.getNodeValue());
+                String prefix = getNextTmpNs();
+                putInCache(prefix, uri);
             } else {
                 // The defined prefixes are stored here
-                putInCache(attribute.getLocalName(), attribute.getNodeValue());
+                putInCache(attribute.getLocalName(), uri);
             }
         }
 
@@ -105,6 +110,10 @@ public class NamespaceCache implements NamespaceContext {
         }
     }
 
+    public Map<String, String> getPrefix2Uri() {
+        return prefix2Uri;
+    }
+
     /**
      * This method is not needed in this context, but can be implemented in a
      * similar way.
@@ -116,5 +125,9 @@ public class NamespaceCache implements NamespaceContext {
     public Iterator getPrefixes(String namespaceURI) {
         // Not implemented
         return null;
+    }
+
+    private String getNextTmpNs() {
+        return tmpNsPrefix + Integer.toString(tmpNsCount++);
     }
 }

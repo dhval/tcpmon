@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -16,8 +15,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 //@ComponentScan(basePackages = {"org.apache.dhval"})
 @SpringBootTest(classes = {LocalDB.class})
 @EnableConfigurationProperties
-public class LocalDBTest {
-    private static final Logger LOG = LoggerFactory.getLogger(LocalDBTest.class);
+public class MapDBTest {
+    private static final Logger LOG = LoggerFactory.getLogger(MapDBTest.class);
 
     @Autowired
     LocalDB localDB;
