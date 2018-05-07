@@ -2,6 +2,7 @@ package org.apache.dhval.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,6 +31,36 @@ import java.util.stream.Stream;
 public class XMLUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtil.class);
+    private static final String XMLNS_XSI = "xmlns:xsi";
+    private static final String XSI_SCHEMA_LOCATION = "xsi:schemaLocation";
+
+    /**
+     * Moves all namepace declarations to root element.
+     *
+     * @param document
+     * @return
+     */
+    public static Document canonicalNS(Document document) {
+        NamespaceCache cache = new NamespaceCache(document, false);
+        Element root = document.getDocumentElement();
+        cache.getPrefix2Uri().entrySet().stream().filter(entry -> !entry.getKey().equals(NamespaceCache.DEFAULT_NS)).forEach(e -> {
+            root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + e.getKey(), e.getValue());
+        });
+        List<Node> list = new ArrayList<>();
+        list.add(root);
+        while (!list.isEmpty()) {
+            Node node = list.remove(0);
+            node.setPrefix(cache.getPrefix(node.getNamespaceURI()));
+            ((Element) node).removeAttribute("xmlns");
+            NodeList nodeList = node.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node item = nodeList.item(i);
+                if (item.getNodeType() == Node.ELEMENT_NODE)
+                    list.add(item);
+            }
+        }
+        return root.getOwnerDocument();
+    }
 
     public static Document createDOMNode(String file)
             throws ParserConfigurationException, SAXException, IOException {
@@ -162,6 +193,37 @@ public class XMLUtil {
         } catch (XPathExpressionException e) {
             return null;
         }
+    }
+
+    public static void buildXpathMap(String path, Node node, Map<String, String> map) {
+        NodeList nodeList = node.getChildNodes();
+        if (nodeList.getLength() == 0) {
+            if (!StringUtils.isEmpty(node.getTextContent().trim()))
+                map.put(path, node.getTextContent());
+            return;
+        }
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node item = nodeList.item(i);
+            if (item.getNodeType() == Node.ELEMENT_NODE || item.getNodeType() == Node.TEXT_NODE)
+                buildXpathMap(path + "/" + node.getNodeName(), item, map);
+        }
+    }
+
+    /**
+     * Sets the namespace to specific element.
+     *
+     * @param element the element to set
+     * @param namespace the namespace to set
+     * @param schemaLocation the XML schema file location URI
+     */
+    public static void setNamespace(Element element, String namespace,
+                                    String schemaLocation) {
+        element.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+                XMLConstants.XMLNS_ATTRIBUTE, namespace);
+        element.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, XMLNS_XSI,
+                XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        element.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
+                XSI_SCHEMA_LOCATION, schemaLocation);
     }
 
     /**

@@ -17,7 +17,7 @@ public class NamespaceCache implements NamespaceContext {
     private Map<String, String> prefix2Uri = new HashMap<String, String>();
     private Map<String, String> uri2Prefix = new HashMap<String, String>();
     // First name space encountered, however there can be multiple namespaces w/o prefix making this less reliable.
-    private static final String DEFAULT_NS = "DEFAULT";
+    public static final String DEFAULT_NS = "DEFAULT";
     // When no prefix is found then it will be automatically generated.
     private String tmpNsPrefix = "ns";
     private Integer tmpNsCount = 1;

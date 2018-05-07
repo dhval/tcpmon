@@ -1,6 +1,7 @@
 package org.apache.dhval;
 
 import org.apache.dhval.utils.NamespaceCache;
+import org.apache.dhval.utils.SaxonUtils;
 import org.apache.dhval.utils.XMLUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPath;
@@ -25,6 +27,10 @@ import java.util.stream.Stream;
 public class XMLUtilTest {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtilTest.class);
 
+    public static final String NIEM_PERSON_SUR_NAME = "//*[local-name()='GetOffenderInformation' and namespace-uri()='http://jnet.state.pa.us/message/jnet/OffenderInquiry/1']";
+
+    Path soapResourceDir = Paths.get("soap");
+
     @Test
     public void extractXpathNoNameSpace() throws Exception {
         Path resourceDirectory = Paths.get("src","test","resources");
@@ -41,8 +47,7 @@ public class XMLUtilTest {
 
     @Test
     public void getNameSpaces() throws Exception {
-        Path resourceDirectory = Paths.get("soap");
-        File file = new File(resourceDirectory.toFile(), "offender-inquiry-03.xml");
+        File file = new File(soapResourceDir.toFile(), "offender-inquiry-03.xml");
         Document document = XMLUtil.createDOMNode(file.getAbsolutePath());
 
         NamespaceCache namespaceCache = new NamespaceCache(document, false);
@@ -55,8 +60,7 @@ public class XMLUtilTest {
 
     @Test
     public void extractXpath() throws Exception {
-        Path resourceDirectory = Paths.get("soap");
-        File file = new File(resourceDirectory.toFile(), "Notify-PA_Arrest-1afa-bc21-a85e-e9ef-162e-7a1408c-data.xml");
+        File file = new File(soapResourceDir.toFile(), "Notify-PA_Arrest-1afa-bc21-a85e-e9ef-162e-7a1408c-data.xml");
         Document document = XMLUtil.createDOMNode(file.getAbsolutePath());
 
         NamespaceCache namespaceCache = new NamespaceCache(document, false);
@@ -69,6 +73,5 @@ public class XMLUtilTest {
 
         list.stream().forEach(content -> LOG.info(content));
     }
-
 
 }

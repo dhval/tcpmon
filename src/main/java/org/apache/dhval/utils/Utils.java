@@ -52,6 +52,24 @@ public class Utils {
         return Arrays.stream(files).map(str -> path + "/" + str).collect(Collectors.toList());
     }
 
+    public static void writeToDisk(String path, String content) throws IOException {
+        try(BufferedWriter w = new BufferedWriter(new FileWriter(path,true)))
+        {
+            w.write(content);
+        } catch(IOException e) {
+            throw e;
+        }
+    }
+
+    public static void overWriteToDisk(String path, String content) throws IOException {
+        try(BufferedWriter w = new BufferedWriter(new FileWriter(path,false)))
+        {
+            w.write(content);
+        } catch(IOException e) {
+            throw e;
+        }
+    }
+
     public static String prettyXml(JAXBElement element) {
         try {
             JAXBContext jc = JAXBContext.newInstance(element.getValue().getClass());

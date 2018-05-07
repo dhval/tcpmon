@@ -2,6 +2,7 @@ package org.apache.dhval;
 
 import junitparams.FileParameters;
 import junitparams.JUnitParamsRunner;
+import org.apache.dhval.utils.Utils;
 import org.apache.dhval.utils.XMLUtil;
 import org.apache.dhval.wss.WSSClient;
 import org.junit.Test;
@@ -32,12 +33,13 @@ public class WSTransformClientTest {
     public static final String NIEM_PERSON_GIVEN_NAME = "//*[local-name()='PersonGivenName' and namespace-uri()='http://release.niem.gov/niem/niem-core/3.0/']";
 
     Path resourceDirectory = Paths.get("soap");
+    Path tmpDirectory = Paths.get("tmp");
 
     @Test
     @FileParameters("src/test/resources/param.csv")
     public void wss4jX509(String last, String first) throws Exception {
         String url = "https://ws.jnet.beta.pa.gov/JNETInquiry/OffenderInquiry/1";
-        File file = new File(resourceDirectory.toFile(), "offender-inquiry-03.xml");
+        File file = new File(resourceDirectory.toFile(), "offender-inquiry-05.xml");
         Map<String, String> xpaths = Stream.of(
                 new AbstractMap.SimpleEntry<>(NIEM_PERSON_GIVEN_NAME, first),
                 new AbstractMap.SimpleEntry<>(NIEM_PERSON_SUR_NAME, last)
@@ -58,6 +60,7 @@ public class WSTransformClientTest {
                 new AbstractMap.SimpleEntry<>("keystore-password", "changeit"),
                 new AbstractMap.SimpleEntry<>("keystore-location", "keystore.jks")).collect(Collectors.toMap(e -> e.getKey(), e-> e.getValue()));
         String result = WSSClient.wssPost(url, srcXml, headers, wss4jProfile);
-        LOG.info(result);
+        File file2 = new File(tmpDirectory.toFile(), "offender-inquiry-" + first + "-" + last);
+        Utils.overWriteToDisk(file2.getAbsolutePath(), result);
     }
 }

@@ -18,6 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 
+import javax.xml.crypto.dsig.CanonicalizationMethod;
+
 public class SaxonUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SaxonUtils.class);
     private static Processor proc = new Processor(false);
@@ -78,6 +80,8 @@ public class SaxonUtils {
         element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:aopc-doc","http://us.pacourts.us/niem/aopc/CourtFiling/1");
         element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:aopc-ext","http://us.pacourts.us/niem/aopc/Extension/2");
         element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:nc","http://niem.gov/niem/niem-core/2.0");
+        element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:nc3","http://release.niem.gov/niem/niem-core/3.0/");
+        element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:m","http://jnet.state.pa.us/message/jnet/OffenderInquiry/1");
 
         return element;
     }
