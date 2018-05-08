@@ -7,6 +7,7 @@ import org.apache.ws.security.WSSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.WebServiceMessage;
+import org.springframework.ws.WebServiceMessageFactory;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
@@ -15,7 +16,9 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.xml.transform.StringResult;
 
+import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPConstants;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -42,9 +45,16 @@ public class WSSClient {
     public static String wssPost(String url, String srcXml, Map<String, String> headers, Map<String, String> wss4jProfile) throws Exception {
         try {
             WebServiceTemplate template = new WebServiceTemplate();
+
+            /** **/
             SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
             messageFactory.setSoapVersion(SoapVersion.SOAP_12);
             messageFactory.afterPropertiesSet();
+
+       //     MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+        //    WebServiceMessageFactory webMessageFactory = new SaajSoapMessageFactory(messageFactory);
+         //   template.setMessageFactory(messageFactory);
+
 
             addInterceptor(wss4jProfile, template);
 

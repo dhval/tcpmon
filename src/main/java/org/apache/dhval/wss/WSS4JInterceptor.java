@@ -55,6 +55,14 @@ public class WSS4JInterceptor {
                 "{Element}{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Timestamp;" +
                         "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body"
         );
+        /**
+
+                 securityInterceptor.setSecurementSignatureParts(
+         "{Element}{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Timestamp;" +
+         "{Element}{http://www.w3.org/2003/05/soap-envelope}Body"
+         );
+
+         */
         // X509KeyIdentifier, DirectReference
         securityInterceptor.setSecurementSignatureKeyIdentifier("DirectReference");
         // initialize

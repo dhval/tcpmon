@@ -26,6 +26,7 @@
     "AOPC-CourtFiling": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit",
     "CCF": "http://10.182.70.250:56100/AOPC/CourtFiling/Submit",
     "CCF-Public": "https://ws.jnet.beta.pa.gov/AOPC/CourtFiling/Submit",
+    "CCF-Response": "https://ws.jnet.beta.pa.gov/ccf/response",
     "Driver-Beta": "https://ws.jnet.beta.pa.gov/PennDOT/Driver",
     "DP-Router": "http://10.182.70.250:55000/EventMessageConsumer/1",
     "Echo": "http://localhost:7832/echo/services/XYZ",
@@ -59,14 +60,14 @@
       "action": "Timestamp Signature",
       "keystore-location": "keystore.jks",
       "keystore-password": "changeit",
-      "keystore-alias": "client"
+      "keystore-alias": "jnet.test"
     },
     "SAMLTokenSigned": {
       "name": "SAMLTokenSigned",
       "action": "Timestamp SAMLTokenSigned",
       "keystore-location": "keystore.jks",
       "keystore-password": "changeit",
-      "keystore-alias": "client",
+      "keystore-alias": "jnet.test",
       "user": "user",
       "password": "password"
     }
@@ -74,8 +75,13 @@
   "KeyStores": [{
     "location": "keystore.jks",
     "aliases": [
-      "client",
-      "lehighcoda"
+      "jnet.test",
+      "lehighcoda.test",
+      "allecogts.test",
+      "phillygts.test",
+      "phillycf.test",
+      "dauphincogts.test",
+      "perrygts.test"
     ]
   },
     {

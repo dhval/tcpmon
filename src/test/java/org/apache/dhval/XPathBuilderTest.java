@@ -25,11 +25,13 @@ public class XPathBuilderTest {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtilTest.class);
 
     Path resourceDirectory = Paths.get("src","test","resources");
-    Path soapResourceDir = Paths.get("soap");
+    Path tmpDir = Paths.get("soap");
+
+    String inputFile = "Correction-Inquiry-3.xml";
 
     @Test
     public void extractXpathNoNameSpace() throws Exception {
-        File file = new File(soapResourceDir.toFile(), "Notify-PA_Arrest-1afa-bc21-a85e-e9ef-162e-7a1408c-data.xml");
+        File file = new File(tmpDir.toFile(), inputFile);
         Node root = XMLUtil.createDOMNode(file.getAbsolutePath()).getFirstChild();
 
         Map<String, String> values = new LinkedHashMap<>();
@@ -42,6 +44,6 @@ public class XPathBuilderTest {
                 new AbstractMap.SimpleEntry<>("data", values)
         ).collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue()));
 
-        new ObjectMapper().writeValue(new File("tmp/xpath.json"), data);
+        new ObjectMapper().writeValue(new File("tmp/" + inputFile + ".json"), data);
     }
 }

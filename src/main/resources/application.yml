@@ -2,7 +2,6 @@ debug: true
 local:
   server:
     port: 8081
-autoconfigure.
 autoconfigure:
   exclude: >
             org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,
