@@ -196,22 +196,21 @@ public class XMLUtil {
     }
 
     public static void buildXpathMap(String path, Node node, Map<String, String> map) {
-        path = path + "/" + node.getNodeName() + "[0]";
-        int childCounter = 1;
-        while(map.containsKey(path)) {
-            path = path + "/" + node.getNodeName() + "[" + (childCounter++) + "]";
-        }
-        map.put(path, "");
-        NodeList nodeList = node.getChildNodes();
-        if (nodeList.getLength() == 0) {
-            if (!StringUtils.isEmpty(node.getTextContent().trim()))
-                map.put(path + "#text", node.getTextContent());
-            return;
-        }
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node item = nodeList.item(i);
-            if (item.getNodeType() == Node.ELEMENT_NODE || item.getNodeType() == Node.TEXT_NODE)
-                buildXpathMap(path, item, map);
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            String tPath = path + "/" + node.getNodeName() + "[0]";
+            int childCounter = 1;
+            while (map.containsKey(tPath)) {
+                tPath = path + "/" + node.getNodeName() + "[" + (childCounter++) + "]";
+            }
+            map.put(tPath, "");
+            NodeList nodeList = node.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node item = nodeList.item(i);
+                if (item.getNodeType() == Node.ELEMENT_NODE || item.getNodeType() == Node.TEXT_NODE)
+                    buildXpathMap(tPath, item, map);
+            }
+        } else  if (node.getNodeType() == Node.TEXT_NODE) {
+            map.put(path, node.getTextContent().trim());
         }
     }
 

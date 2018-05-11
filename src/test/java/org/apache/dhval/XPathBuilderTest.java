@@ -27,7 +27,7 @@ public class XPathBuilderTest {
     Path resourceDirectory = Paths.get("src","test","resources");
     Path tmpDir = Paths.get("tmp");
 
-    String inputFile = "er-pbpp-full.xml";
+    String inputFile = "offender-inquiry-EUGENE-BRYANT";
 
     @Test
     public void extractXpathNoNameSpace() throws Exception {
