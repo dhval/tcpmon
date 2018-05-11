@@ -25,9 +25,9 @@ public class XPathBuilderTest {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtilTest.class);
 
     Path resourceDirectory = Paths.get("src","test","resources");
-    Path tmpDir = Paths.get("soap");
+    Path tmpDir = Paths.get("tmp");
 
-    String inputFile = "Correction-Inquiry-3.xml";
+    String inputFile = "er-pbpp-full.xml";
 
     @Test
     public void extractXpathNoNameSpace() throws Exception {

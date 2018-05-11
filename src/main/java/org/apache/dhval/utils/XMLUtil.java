@@ -196,16 +196,22 @@ public class XMLUtil {
     }
 
     public static void buildXpathMap(String path, Node node, Map<String, String> map) {
+        path = path + "/" + node.getNodeName() + "[0]";
+        int childCounter = 1;
+        while(map.containsKey(path)) {
+            path = path + "/" + node.getNodeName() + "[" + (childCounter++) + "]";
+        }
+        map.put(path, "");
         NodeList nodeList = node.getChildNodes();
         if (nodeList.getLength() == 0) {
             if (!StringUtils.isEmpty(node.getTextContent().trim()))
-                map.put(path, node.getTextContent());
+                map.put(path + "#text", node.getTextContent());
             return;
         }
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node item = nodeList.item(i);
             if (item.getNodeType() == Node.ELEMENT_NODE || item.getNodeType() == Node.TEXT_NODE)
-                buildXpathMap(path + "/" + node.getNodeName(), item, map);
+                buildXpathMap(path, item, map);
         }
     }
 
