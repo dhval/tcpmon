@@ -12,9 +12,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
@@ -32,10 +34,10 @@ import java.util.ResourceBundle;
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
  */
 
-@SpringBootApplication
+@Configuration
 @ComponentScan(basePackages = {"org.apache.dhval"})
 @EnableScheduling
-//@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+@EnableConfigurationProperties
 public class TCPMon extends JFrame {
 
     private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);
