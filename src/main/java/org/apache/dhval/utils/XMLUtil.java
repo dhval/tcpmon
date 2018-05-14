@@ -21,7 +21,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,6 +137,39 @@ public class XMLUtil {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.transform(new DOMSource(document), new StreamResult(writer));
         return writer.toString();
+    }
+
+    public static Map<String, String> extractXpath(Node root, Map<String, String> xpaths)
+            throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+
+        NamespaceCache namespaceCache = new NamespaceCache(root.getOwnerDocument(), false);
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        xpath.setNamespaceContext(namespaceCache);
+
+        XPathExpression expression;
+        Map<String, String> result = new HashMap<>();
+        for(String key: xpaths.keySet()) {
+            expression = xpath.compile(xpaths.get(key));
+            String value = (String) expression.evaluate(root, XPathConstants.STRING);
+            result.put(key, value);
+        }
+
+        return result;
+    }
+
+    public static void extractXMLFromText(String content, String tag, String dstDir) throws IOException {
+        // allow any attributes in root element.
+        String startTag = "<" + tag;
+        String endTag = "</" + tag + ">";
+
+        Pattern p = Pattern.compile(startTag + "[\\s\\S]*?" + endTag); // [\s\S]
+        Matcher m = p.matcher(content);
+        int counter  = 1;
+        while (m.find()) {
+            String text = m.group(0);
+            Files.write(Paths.get(dstDir + "/file-" + (counter++) + ".xml"), text.getBytes());
+        }
     }
 
     /**

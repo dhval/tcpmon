@@ -1,5 +1,6 @@
 package org.apache.dhval;
 
+import org.apache.dhval.utils.XMLUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,21 +23,14 @@ public class RegexXMLExtractor {
     Path resourceDirectory = Paths.get("src", "test", "resources");
     Path tmpDir = Paths.get("soap");
 
-    String inputFile = "SubmitCourtFiling_01.xml";
-
-    String startTag = "<ID>";
-    String endTag = "</ID>";
+    String inputFile = "/Users/dhval/Downloads/PublishCountyInmateBulk.xml";
+    String dstDirectory = "tmp/extract-cpe";
+    String TAG = "cpe:CountyProbationEvent";
 
     @Test
     public void extractXpathNoNameSpace() throws Exception {
-        File file = new File(tmpDir.toFile(), inputFile);
-
+        File file = new File(inputFile);
         String content = new String (Files.readAllBytes(file.toPath()), Charset.forName("UTF-8"));
-
-        Pattern p = Pattern.compile(startTag + "[\\s\\S]*?" + endTag); // [\s\S]
-        Matcher m = p.matcher(content);
-        while (m.find()) {
-            LOG.info(m.group(0));
-        }
+        XMLUtil.extractXMLFromText(content, TAG, dstDirectory);
     }
 }

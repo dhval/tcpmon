@@ -2,7 +2,9 @@ package org.apache.dhval;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.dhval.utils.NamespaceCache;
+import org.apache.dhval.utils.Utils;
 import org.apache.dhval.utils.XMLUtil;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,10 +15,7 @@ import org.w3c.dom.Node;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,13 +23,12 @@ import java.util.stream.Stream;
 public class XPathBuilderTest {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtilTest.class);
 
-    Path resourceDirectory = Paths.get("src","test","resources");
-    Path tmpDir = Paths.get("tmp");
-
-    String inputFile = "offender-inquiry-EUGENE-BRYANT";
-
     @Test
+    @Ignore
     public void extractXpathNoNameSpace() throws Exception {
+        Path tmpDir = Paths.get("tmp");
+        String inputFile = "offender-inquiry-EUGENE-BRYANT";
+
         File file = new File(tmpDir.toFile(), inputFile);
         Node root = XMLUtil.createDOMNode(file.getAbsolutePath()).getFirstChild();
 
@@ -46,4 +44,26 @@ public class XPathBuilderTest {
 
         new ObjectMapper().writeValue(new File("tmp/" + inputFile + ".json"), data);
     }
-}
+
+    @Test
+    @Ignore
+    public void extractXpathFromDir() throws Exception {
+        String srcDirectory = "/Users/dhval/projects/tcpmon/tmp/extract";
+        List<String> files = Utils.allFilesByType(srcDirectory, "xml");
+
+        Map<String, String> data = new HashMap<>();
+        for(String file : files) {
+            Map<String, String> values = new HashMap<>();
+            Node root = XMLUtil.createDOMNode(file).getFirstChild();
+            XMLUtil.buildXpathMap("/", root, values);
+            data.putAll(values);
+        }
+
+        new ObjectMapper().writeValue(new File("tmp/out" + ".json"), data);
+
+    }
+
+
+
+    }
+
