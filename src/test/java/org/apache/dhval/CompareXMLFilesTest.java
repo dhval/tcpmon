@@ -3,6 +3,7 @@ package org.apache.dhval;
 
 import org.apache.dhval.utils.Utils;
 import org.apache.dhval.utils.XMLUtil;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,10 +22,29 @@ import java.util.Map;
 public class CompareXMLFilesTest {
     private static final Logger LOG = LoggerFactory.getLogger(CompareXMLFilesTest.class);
 
-    String srcDirectory = "/Users/dhval/projects/tcpmon/tmp/extract-cie";
+    @Test
+    public void compareTwoFiles() throws Exception {
+        String file1 = "C:\\tmp\\jnetoffenderresults.txt";
+        String file2 = "C:\\Users\\c-dmudawal\\Desktop\\file1.xml";
+
+        Node root1 = XMLUtil.createDOMNode(file1).getFirstChild();
+        Map<String, String> values1 = new LinkedHashMap<>();
+        XMLUtil.buildXpathMap("/", root1, values1);
+
+        Node root2 = XMLUtil.createDOMNode(file2).getFirstChild();
+        Map<String, String> values2 = new LinkedHashMap<>();
+        XMLUtil.buildXpathMap("/", root2, values2);
+
+        values2.keySet().forEach( key -> values1.remove(key));
+
+        values1.keySet().forEach(key-> LOG.info(key + ":" + values1.get(key)));
+    }
 
     @Test
+    @Ignore
     public void findAndDeleteDuplicateFiles() throws Exception {
+
+        String srcDirectory = "/Users/dhval/projects/tcpmon/tmp/extract-cie";
 
         List<String> files = Utils.allFilesByType(srcDirectory, "xml");
         for(int i = 0; i < files.size()-1; i++) {
