@@ -6,7 +6,6 @@ import org.apache.dhval.action.FormatXMLAction;
 import org.apache.dhval.action.JFieldDocumentListener;
 import org.apache.dhval.action.SaveFileAction;
 import org.apache.dhval.action.SelectTextAction;
-import org.apache.dhval.storage.LocalDB;
 import org.apache.dhval.utils.JUtils;
 import org.apache.dhval.utils.Utils;
 import org.apache.dhval.wss.WSSClient;
@@ -75,7 +74,6 @@ public class Sender extends JPanel {
     private Map<String, String> environmentMap;
     private Map<String, String> hostMap;
 
-    private LocalDB db;
     private AbstractAction saveInputFileListener = new AbstractAction("Save") {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -104,9 +102,8 @@ public class Sender extends JPanel {
         }
     };
 
-    public Sender(@Autowired JTabbedPane _notebook, @Autowired LocalDB db) {
+    public Sender(@Autowired JTabbedPane _notebook) {
         notebook = _notebook;
-        this.db = db;
         fc.setCurrentDirectory(new File(TCPMon.CWD));
 
         inputText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
@@ -148,10 +145,6 @@ public class Sender extends JPanel {
         selectHost = new JComboBox<>(hostMap.keySet().toArray(new String[0]));
         selectWSS4J = new JComboBox<>(requestWSS4J.keySet().toArray(new String[0]));
 
-        String lastWSSProfile = db.getHistory(LocalDB.LAST_WSS_PROFILE);
-        for (int i=1; i< selectWSS4J.getItemCount(); i++)
-            if(selectWSS4J.getItemAt(i).equals(lastWSSProfile)) selectWSS4J.setSelectedIndex(i);
-
         this.setLayout(new BorderLayout());
 
         // 1st component is just a row of labels and 1-line entry fields
@@ -164,7 +157,7 @@ public class Sender extends JPanel {
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("Endpoint", SwingConstants.RIGHT));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(endpointField = new JTextField(db.getHistory(LocalDB.LAST_WS_ENDPOINT, "http://localhost:8080/echo/services/23"), 50));
+        top.add(endpointField = new JTextField("http://localhost:8080/echo/services/23"));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("WS-Security"));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -225,8 +218,6 @@ public class Sender extends JPanel {
 
     @PostConstruct
     void init() {
-        // Load previously opened files
-        db.getFileHistory().forEach(item -> addFileMenuItem(item));
         // Register event listeners
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -268,6 +259,7 @@ public class Sender extends JPanel {
                 endpointField.setText(Utils.replaceHost(selectEndPoint, selHost));
             }
         });
+        /**
         endpointField.getDocument().addDocumentListener(
                 new JFieldDocumentListener(endpointField, LocalDB.LAST_WS_ENDPOINT, db)
         );
@@ -278,6 +270,7 @@ public class Sender extends JPanel {
                 db.publish(LocalDB.LAST_WSS_PROFILE, item);
             }
         });
+         **/
         xmlFormatBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -360,12 +353,6 @@ public class Sender extends JPanel {
             LOG.warn("Query already in progress.");
             return;
         }
-        // update file history cache
-        if (!db.getFileHistory().contains(requestFileLabel.getText())) {
-            db.saveFileHistory(requestFileLabel.getText());
-            addFileMenuItem(requestFileLabel.getText());
-        }
-        LOG.info("Hi" + db.getFileHistory().size());
         statusLabel.setText("Pending...");
         outputText.setText("");
         Instant start = Instant.now();
@@ -407,7 +394,6 @@ public class Sender extends JPanel {
                     } else {
                         outputText.setText(result);
                     }
-                    db.saveRequestResponse(inputText.getText(), outputText.getText());
                 } catch (Exception e) {
                     outputText.setText(Utils.printStackTrace(e));
                 } finally {

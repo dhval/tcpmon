@@ -1,7 +1,7 @@
 package org.apache.dhval.wss;
 
-import org.apache.dhval.utils.SaxonUtils;
 import org.apache.dhval.utils.Utils;
+import org.apache.dhval.utils.XMLUtil;
 import org.apache.tcpmon.TCPMon;
 import org.apache.ws.security.WSSecurityException;
 import org.slf4j.Logger;
@@ -74,7 +74,7 @@ public class WSSClient {
 
             // The afterPropertiesSet or @PostConstruct annotated method is called after an instance of class is created.
             template.afterPropertiesSet();
-            StreamSource requestMessage = new StreamSource(new StringReader(SaxonUtils.extractSoapBody(srcXml)));
+            StreamSource requestMessage = new StreamSource(new StringReader(extractBody(srcXml)));
             StringResult responseResult = new StringResult();
 
             template.sendSourceAndReceiveToResult(url, requestMessage, callback, responseResult);
@@ -130,6 +130,13 @@ public class WSSClient {
             sb.append(line);
         }
         return sb.toString();
+    }
+
+    private static String extractBody(String srcXML) {
+       if (XMLUtil.evaluate(srcXML, "//*[local-name()='Body']")) {
+           return  XMLUtil.evaluateNode(srcXML, "//*[local-name()='Body']/*[1]");
+       }
+       return srcXML;
     }
 
 }

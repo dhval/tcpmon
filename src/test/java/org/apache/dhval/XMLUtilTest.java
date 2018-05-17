@@ -1,7 +1,6 @@
 package org.apache.dhval;
 
 import org.apache.dhval.utils.NamespaceCache;
-import org.apache.dhval.utils.SaxonUtils;
 import org.apache.dhval.utils.XMLUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;

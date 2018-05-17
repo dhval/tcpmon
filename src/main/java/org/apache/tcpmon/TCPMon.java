@@ -3,14 +3,9 @@ package org.apache.tcpmon;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.dhval.dto.LocalServer;
 import org.apache.dhval.dto.TcpProxy;
-import org.apache.dhval.storage.LocalDB;
 import org.apache.dhval.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -18,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
@@ -195,16 +189,9 @@ public class TCPMon extends JFrame {
             exp.printStackTrace();
         }
         EventQueue.invokeLater(() -> {
-            final LocalDB localDB = context.getBean(LocalDB.class);
             TCPMon tcpMon = context.getBean(TCPMon.class);
             tcpMon.setVisible(true);
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    if (localDB != null) localDB.close();
-                }
-            });
-        });
+         });
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
     }
 

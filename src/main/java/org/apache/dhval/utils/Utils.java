@@ -1,7 +1,5 @@
 package org.apache.dhval.utils;
 
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.XPathCompiler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -26,13 +24,7 @@ import java.util.stream.Collectors;
 
 public class Utils {
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
-    private static Processor proc = new Processor(false);
-    private static XPathCompiler xpath = proc.newXPathCompiler();
     private static Pattern patternURL = Pattern.compile("^(http[s]?):\\/\\/([^:\\/]*)([^\\/]*)\\/(.*)$");
-
-    static {
-        xpath.declareNamespace("jnet", "http://www.jnet.state.pa.us/niem/JNET/jnet-core/1");
-    }
 
     public static String printStackTrace(Exception e) {
         StringWriter w = new StringWriter();

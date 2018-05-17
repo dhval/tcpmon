@@ -1,6 +1,5 @@
 package org.apache.dhval.action;
 
-import org.apache.dhval.storage.LocalDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +11,10 @@ public class JFieldDocumentListener implements DocumentListener {
     private static final Logger LOG = LoggerFactory.getLogger(JFieldDocumentListener.class);
     public JTextField textField;
     public String fieldKey;
-    public LocalDB localDB;
 
-    public JFieldDocumentListener(JTextField textField, String fieldKey, LocalDB localDB) {
+    public JFieldDocumentListener(JTextField textField, String fieldKey) {
         this.textField = textField;
         this.fieldKey = fieldKey;
-        this.localDB = localDB;
     }
 
     @Override
@@ -37,6 +34,5 @@ public class JFieldDocumentListener implements DocumentListener {
 
     public void publish() {
         LOG.info(textField.getText());
-        localDB.publish(fieldKey, textField.getText());
     }
 }

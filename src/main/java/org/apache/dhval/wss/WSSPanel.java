@@ -1,7 +1,6 @@
 package org.apache.dhval.wss;
 
 import org.apache.dhval.action.JFieldDocumentListener;
-import org.apache.dhval.storage.LocalDB;
 import org.apache.dhval.utils.JUtils;
 import org.apache.tcpmon.TCPMon;
 import org.slf4j.Logger;
@@ -30,12 +29,9 @@ public class WSSPanel extends JPanel {
    public JComboBox<String> ksAliases;
    public JTextField ksAliasField;
 
-   private LocalDB localDB;
-
-    public WSSPanel(@Autowired JTabbedPane notebook, @Autowired LocalDB localDB) {
+    public WSSPanel(@Autowired JTabbedPane notebook) {
         super(new GridBagLayout());
         this.setLayout(new BorderLayout());
-        this.localDB = localDB;
 
         JPanel jPanel = new JPanel(new GridBagLayout());
         jPanel.setBorder(new TitledBorder("Keystore Configuration"));
@@ -66,9 +62,6 @@ public class WSSPanel extends JPanel {
         jPanel.add(ksAliases, JUtils.createGridElement());
         jPanel.add(ksAliasField = JUtils.jTextField(ksAliases.getItemAt(0), 25, 50), JUtils.createGridEndElement());
 
-        localDB.saveHistory(LocalDB.KEY_STORE_LOCATION, ksLocationField.getText());
-        localDB.saveHistory(LocalDB.KEY_STORE_ALIAS, ksAliasField.getText());
-
         this.add(jPanel);
     }
 
@@ -85,14 +78,9 @@ public class WSSPanel extends JPanel {
                     ksAliases.removeAllItems();
                     list.forEach(item -> ksAliases.addItem(item));
                     ksAliasField.setText(ksAlias);
-                    localDB.saveHistory(LocalDB.KEY_STORE_LOCATION, ksLocation);
-                    localDB.saveHistory(LocalDB.KEY_STORE_ALIAS, ksAlias);
                 });
             }
         });
-        ksLocationField.getDocument().addDocumentListener(
-                new JFieldDocumentListener(ksLocationField, LocalDB.KEY_STORE_LOCATION, localDB)
-        );
         ksAliases.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -100,8 +88,13 @@ public class WSSPanel extends JPanel {
                 ksAliasField.setText(item);
             }
         });
+        /**
         ksAliasField.getDocument().addDocumentListener(
                 new JFieldDocumentListener(ksAliasField, LocalDB.KEY_STORE_ALIAS, localDB)
         );
+        ksLocationField.getDocument().addDocumentListener(
+                new JFieldDocumentListener(ksLocationField, LocalDB.KEY_STORE_LOCATION, localDB)
+        );
+        **/
     }
 }

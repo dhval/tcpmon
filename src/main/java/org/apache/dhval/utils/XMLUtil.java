@@ -78,6 +78,18 @@ public class XMLUtil {
         return doc;
     }
 
+    public static Document createDOMNodeFromText(String content)
+            throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setNamespaceAware(true);
+        javax.xml.parsers.DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
+        Document doc = dBuilder.parse(new InputSource(new StringReader(content)));
+        doc.getDocumentElement().normalize();
+
+        return doc;
+    }
+
     public static void saveDOMNode(Document doc, String file)
             throws ParserConfigurationException, SAXException, IOException, TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -85,6 +97,13 @@ public class XMLUtil {
         DOMSource source = new DOMSource(doc);
         StreamResult result = new StreamResult(new File(file));
         transformer.transform(source, result);
+    }
+
+    public static String nodeToString(Node doc) throws TransformerException {
+        StringWriter writer = new StringWriter();
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+        return writer.toString();
     }
 
     public static NamespaceContext createNamespaceContext() {
@@ -215,6 +234,35 @@ public class XMLUtil {
         } catch (XPathExpressionException e) {
             return false;
         }
+    }
+
+    public static boolean evaluate(String content, String xPath) {
+        try {
+            Node root = XMLUtil.createDOMNodeFromText(content).getFirstChild();
+            NamespaceCache namespaceCache = new NamespaceCache(root.getOwnerDocument(), false);
+            XPathFactory xpathfactory = XPathFactory.newInstance();
+            XPath xpath = xpathfactory.newXPath();
+            xpath.setNamespaceContext(namespaceCache);
+            return evaluate(root, xpath.compile(xPath));
+        } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public static String evaluateNode(String content, String xPath) {
+        try {
+            Node root = XMLUtil.createDOMNodeFromText(content).getFirstChild();
+            NamespaceCache namespaceCache = new NamespaceCache(root.getOwnerDocument(), false);
+            XPathFactory xpathfactory = XPathFactory.newInstance();
+            XPath xpath = xpathfactory.newXPath();
+            xpath.setNamespaceContext(namespaceCache);
+            Node node = (Node) xpath.compile(xPath).evaluate(root, XPathConstants.NODE);
+            return nodeToString(node);
+        } catch (Exception e) {
+           LOG.warn(e.getMessage(), e);
+        }
+        return content;
     }
 
     /**

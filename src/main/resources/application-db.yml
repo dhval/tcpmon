@@ -1,8 +1,0 @@
-spring:
-  profiles: db
-  datasource:
-    url: jdbc:jtds:sqlserver://10.182.70.12/audit_log
-    username: audit_log
-    password: NE6F!$8LKt
-    driverClassName: net.sourceforge.jtds.jdbc.Driver
-    initialize: true

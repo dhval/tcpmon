@@ -10,9 +10,15 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -60,6 +66,22 @@ public class XPathBuilderTest {
         }
 
         new ObjectMapper().writeValue(new File("tmp/out" + ".json"), data);
+
+    }
+
+    @Test
+    public void evaluateBoolean() throws Exception {
+       File file = new File("soap/offender-inquiry-er-doc.xml");
+        //File file = new File("soap/offender-inquiry-01.xml");
+        String content = new String (Files.readAllBytes(file.toPath()), Charset.forName("UTF-8"));
+
+        Boolean bool = XMLUtil.evaluate(content, "//*[local-name()='Body']");
+
+        LOG.info("v-" + bool);
+
+        String result = XMLUtil.evaluateNode(content, "//*[local-name()='Body']/*[1]");
+
+        LOG.info(result);
 
     }
 
