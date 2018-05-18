@@ -24,8 +24,8 @@ public class CompareXMLFilesTest {
 
     @Test
     public void compareTwoFiles() throws Exception {
-        String file1 = "C:\\tmp\\jnetoffenderresults.txt";
-        String file2 = "C:\\Users\\c-dmudawal\\Desktop\\file1.xml";
+        String file1 = "tmp/file1.xml";
+        String file2 = "tmp/file2.xml";
 
         Node root1 = XMLUtil.createDOMNode(file1).getFirstChild();
         Map<String, String> values1 = new LinkedHashMap<>();

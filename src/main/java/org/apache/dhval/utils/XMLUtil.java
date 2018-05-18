@@ -44,8 +44,7 @@ public class XMLUtil {
      * @param document
      * @return
      */
-    public static Document canonicalNS(Document document) {
-        NamespaceCache cache = new NamespaceCache(document, false);
+    public static Document canonicalNS(Document document, NamespaceCache cache) {
         Element root = document.getDocumentElement();
         cache.getPrefix2Uri().entrySet().stream().filter(entry -> !entry.getKey().equals(NamespaceCache.DEFAULT_NS)).forEach(e -> {
             root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + e.getKey(), e.getValue());
@@ -65,6 +64,12 @@ public class XMLUtil {
         }
         return root.getOwnerDocument();
     }
+
+    public static Document canonicalNS(Document document) {
+        NamespaceCache cache = new NamespaceCache(document, false);
+        return canonicalNS(document, cache);
+    }
+
 
     public static Document createDOMNode(String file)
             throws ParserConfigurationException, SAXException, IOException {
@@ -163,7 +168,7 @@ public class XMLUtil {
         String startTag = "<" + tag;
         String endTag = "</" + tag + ">";
 
-        Pattern p = Pattern.compile(startTag + "[\\s\\S]*?" + endTag); // [\s\S]
+        Pattern p = Pattern.compile(startTag + "[\\s\\S]*?" + endTag); // [\s\S] captures multi line
         Matcher m = p.matcher(content);
         int counter  = 1;
         while (m.find()) {
