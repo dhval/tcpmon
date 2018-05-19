@@ -1,6 +1,7 @@
 package org.apache.dhval.wss;
 
 import org.apache.tcpmon.TCPMon;
+import org.apache.ws.security.components.crypto.Merlin;
 import org.apache.wss4j.dom.WSConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,10 +10,9 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 import org.springframework.ws.soap.security.wss4j.support.CryptoFactoryBean;
 import org.apache.ws.security.components.crypto.Crypto;
-import org.apache.ws.security.saml.SAMLIssuerImpl;
 
+import java.security.KeyStore;
 import java.util.Map;
-import org.springframework.core.io.ClassPathResource;
 
 /**
  * https://www.one-tab.com/page/S2c297WjQJmzJbFyE-_6RQ
@@ -40,17 +40,26 @@ public class WSS4JInterceptor {
 
         Wss4jSecurityInterceptor securityInterceptor = new Wss4jSecurityInterceptor();
 
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(new FileSystemResource(map.get("keystore-location")).getInputStream(),
+                map.get("keystore-password").toCharArray());
+        Crypto issuerCrypto = new Merlin();
+        ((Merlin) issuerCrypto).setKeyStore(keyStore);
+
+        /**
         CryptoFactoryBean cryptoFactory = new CryptoFactoryBean();
         cryptoFactory.setKeyStoreLocation(new FileSystemResource(map.get("keystore-location")));
         cryptoFactory.setKeyStorePassword(map.get("keystore-password"));
         cryptoFactory.afterPropertiesSet();
         Crypto crypto = cryptoFactory.getObject();
+         **/
+
         // set security actions: Timestamp Signature SAMLTokenSigned SAMLTokenUnsigned
         securityInterceptor.setSecurementActions(map.get("action"));
         // sign the request
         securityInterceptor.setSecurementUsername(map.get("keystore-alias"));
         securityInterceptor.setSecurementPassword(map.get("keystore-password"));
-        securityInterceptor.setSecurementSignatureCrypto(crypto);
+        securityInterceptor.setSecurementSignatureCrypto(issuerCrypto);
         securityInterceptor.setSecurementSignatureParts(
                 "{Element}{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Timestamp;" +
                         "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body"
