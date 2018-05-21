@@ -9,6 +9,7 @@ import org.apache.dhval.action.SelectTextAction;
 import org.apache.dhval.utils.JUtils;
 import org.apache.dhval.utils.Utils;
 import org.apache.dhval.wss.WSSClient;
+import org.apache.dhval.wss.WSSPanel;
 import org.apache.tcpmon.TCPMon;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -45,6 +46,10 @@ import java.util.stream.Stream;
 public class Sender extends JPanel {
     public static final String SWITCH_LAYOUT = "Switch Layout";
     private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
+
+    @Autowired
+    WSSPanel wssPanel;
+
     public JTextField endpointField = null;
     public JTextField actionField = JUtils.jTextField("", 4, 4);
     public JCheckBox xmlFormatBox = null;
@@ -371,8 +376,24 @@ public class Sender extends JPanel {
                             new AbstractMap.SimpleEntry<>("Content-Type", "text/xml; charset=utf-8"),
                             new AbstractMap.SimpleEntry<>("User-Agent", "TCPMon/2.0")
                     ).collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue()));
-
-                    return WSSClient.post(url, data, headers, selWSS4JProfile);
+                    Map jsonMap = TCPMon.jsonMap;
+                    // Check any WS-Security profile is selected
+                    if (jsonMap != null && jsonMap.containsKey("wss4j-profiles")) {
+                        Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
+                        if (map != null && map.containsKey(selWSS4JProfile)) {
+                            Map<String, String> keyStoreMap = (Map<String, String>) map.get(selWSS4JProfile);
+                            if (!StringUtils.isEmpty(wssPanel.getKeyStoreLocation()))
+                                keyStoreMap.put("keystore-location", wssPanel.getKeyStoreLocation());
+                            if (!StringUtils.isEmpty(wssPanel.getKeyStorePWD()))
+                                keyStoreMap.put("keystore-password", wssPanel.getKeyStorePWD());
+                            if (!StringUtils.isEmpty(wssPanel.getKeyStoreAlias()))
+                                keyStoreMap.put("keystore-alias", wssPanel.getKeyStoreAlias());
+                            LOG.info("WSS-Profile - " + keyStoreMap.toString());
+                            return WSSClient.wssPost(url, data, headers, keyStoreMap);
+                        }
+                    }
+                    // Use vanilla HTTP Post
+                    return WSSClient.httpPost(url, data, headers);
                 } catch (Exception e) {
                     LOG.warn(e.getMessage(), e);
                     return Utils.printStackTrace(e);

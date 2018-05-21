@@ -116,12 +116,4 @@ public class WSS4JInterceptor {
         securityInterceptor.afterPropertiesSet();
         return securityInterceptor;
     }
-
-    private static Map<String, String> getWSS4JProfile(String name) {
-        Map jsonMap = TCPMon.jsonMap;
-        if (jsonMap == null || !jsonMap.containsKey("wss4j-profiles"))
-            return null;
-        Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
-        return (Map<String, String>) map.get(name);
-    }
 }

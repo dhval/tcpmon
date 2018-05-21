@@ -60,7 +60,7 @@
       "action": "Timestamp Signature",
       "keystore-location": "keystore.jks",
       "keystore-password": "changeit",
-      "keystore-alias": "jnet.test"
+      "keystore-alias": "client"
     },
     "SAMLTokenSigned": {
       "name": "SAMLTokenSigned",
@@ -74,8 +74,9 @@
   },
   "KeyStores": [{
     "location": "keystore.jks",
+    "keystore-password": "changeit",
     "aliases": [
-      "jnet.test",
+      "client",
       "lehighcoda.test",
       "allecogts.test",
       "phillygts.test",
@@ -86,6 +87,7 @@
   },
     {
       "location": "mystore.jks",
+      "keystore-password": "changeit",
       "aliases": [
         "client1",
         "lehighcoda1"

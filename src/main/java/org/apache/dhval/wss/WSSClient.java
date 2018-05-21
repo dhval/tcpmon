@@ -30,13 +30,10 @@ public class WSSClient {
     private static final Logger LOG = LoggerFactory.getLogger(WSSClient.class);
 
     public static String post(String url, String data, Map<String, String> headers, String selWSS4JProfile) throws Exception {
-        Map jsonMap = TCPMon.jsonMap;
+        Map<String, String> keyStoreMap = getWSS4JProfile(selWSS4JProfile);
         // Check any WS-Security profile is selected
-        if (jsonMap != null && jsonMap.containsKey("wss4j-profiles")) {
-            Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
-            if (map != null && map.containsKey(selWSS4JProfile)) {
-                return WSSClient.wssPost(url, data, headers, (Map<String, String>) map.get(selWSS4JProfile));
-            }
+        if (keyStoreMap != null) {
+            return WSSClient.wssPost(url, data, headers, keyStoreMap);
         }
         // Use vanilla HTTP Post
         return httpPost(url, data, headers);
@@ -137,6 +134,14 @@ public class WSSClient {
            return  XMLUtil.evaluateNode(srcXML, "//*[local-name()='Body']/*[1]");
        }
        return srcXML;
+    }
+
+    private static Map<String, String> getWSS4JProfile(String selWSS4JProfile) {
+        Map jsonMap = TCPMon.jsonMap;
+        if (jsonMap == null || !jsonMap.containsKey("wss4j-profiles"))
+            return null;
+        Map<String, Object> map = (Map<String, Object>) jsonMap.get("wss4j-profiles");
+        return (Map<String, String>) map.get(selWSS4JProfile);
     }
 
 }
