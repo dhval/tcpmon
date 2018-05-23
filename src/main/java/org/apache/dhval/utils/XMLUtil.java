@@ -14,6 +14,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -93,7 +94,10 @@ public class XMLUtil {
     public static void saveDOMNode(Document doc, String file)
             throws ParserConfigurationException, SAXException, IOException, TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        try {transformerFactory.setAttribute("indent-number", new Integer(1)); } catch (Exception e){}
         Transformer transformer = transformerFactory.newTransformer();
+        try {transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "1"); } catch (Exception e){}
+        transformer.setOutputProperty(OutputKeys.INDENT , "yes");
         DOMSource source = new DOMSource(doc);
         StreamResult result = new StreamResult(new File(file));
         transformer.transform(source, result);
@@ -252,17 +256,21 @@ public class XMLUtil {
 
     public static String evaluateNode(String content, String xPath) {
         try {
-            Node root = XMLUtil.createDOMNodeFromText(content).getFirstChild();
-            NamespaceCache namespaceCache = new NamespaceCache(root.getOwnerDocument(), false);
-            XPathFactory xpathfactory = XPathFactory.newInstance();
-            XPath xpath = xpathfactory.newXPath();
-            xpath.setNamespaceContext(namespaceCache);
-            Node node = (Node) xpath.compile(xPath).evaluate(root, XPathConstants.NODE);
-            return nodeToString(node);
+             return nodeToString(evaluateNodeForNode(content, xPath));
         } catch (Exception e) {
            LOG.warn(e.getMessage(), e);
         }
         return content;
+    }
+
+    public static Node evaluateNodeForNode(String content, String xPath) throws Exception {
+        Node root = XMLUtil.createDOMNodeFromText(content).getFirstChild();
+        NamespaceCache namespaceCache = new NamespaceCache(root.getOwnerDocument(), false);
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        xpath.setNamespaceContext(namespaceCache);
+        Node node = (Node) xpath.compile(xPath).evaluate(root, XPathConstants.NODE);
+        return node;
     }
 
     /**
