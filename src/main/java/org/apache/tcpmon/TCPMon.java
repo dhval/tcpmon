@@ -205,6 +205,7 @@ public class TCPMon extends JFrame {
                 }
             });
         });
+        LOG.info(System.getProperty("java.library.path"));
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
     }
 
