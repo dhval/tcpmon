@@ -1,5 +1,5 @@
-SELECT TOP 10 id, txnID, requestDateTime, userTrackingNumber, queryType
-, LEN(ISNULL(requestData,'')) as request, LEN(ISNULL(responseData,'')) as response
+SELECT TOP 5 id, txnID, requestDateTime, userTrackingNumber, queryType, LEN(ISNULL(requestData,'')) as request
+, CAST(requestData AS XML).query('//*[local-name()="RequestCourtCaseEvent"]//text()[not(local-name()="RequestMetadata")]') as response
  FROM Audit_Log.dbo.TransactionLog
- where userTrackingNumber not like '%healthcheck' and userTrackingNumber not like '%Monitor%' and userTrackingNumber not like 'wm-monitor%'
+ where queryType like 'RequestCourt%'
  order by requestDateTime desc
