@@ -193,6 +193,7 @@ public class TCPMon extends JFrame {
             tcpMon.setVisible(true);
          });
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
+        LOG.info("Build Date: May 22, 2018");
     }
 
     /**
