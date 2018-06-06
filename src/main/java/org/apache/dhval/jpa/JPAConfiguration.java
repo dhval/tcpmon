@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 
@@ -32,8 +33,8 @@ public class JPAConfiguration {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(url);
-        //dataSource.setUsername(username);
-        //dataSource.setPassword(password);
+        if (!StringUtils.isEmpty(username)) dataSource.setUsername(username);
+        if (!StringUtils.isEmpty(password)) dataSource.setPassword(password);
         return dataSource;
     }
 
