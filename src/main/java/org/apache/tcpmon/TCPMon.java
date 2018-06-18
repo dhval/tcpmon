@@ -1,11 +1,13 @@
 package org.apache.tcpmon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.dhval.dto.BuildConfig;
 import org.apache.dhval.dto.LocalServer;
 import org.apache.dhval.dto.TcpProxy;
 import org.apache.dhval.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,14 +37,11 @@ import java.util.ResourceBundle;
 public class TCPMon extends JFrame {
 
     private static final Logger LOG = LoggerFactory.getLogger(TCPMon.class);
-
     public static Map jsonMap;
-
     static {
         System.setProperty("javax.xml.soap.MessageFactory", "com.sun.xml.internal.messaging.saaj.soap.ver1_2.SOAPMessageFactory1_2Impl");
         System.setProperty("javax.xml.bind.JAXBContext", "com.sun.xml.internal.bind.v2.ContextFactory");
-
-
+        System.setProperty("javax.net.debug", "none"); //all, ssl, none
         try {
             jsonMap = new ObjectMapper().readValue(new File("config.json"), Map.class);
         } catch (IOException io) {
@@ -101,8 +100,8 @@ public class TCPMon extends JFrame {
 
     public static ConfigurableApplicationContext context;
 
-    public TCPMon() {
-        super("TCPMon2");
+    public TCPMon(@Autowired BuildConfig buildConfig) {
+        super("TCPMon v" + buildConfig.buildVersion + " Build: " + buildConfig.buildDate);
     }
 
     @PostConstruct
@@ -192,8 +191,8 @@ public class TCPMon extends JFrame {
             TCPMon tcpMon = context.getBean(TCPMon.class);
             tcpMon.setVisible(true);
          });
+        LOG.info("System Path: " + System.getProperty("java.library.path"));
         LOG.info("Current Working Directory: " + System.getProperty("user.dir"));
-        LOG.info("Build Date: May 22, 2018");
     }
 
     /**
