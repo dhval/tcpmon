@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:ns="http://jnet.state.pa.us/message/aopc/CCERequestReply/1" xmlns:ns1="http://www.jnet.state.pa.us/niem/jnet/metadata/1" xmlns:ns2="http://niem.gov/niem/niem-core/2.0" xmlns:ns3="http://niem.gov/niem/domains/jxdm/4.0" xmlns:ns4="http://niem.gov/niem/structures/2.0" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Body>
+		<ns:RequestCourtCaseEvent>
+			<ns1:RequestMetadata>
+				<ns1:UserDefinedTrackingID>oig.test</ns1:UserDefinedTrackingID>
+				<ns1:ReplyToAddressURI>https://igoarsweb-t.pa.lcl/JNET_JEMS/JEMS.svc</ns1:ReplyToAddressURI>
+			</ns1:RequestMetadata>
+			<ns:DocketCriteria>
+				<ns2:CaseDocketID>CP-02-DP-851789-2017</ns2:CaseDocketID>
+			</ns:DocketCriteria>
+		</ns:RequestCourtCaseEvent>
+	</soapenv:Body>
+</soapenv:Envelope>

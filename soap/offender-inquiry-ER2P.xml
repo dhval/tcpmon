@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetOffenderInformation xmlns="http://jnet.state.pa.us/message/jnet/OffenderInquiry/1">
+	  <RequestMetadata xmlns="http://www.jnet.state.pa.us/niem/jnet/metadata/1">
+		    <UserDefinedTrackingID>RIIC_98dd373a-ff76-4e7c-9368-167af942559b</UserDefinedTrackingID>
+		    <RequestDataSourceID>ER-PBPP</RequestDataSourceID>
+		    <RequestUserEntitlement>CH</RequestUserEntitlement>
+		    <RequestAuthenticatedUserID>BrianBranson</RequestAuthenticatedUserID>
+	  </RequestMetadata>
+	  <OffenderSearchCriteria xmlns="http://www.jnet.state.pa.us/niem/JNET/jnet-core/2">
+	     <PersonBirthDate xmlns="http://release.niem.gov/niem/niem-core/3.0/">
+			      <Date>1975-07-14</Date>
+		    </PersonBirthDate>
+		    <PersonName xmlns="http://release.niem.gov/niem/niem-core/3.0/">
+			      <PersonGivenName>test</PersonGivenName>
+			      <PersonSurName>offender</PersonSurName>
+		    </PersonName>
+		    <!--
+		    <nc:PersonSSNIdentification xmlns:nc="http://release.niem.gov/niem/niem-core/3.0/">
+					<nc:IdentificationID>12345678 </nc:IdentificationID>
+			</nc:PersonSSNIdentification>
+			-->
+	  </OffenderSearchCriteria>
+</GetOffenderInformation>

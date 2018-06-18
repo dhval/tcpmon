@@ -1,0 +1,27 @@
+<ns14:GetDriverStatus xmlns:ns1="http://niem.gov/niem/appinfo/2.0"
+    xmlns:ns10="http://www.jnet.state.pa.us/niem/PennDOT/DriverStatus/1"
+    xmlns:ns11="http://www.jnet.state.pa.us/niem/PennDOT/DriverLicensePickupList/1"
+    xmlns:ns12="http://www.jnet.state.pa.us/niem/PennDOT/DriverHistory/1"
+    xmlns:ns13="http://www.jnet.state.pa.us/niem/PennDOT/DriverLicenseLiftOrder/1"
+    xmlns:ns14="http://jnet.state.pa.us/message/PennDOT/Driver"
+    xmlns:ns15="http://jnet.state.pa.us/soap/fault"
+    xmlns:ns2="http://niem.gov/niem/structures/2.0"
+    xmlns:ns3="http://niem.gov/niem/niem-core/2.0"
+    xmlns:ns4="http://niem.gov/niem/domains/jxdm/4.0"
+    xmlns:ns5="http://www.jnet.state.pa.us/niem/PennDOT/DriverExtension/1"
+    xmlns:ns6="http://www.jnet.state.pa.us/niem/jnet/metadata/1"
+    xmlns:ns7="http://www.jnet.state.pa.us/niem/PennDOT/DriverLicenseProductSeized/1"
+    xmlns:ns8="http://www.jnet.state.pa.us/niem/PennDOT/DriverCriteria/1"
+    xmlns:ns9="http://www.jnet.state.pa.us/niem/PennDOT/DriverLicensePickupListCriteria/1">
+    <ns6:RequestMetadata>
+        <ns6:UserDefinedTrackingID>de108dae-bcdc-4bd8-af16-e798acc723e6</ns6:UserDefinedTrackingID>
+        <ns6:RequestAttentionName>Vanita.Sponsor30</ns6:RequestAttentionName>
+        <ns6:RequestAuthenticatedUserID>Vanita.Sponsor30</ns6:RequestAuthenticatedUserID>
+    </ns6:RequestMetadata>
+    <ns8:DriverCriteria>
+        <DriverLicenseIdentification xmlns="http://niem.gov/niem/niem-core/2.0">
+            <IdentificationID>24475824</IdentificationID>
+        </DriverLicenseIdentification>
+        <DriverPhotoIndicator xmlns="http://www.jnet.state.pa.us/niem/PennDOT/DriverExtension/1">true</DriverPhotoIndicator>
+    </ns8:DriverCriteria>
+</ns14:GetDriverStatus>

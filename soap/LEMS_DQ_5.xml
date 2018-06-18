@@ -1,0 +1,28 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <m1:SendLEMSRequest xmlns:m1="http://jnet.state.pa.us/message/jnet/LEMSRequestProxy/1">
+      <jnet-m:RequestMetadata xmlns:jnet-m="http://www.jnet.state.pa.us/niem/jnet/metadata/1">
+        <jnet-m:UserDefinedTrackingID>DI11325022</jnet-m:UserDefinedTrackingID>
+        <jnet-m:RequestAgencyORIID>PA022035Y</jnet-m:RequestAgencyORIID>
+        <jnet-m:RequestAttentionName>testuser, vnelluri</jnet-m:RequestAttentionName>
+        <jnet-m:RequestOperatorNameInitialsText>VT</jnet-m:RequestOperatorNameInitialsText>
+        <jnet-m:RequestPurposeCode>C</jnet-m:RequestPurposeCode>
+        <jnet-m:RequestReasonText>Traffic Stop</jnet-m:RequestReasonText>
+        <jnet-m:RequestUserID>H02293184</jnet-m:RequestUserID>
+        <jnet-m:RequestDataSourceID>DQ</jnet-m:RequestDataSourceID>
+        <jnet-m:RequestDestinationID>MD</jnet-m:RequestDestinationID>
+      </jnet-m:RequestMetadata>
+      <jc:PersonSearchCriteria xmlns:jc="http://www.jnet.state.pa.us/niem/JNET/jnet-core/1">
+      <!--
+        <nc:PersonName xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:s="http://niem.gov/niem/structures/2.0">
+          <nc:PersonGivenName>NATASHA</nc:PersonGivenName>
+        </nc:PersonName>
+        -->
+        <nc:DriverLicenseIdentification xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:s="http://niem.gov/niem/structures/2.0">
+          <nc:IdentificationID>D000429000361</nc:IdentificationID>
+          <nc:IdentificationJurisdictionText>MD</nc:IdentificationJurisdictionText>
+        </nc:DriverLicenseIdentification>
+      </jc:PersonSearchCriteria>
+    </m1:SendLEMSRequest>
+  </soapenv:Body>
+</soapenv:Envelope>

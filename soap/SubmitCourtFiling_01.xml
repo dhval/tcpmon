@@ -1,0 +1,185 @@
+<SubmitCourtFiling xmlns="http://jnet.state.pa.us/message/aopc/CourtFiling/1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<RequestMetadata xmlns="http://www.jnet.state.pa.us/niem/jnet/metadata/1">
+		<UserDefinedTrackingID>43-2-02_E0000012-5_041818085625</UserDefinedTrackingID>
+		<ReplyToAddressURI>https://www.tocite.net/Services/CloudPAService.svc</ReplyToAddressURI>
+		<RequestActionText>http://jnet.state.pa.us/jxdm/aopc/CourtFiling/Submit</RequestActionText>
+	</RequestMetadata>
+	<CourtFiling xmlns="http://jnet.state.pa.us/jxdm/aopc">
+		<TrafficCitation>
+			<ActivityID xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ID>E0000012-5</ID>
+				<IDTypeText>Parking - Copy Attached</IDTypeText>
+			</ActivityID>
+			<ActivityTypeText xmlns="http://www.it.ojp.gov/jxdm/3.0">Parking - Copy Attached</ActivityTypeText>
+			<ActivityCompletedIndicator xmlns="http://www.it.ojp.gov/jxdm/3.0">false</ActivityCompletedIndicator>
+			<ActivityStatus xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<StatusText>FILED</StatusText>
+				<StatusDate>2018-04-18</StatusDate>
+				<StatusTime>08:44:00.0000000-04:00</StatusTime>
+			</ActivityStatus>
+			<ActivityCourt xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<OrganizationLocation>
+					<LocationAddress>
+						<LocationStreet>
+							<StreetFullText>98 Day Street</StreetFullText>
+						</LocationStreet>
+						<LocationCityName>East Stroudsburg</LocationCityName>
+						<LocationCountyName>Monroe</LocationCountyName>
+						<LocationPostalCodeID>
+							<ID>18301</ID>
+						</LocationPostalCodeID>
+					</LocationAddress>
+				</OrganizationLocation>
+				<PrimaryContactInformation>
+					<ContactTelephoneNumber>
+						<TelephoneNumberFullID>5704203496</TelephoneNumberFullID>
+						<TelephoneNumberCommentText>BUSINESS</TelephoneNumberCommentText>
+					</ContactTelephoneNumber>
+				</PrimaryContactInformation>
+				<OrganizationJurisdiction>
+					<JurisdictionID>
+						<ID>43-2-02</ID>
+					</JurisdictionID>
+				</OrganizationJurisdiction>
+			</ActivityCourt>
+			<CitationIssuingOfficial xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<PersonName>
+					<PersonFullName>Marv Walton</PersonFullName>
+				</PersonName>
+				<PersonAssignedIDDetails>
+					<PersonHumanResourcesID>
+						<ID>8319</ID>
+					</PersonHumanResourcesID>
+				</PersonAssignedIDDetails>
+				<EnforcementOfficialUnit>
+					<OrganizationName>East Stroudsburg Borough PA</OrganizationName>
+					<OrganizationORIID>
+						<ID>PA04501VS</ID>
+					</OrganizationORIID>
+					<PrimaryContactInformation>
+						<ContactTelephoneNumber>
+							<TelephoneNumberFullID>5704218300</TelephoneNumberFullID>
+							<TelephoneNumberCommentText/>
+						</ContactTelephoneNumber>
+					</PrimaryContactInformation>
+				</EnforcementOfficialUnit>
+			</CitationIssuingOfficial>
+			<CitationViolation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ActivityDate>2018-04-18</ActivityDate>
+				<ActivityTime>07:57:00.0000000-04:00</ActivityTime>
+				<ActivityCommentText>TICKET # testcitation6.</ActivityCommentText>
+				<IncidentViolatedStatute xmlns:q1="http://jnet.state.pa.us/jxdm/aopc" xsi:type="q1:StatuteType">
+					<StatuteCodeID>
+						<ID>LO</ID>
+					</StatuteCodeID>
+					<StatuteCodeSectionID>
+						<ID>150</ID>
+					</StatuteCodeSectionID>
+					<StatuteOffenseID>
+						<ID>26.C</ID>
+					</StatuteOffenseID>
+					<StatuteTypeText>PARKING AUTHORITY</StatuteTypeText>
+					<StatuteDescriptionText>Special Purpose Parking Zones</StatuteDescriptionText>
+				</IncidentViolatedStatute>
+				<IncidentCategory>
+					<IncidentLevelText>S</IncidentLevelText>
+					<IncidentMinorInvolvedIndicator>false</IncidentMinorInvolvedIndicator>
+				</IncidentCategory>
+				<IncidentResponse>
+					<IncidentObservationText>Vehicle Was Parked In A Special Purpose Parking Zone Outside of The Times Authorized by Schedule XIX</IncidentObservationText>
+				</IncidentResponse>
+				<IncidentSubject>
+					<PersonName>
+						<PersonGivenName>Test</PersonGivenName>
+						<PersonMiddleName>Test</PersonMiddleName>
+						<PersonSurName>Test</PersonSurName>
+					</PersonName>
+					<Residence>
+						<LocationAddress>
+							<LocationStreet>
+								<StreetFullText>123 Test St</StreetFullText>
+							</LocationStreet>
+							<LocationCityName>East Stroudsburg</LocationCityName>
+							<LocationStateCode.USPostalService>PA</LocationStateCode.USPostalService>
+							<LocationPostalCodeID>
+								<ID>11111</ID>
+							</LocationPostalCodeID>
+						</LocationAddress>
+					</Residence>
+				</IncidentSubject>
+				<IncidentLocation>
+					<LocationDescriptionText>Analomink Street</LocationDescriptionText>
+					<LocationAddress>
+						<LocationCityName>East Stroudsburg Borough</LocationCityName>
+						<LocationCountyName>Monroe</LocationCountyName>
+						<AddressOther>
+							<AddressComponentText>402</AddressComponentText>
+							<AddressComponentDescriptionText>City Code</AddressComponentDescriptionText>
+						</AddressOther>
+						<AddressOther>
+							<AddressComponentText>45</AddressComponentText>
+							<AddressComponentDescriptionText>County Code</AddressComponentDescriptionText>
+						</AddressOther>
+					</LocationAddress>
+				</IncidentLocation>
+				<IncidentEvent>
+					<EventDescriptionText>Wednesday</EventDescriptionText>
+				</IncidentEvent>
+			</CitationViolation>
+			<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ObligationTypeText>Fine</ObligationTypeText>
+				<FinancialObligationTotalAmount>75</FinancialObligationTotalAmount>
+			</FinancialObligation>
+			<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ObligationTypeText>EMS</ObligationTypeText>
+				<FinancialObligationTotalAmount>0</FinancialObligationTotalAmount>
+			</FinancialObligation>
+			<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ObligationTypeText>SURCHARGE</ObligationTypeText>
+				<FinancialObligationTotalAmount>0</FinancialObligationTotalAmount>
+			</FinancialObligation>
+			<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ObligationTypeText>Costs</ObligationTypeText>
+				<FinancialObligationTotalAmount>39.5</FinancialObligationTotalAmount>
+			</FinancialObligation>
+			<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ObligationTypeText>JCP-ATJ</ObligationTypeText>
+				<FinancialObligationTotalAmount>22</FinancialObligationTotalAmount>
+			</FinancialObligation>
+			<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+				<ObligationTypeText>TOTAL DUE</ObligationTypeText>
+				<FinancialObligationTotalAmount>136.5</FinancialObligationTotalAmount>
+			</FinancialObligation>
+			<Vehicle>
+				<PropertyOwner.Person xmlns="http://www.it.ojp.gov/jxdm/3.0">
+					<PersonName>
+						<PersonGivenName>Test</PersonGivenName>
+						<PersonMiddleName>Test</PersonMiddleName>
+						<PersonSurName>Test</PersonSurName>
+					</PersonName>
+					<Residence>
+						<LocationAddress>
+							<LocationStreet>
+								<StreetFullText>123 Test St</StreetFullText>
+							</LocationStreet>
+							<LocationCityName>East Stroudsburg</LocationCityName>
+							<LocationStateCode.USPostalService>PA</LocationStateCode.USPostalService>
+							<LocationPostalCodeID>
+								<ID>11111</ID>
+							</LocationPostalCodeID>
+						</LocationAddress>
+					</Residence>
+				</PropertyOwner.Person>
+				<VehicleRegistration xmlns="http://www.it.ojp.gov/jxdm/3.0">
+					<RegistrationJurisdictionCode.ncicLIS>PA</RegistrationJurisdictionCode.ncicLIS>
+					<VehicleRegistrationPlateID>
+						<ID>123test</ID>
+					</VehicleRegistrationPlateID>
+				</VehicleRegistration>
+				<VehicleMakeCode xmlns="http://www.it.ojp.gov/jxdm/3.0">ACUR</VehicleMakeCode>
+				<VehicleColorPrimaryCode xmlns="http://www.it.ojp.gov/jxdm/3.0">GLD</VehicleColorPrimaryCode>
+				<VehicleStyleCode>4D</VehicleStyleCode>
+			</Vehicle>
+		</TrafficCitation>
+	</CourtFiling>
+</SubmitCourtFiling>
