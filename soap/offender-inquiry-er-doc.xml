@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:jnet-m="http://www.jnet.state.pa.us/niem/jnet/metadata/1"
+                   xmlns:jc2="http://www.jnet.state.pa.us/niem/JNET/jnet-core/2"
+                   xmlns:nc="http://release.niem.gov/niem/niem-core/3.0/">
+	  <SOAP-ENV:Body>
+		    <m:GetOffenderInformation xmlns:m="http://jnet.state.pa.us/message/jnet/OffenderInquiry/1">
+			      <jnet-m:RequestMetadata>
+				        <jnet-m:UserDefinedTrackingID>d175cfe0-779c-4acb-a744-72f644002e08</jnet-m:UserDefinedTrackingID>
+				        <jnet-m:RequestDataSourceID>ER-DOC</jnet-m:RequestDataSourceID>
+				        <jnet-m:RequestAuthenticatedUserID>test.user</jnet-m:RequestAuthenticatedUserID>
+				        <jnet-m:RequestUserEntitlement>CH</jnet-m:RequestUserEntitlement>
+			      </jnet-m:RequestMetadata>
+			      <jc2:OffenderSearchCriteria>
+				        <nc:PersonBirthDate>
+					          <nc:Date>1972-03-24</nc:Date>
+				        </nc:PersonBirthDate>
+				        <nc:PersonName>
+					          <nc:PersonGivenName>Kawliga</nc:PersonGivenName>
+					          <nc:PersonSurName>Davies</nc:PersonSurName>
+				        </nc:PersonName>
+			      </jc2:OffenderSearchCriteria>
+		    </m:GetOffenderInformation>
+	  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

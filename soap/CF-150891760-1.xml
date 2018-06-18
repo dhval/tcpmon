@@ -1,0 +1,216 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<soap:Body>
+		<SubmitCourtFiling xmlns="http://jnet.state.pa.us/message/aopc/CourtFiling/1">
+			<RequestMetadata xmlns="http://www.jnet.state.pa.us/niem/jnet/metadata/1">
+				<UserDefinedTrackingID>38-1-04_E0000010-3_050818092628</UserDefinedTrackingID>
+				<ReplyToAddressURI>https://www.tocitestaging.net/Services/CloudPAService.svc</ReplyToAddressURI>
+				<RequestActionText>http://jnet.state.pa.us/jxdm/aopc/CourtFiling/Submit</RequestActionText>
+			</RequestMetadata>
+			<CourtFiling xmlns="http://jnet.state.pa.us/jxdm/aopc">
+				<TrafficCitation>
+					<ActivityID xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ID>E0000010-3</ID>
+						<IDTypeText>Issued - Copy Not Attached</IDTypeText>
+					</ActivityID>
+					<ActivityTypeText xmlns="http://www.it.ojp.gov/jxdm/3.0">Issued - Copy Not Attached</ActivityTypeText>
+					<ActivityCompletedIndicator xmlns="http://www.it.ojp.gov/jxdm/3.0">false</ActivityCompletedIndicator>
+					<ActivityStatus xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<StatusText>Issued</StatusText>
+						<StatusDate>2018-05-08</StatusDate>
+						<StatusTime>09:26:00.0000000+00:00</StatusTime>
+					</ActivityStatus>
+					<ActivityCourt xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<OrganizationLocation>
+							<LocationAddress>
+								<LocationStreet>
+									<StreetFullText>1150 Old York Road</StreetFullText>
+								</LocationStreet>
+								<LocationCityName>Abington</LocationCityName>
+								<LocationCountyName>Montgomery</LocationCountyName>
+								<LocationPostalCodeID>
+									<ID>19001</ID>
+								</LocationPostalCodeID>
+							</LocationAddress>
+						</OrganizationLocation>
+						<PrimaryContactInformation>
+							<ContactTelephoneNumber>
+								<TelephoneNumberFullID>2158872362</TelephoneNumberFullID>
+								<TelephoneNumberCommentText>BUSINESS</TelephoneNumberCommentText>
+							</ContactTelephoneNumber>
+						</PrimaryContactInformation>
+						<OrganizationJurisdiction>
+							<JurisdictionID>
+								<ID>38-1-04</ID>
+							</JurisdictionID>
+						</OrganizationJurisdiction>
+					</ActivityCourt>
+					<ActivityPreviousIncident xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ActivityID>
+							<ID/>
+						</ActivityID>
+					</ActivityPreviousIncident>
+					<CitationIssuingOfficial xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<PersonName>
+							<PersonFullName>JAKE BEEBE</PersonFullName>
+						</PersonName>
+						<PersonAssignedIDDetails>
+							<PersonHumanResourcesID>
+								<ID>66771111</ID>
+							</PersonHumanResourcesID>
+						</PersonAssignedIDDetails>
+						<EnforcementOfficialUnit>
+							<OrganizationName>CSI Technology Group</OrganizationName>
+							<OrganizationORIID>
+								<ID>CSI123ORI</ID>
+							</OrganizationORIID>
+							<PrimaryContactInformation>
+								<ContactTelephoneNumber>
+									<TelephoneNumberFullID>1234567890</TelephoneNumberFullID>
+									<TelephoneNumberCommentText/>
+								</ContactTelephoneNumber>
+							</PrimaryContactInformation>
+							<EnforcementUnitBeatID>
+								<ID>47</ID>
+							</EnforcementUnitBeatID>
+						</EnforcementOfficialUnit>
+					</CitationIssuingOfficial>
+					<CitationViolation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ActivityID>
+							<ID>2017-014828</ID>
+							<IDTypeText>Accident Number</IDTypeText>
+						</ActivityID>
+						<ActivityDate>2018-05-08</ActivityDate>
+						<ActivityTime>09:26:00.0000000+00:00</ActivityTime>
+						<IncidentViolatedStatute xmlns:q1="http://jnet.state.pa.us/jxdm/aopc" xsi:type="q1:StatuteType">
+							<StatuteCodeID>
+								<ID>75</ID>
+							</StatuteCodeID>
+							<StatuteCodeSectionID>
+								<ID>1103</ID>
+							</StatuteCodeSectionID>
+							<StatuteOffenseID>
+								<ID>D</ID>
+							</StatuteOffenseID>
+							<StatuteTypeText>STATE STATUTE</StatuteTypeText>
+							<StatuteDescriptionText>Past 10 Day Limit</StatuteDescriptionText>
+						</IncidentViolatedStatute>
+						<IncidentCategory>
+							<IncidentLevelText>S</IncidentLevelText>
+							<IncidentMinorInvolvedIndicator>false</IncidentMinorInvolvedIndicator>
+						</IncidentCategory>
+						<IncidentResponse/>
+						<IncidentSubject>
+							<PersonName>
+								<PersonGivenName>NADINE</PersonGivenName>
+								<PersonMiddleName>D</PersonMiddleName>
+								<PersonSurName>KRUGER</PersonSurName>
+								<PersonSuffixName/>
+							</PersonName>
+							<Residence>
+								<LocationAddress>
+									<LocationStreet>
+										<StreetFullText>555 RED LION RD</StreetFullText>
+									</LocationStreet>
+									<LocationCityName>LMOR</LocationCityName>
+									<LocationStateCode.USPostalService>PA</LocationStateCode.USPostalService>
+									<LocationPostalCodeID>
+										<ID>19021</ID>
+									</LocationPostalCodeID>
+								</LocationAddress>
+							</Residence>
+							<PersonBirthDate>1961-08-25</PersonBirthDate>
+							<PersonAssignedIDDetails>
+								<PersonDriverLicenseID>
+									<ID>123453212</ID>
+									<IDExpirationDate>2017-11-30</IDExpirationDate>
+									<DrivingJurisdictionAuthorityCode>AK</DrivingJurisdictionAuthorityCode>
+								</PersonDriverLicenseID>
+							</PersonAssignedIDDetails>
+							<PersonPhysicalDetails>
+								<PersonSexCode>F</PersonSexCode>
+							</PersonPhysicalDetails>
+						</IncidentSubject>
+						<IncidentLocation>
+							<LocationDescriptionText>test other</LocationDescriptionText>
+							<LocationAddress>
+								<LocationCityName>Abington Township</LocationCityName>
+								<LocationCountyName>Montgomery</LocationCountyName>
+								<AddressOther>
+									<AddressComponentText>101</AddressComponentText>
+									<AddressComponentDescriptionText>City Code</AddressComponentDescriptionText>
+								</AddressOther>
+								<AddressOther>
+									<AddressComponentText>46</AddressComponentText>
+									<AddressComponentDescriptionText>County Code</AddressComponentDescriptionText>
+								</AddressOther>
+							</LocationAddress>
+						</IncidentLocation>
+						<IncidentEvent>
+							<EventDescriptionText>Tuesday</EventDescriptionText>
+						</IncidentEvent>
+					</CitationViolation>
+					<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ObligationTypeText>Fine</ObligationTypeText>
+						<FinancialObligationTotalAmount>50.00</FinancialObligationTotalAmount>
+					</FinancialObligation>
+					<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ObligationTypeText>EMS</ObligationTypeText>
+						<FinancialObligationTotalAmount>10.00</FinancialObligationTotalAmount>
+					</FinancialObligation>
+					<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ObligationTypeText>SURCHARGE</ObligationTypeText>
+						<FinancialObligationTotalAmount>45.00</FinancialObligationTotalAmount>
+					</FinancialObligation>
+					<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ObligationTypeText>Costs</ObligationTypeText>
+						<FinancialObligationTotalAmount>39.00</FinancialObligationTotalAmount>
+					</FinancialObligation>
+					<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ObligationTypeText>JCP-ATJ</ObligationTypeText>
+						<FinancialObligationTotalAmount>10.00</FinancialObligationTotalAmount>
+					</FinancialObligation>
+					<FinancialObligation xmlns="http://www.it.ojp.gov/jxdm/3.0">
+						<ObligationTypeText>TOTAL DUE</ObligationTypeText>
+						<FinancialObligationTotalAmount>154.00</FinancialObligationTotalAmount>
+					</FinancialObligation>
+					<Vehicle>
+						<PropertyOwner.Person xmlns="http://www.it.ojp.gov/jxdm/3.0">
+							<PersonName>
+								<PersonGivenName>NADINE</PersonGivenName>
+								<PersonMiddleName>D</PersonMiddleName>
+								<PersonSurName>KRUGER</PersonSurName>
+							</PersonName>
+							<Residence>
+								<LocationAddress>
+									<LocationStreet>
+										<StreetFullText>555 RED LION RD</StreetFullText>
+									</LocationStreet>
+									<LocationCityName>LMOR</LocationCityName>
+									<LocationStateCode.USPostalService>PA</LocationStateCode.USPostalService>
+									<LocationPostalCodeID>
+										<ID>19021</ID>
+									</LocationPostalCodeID>
+								</LocationAddress>
+							</Residence>
+						</PropertyOwner.Person>
+						<VehicleRegistration xmlns="http://www.it.ojp.gov/jxdm/3.0">
+							<RegistrationJurisdictionCode.ncicLIS>PA</RegistrationJurisdictionCode.ncicLIS>
+							<VehicleRegistrationPlateID>
+								<ID>JYF9586</ID>
+							</VehicleRegistrationPlateID>
+							<VehicleRegistrationDecal>
+								<DecalYearDate>2018</DecalYearDate>
+							</VehicleRegistrationDecal>
+						</VehicleRegistration>
+					</Vehicle>
+					<DrivingIncident xmlns="http://www.it.ojp.gov/jxdm/3.0" xmlns:q2="http://jnet.state.pa.us/jxdm/aopc" xsi:type="q2:DrivingIncidentType">
+						<DrivingIncidentWeatherDescriptionText>NO ADVERSE CONDITIONS</DrivingIncidentWeatherDescriptionText>
+					</DrivingIncident>
+					<SpeedDetectionDetails>
+						<SpeedDetectionDevice/>
+					</SpeedDetectionDetails>
+				</TrafficCitation>
+			</CourtFiling>
+		</SubmitCourtFiling>
+	</soap:Body>
+</soap:Envelope>

@@ -34,7 +34,9 @@
     "Offender-CDWS": "http://10.182.70.250:50180/CorrectionsInquiryDoc",
     "Offender-New": "http://10.182.70.250:50175/JNETInquiry/OffenderInquiry/1",
     "Offender-Old": "http://10.182.70.250:50061/JNETInquiry/OffenderInquiry",
-    "Offender-Beta": "https://ws.jnet.beta.pa.gov/JNETInquiry/OffenderInquiry/1"
+    "Offender-Beta": "https://ws.jnet.beta.pa.gov/JNETInquiry/OffenderInquiry/1",
+    "Local-JEMS-Subscriber": "http://10.182.70.250:50051/EventMessageConsumer/1",
+    "Local-EventMessageConsumer": "https://localhost:8443/EventMessageConsumer/"
   },
   "hosts": {
     "Beta": "ws.jnet.beta.pa.gov",
@@ -81,7 +83,8 @@
       "phillygts.test",
       "phillycf.test",
       "dauphincogts.test",
-      "perrygts.test"
+      "perrygts.test",
+      "doccaptor.testwebservice"
     ]
   },
     {

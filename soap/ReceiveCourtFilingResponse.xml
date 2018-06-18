@@ -1,0 +1,45 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+	<SOAP-ENV:Body>
+		<m:ReceiveCourtFilingResponse xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ansi="http://www.it.ojp.gov/jxdm/ansi_d20/1.0" xmlns:aopc="http://jnet.state.pa.us/jxdm/aopc" xmlns:aopc-doc="http://us.pacourts.us/niem/aopc/CourtFiling/1" xmlns:aopc-ext="http://us.pacourts.us/niem/aopc/Extension/2" xmlns:j="http://www.it.ojp.gov/jxdm/3.0" xmlns:j4="http://niem.gov/niem/domains/jxdm/4.0" xmlns:jnet="http://www.jnet.state.pa.us/niem/JNET/jnet-core/1" xmlns:jnet-m="http://www.jnet.state.pa.us/niem/jnet/metadata/1" xmlns:m="http://jnet.state.pa.us/message/aopc/CourtFiling/1" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:ncic="http://www.it.ojp.gov/jxdm/ncic_2000/1.0" xmlns:nibrs="http://www.it.ojp.gov/jxdm/nibrs_misc/1.0" xmlns:ref="http://jnet.state.pa.us/jxdm/aopc/wsa-ref" xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:usps="http://www.it.ojp.gov/jxdm/usps_states/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<jnet-m:ResponseMetadata>
+				<jnet-m:UserDefinedTrackingID>_E0070383-5_061418100003</jnet-m:UserDefinedTrackingID>
+				<jnet-m:ResponseActionText>http://jnet.state.pa.us/jxdm/aopc/CourtFilingResponse/Rejected</jnet-m:ResponseActionText>
+			</jnet-m:ResponseMetadata>
+			<ref:AOPCFault>
+				<ref:Code>aopc:E30001</ref:Code>
+				<ref:Severity>aopc:error</ref:Severity>
+				<ref:Reason>
+					<ref:Text>XML Handler found: [Error] :92:16: cvc-complex-type.2.4.a: Invalid content was found starting with element 'AddressOther'. One of '{&quot;http://www.it.ojp.gov/jxdm/3.0&quot;:LocationStreet, &quot;http://www.it.ojp.gov/jxdm/3.0&quot;:LocationSecondaryUnitText, &quot;http://www.it.ojp.gov/jxdm/3.0&quot;:LocationCityName, &quot;http://www.it.ojp.gov/jxdm/3.0&quot;:LocationCountyName}' is expected.</ref:Text>
+				</ref:Reason>
+			</ref:AOPCFault>
+			<ref:AOPCFault>
+				<ref:Code>aopc:E30001</ref:Code>
+				<ref:Severity>aopc:error</ref:Severity>
+				<ref:Reason>
+					<ref:Text>XML Handler found: [Error] :92:16: cvc-complex-type.2.4.b: The content of element 'AddressOther' is not complete. One of '{&quot;http://www.it.ojp.gov/jxdm/3.0&quot;:AddressComponentText}' is expected.</ref:Text>
+				</ref:Reason>
+			</ref:AOPCFault>
+			<ref:AOPCFault>
+				<ref:Code>aopc:E30001</ref:Code>
+				<ref:Severity>aopc:error</ref:Severity>
+				<ref:Reason>
+					<ref:Text>XML Handler found: [Error] :93:16: cvc-complex-type.2.4.b: The content of element 'AddressOther' is not complete. One of '{&quot;http://www.it.ojp.gov/jxdm/3.0&quot;:AddressComponentText}' is expected.</ref:Text>
+				</ref:Reason>
+			</ref:AOPCFault>
+			<Fault>
+				<Code>
+					<Value>Receiver</Value>
+					<Subcode>
+						<Value>aopc:error</Value>
+						<Subcode>
+							<Value>aopc:E30001</Value>
+						</Subcode>
+					</Subcode>
+				</Code>
+				<Reason>
+					<Text xml:lang="en">XML Handler found: [Error] :93:16: cvc-complex-type.2.4.b: The content of element 'AddressOther' is not complete. One of '{&quot;http://www.it.ojp.gov/jxdm/3.0&quot;:AddressComponentText}' is expected.</Text>
+				</Reason>
+			</Fault>
+		</m:ReceiveCourtFilingResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

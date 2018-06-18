@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<m:GetOffenderInformation xmlns:m="http://jnet.state.pa.us/message/jnet/OffenderInquiry/1">
+   <jnet-m:RequestMetadata xmlns:jnet-m="http://www.jnet.state.pa.us/niem/jnet/metadata/1">
+      <jnet-m:UserDefinedTrackingID>11LTbRkGTNL4Q9cv2fvhGVCnLMMLhTXQGkZhd1vc1wHfJ9flmRCC!-12251559!1527882982639</jnet-m:UserDefinedTrackingID>
+      <jnet-m:RequestDataSourceID>STATE-DOC</jnet-m:RequestDataSourceID>
+      <jnet-m:RequestAuthenticatedUserID>Kumar, Naveen</jnet-m:RequestAuthenticatedUserID>
+      <jnet-m:RequestUserEntitlement>CJ</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>DOTDLPhotos</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>DOTPolPkups</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>passwordsettrue</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>cquestionssettrue</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>UserAgreementTrue</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>jnetPinTrue</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>lmspassed</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>MCAdm</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>ODIN1</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>ChallengeResponse</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>AutoRegApproved</jnet-m:RequestUserEntitlement>
+      <jnet-m:RequestUserEntitlement>authenticated</jnet-m:RequestUserEntitlement>
+   </jnet-m:RequestMetadata>
+   <jc2:OffenderSearchCriteria xmlns:jc2="http://www.jnet.state.pa.us/niem/JNET/jnet-core/2">
+      <j:PersonStateFingerprintIdentification xmlns:structures="http://release.niem.gov/niem/structures/3.0/"
+                                              xmlns:j="http://release.niem.gov/niem/domains/jxdm/5.0/">
+         <nc:IdentificationID xmlns:nc="http://release.niem.gov/niem/niem-core/3.0/">12280785</nc:IdentificationID>
+      </j:PersonStateFingerprintIdentification>
+   </jc2:OffenderSearchCriteria>
+</m:GetOffenderInformation>

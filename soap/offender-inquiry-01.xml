@@ -1,0 +1,25 @@
+<m:GetOffenderInformation xmlns:m="http://jnet.state.pa.us/message/jnet/OffenderInquiry/1">
+	<jnet-m:RequestMetadata xmlns:jnet-m="http://www.jnet.state.pa.us/niem/jnet/metadata/1">
+		<jnet-m:UserDefinedTrackingID>test12345678user</jnet-m:UserDefinedTrackingID>
+		<!--
+            <jnet-m:RequestDataSourceID>ER-PBPP</jnet-m:RequestDataSourceID><jnet-m:RequestDataSourceID>ER-DOC</jnet-m:RequestDataSourceID><jnet-m:RequestDataSourceID>STATE-DOC</jnet-m:RequestDataSourceID>-->
+		<jnet-m:RequestDataSourceID>STATE-PBPP</jnet-m:RequestDataSourceID>
+		<jnet-m:RequestUserEntitlement>CH</jnet-m:RequestUserEntitlement>
+	</jnet-m:RequestMetadata>
+	<jc2:OffenderSearchCriteria xmlns:jc2="http://www.jnet.state.pa.us/niem/JNET/jnet-core/2">
+		<!--
+            <nc:PersonBirthDate xmlns:nc="http://release.niem.gov/niem/niem-core/3.0/"><nc:Date>1961-04-27</nc:Date></nc:PersonBirthDate>
+            <nc:PersonName xmlns:nc="http://release.niem.gov/niem/niem-core/3.0/"><nc:PersonGivenName>john</nc:PersonGivenName><nc:PersonSurName>smith</nc:PersonSurName></nc:PersonName>-->
+		<!--
+             <ActivityDateRange xmlns="http://release.niem.gov/niem/niem-core/3.0/"/>-->
+		<PersonBirthDate xmlns="http://release.niem.gov/niem/niem-core/3.0/">
+			<Date>1961-04-27</Date>
+		</PersonBirthDate>
+		<PersonName xmlns="http://release.niem.gov/niem/niem-core/3.0/">
+			<PersonGivenName>john</PersonGivenName>
+			<PersonSurName>smith</PersonSurName>
+		</PersonName>
+		<!--
+            <ChargeTrackingIdentification xmlns="http://release.niem.gov/niem/domains/jxdm/5.0/"/><PersonFBIIdentification xmlns="http://release.niem.gov/niem/domains/jxdm/5.0/"/>-->
+	</jc2:OffenderSearchCriteria>
+</m:GetOffenderInformation>

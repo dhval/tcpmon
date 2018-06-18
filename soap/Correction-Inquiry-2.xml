@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"
+			xmlns:a="http://www.w3.org/2005/08/addressing"
+			xmlns:doc-ext="http://cor.pa.gov/extension"
+			xmlns:j="http://release.niem.gov/niem/domains/jxdm/5.1/"
+			xmlns:nc="http://release.niem.gov/niem/niem-core/3.0/"
+			xmlns:ns1="http://tempuri.org/"
+			xmlns:o="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+			xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+	<s:Header>
+		<a:Action s:mustUnderstand="1">http://tempuri.org/IInmOffParoleSearch/GetPBPPOffenderDetails</a:Action>
+		<a:MessageID>urn:uuid:1afd0e39-83fb-4f84-8f39-5c6bfe529128</a:MessageID>
+		<a:ReplyTo>
+			<a:Address>http://www.w3.org/2005/08/addressing/anonymous</a:Address>
+		</a:ReplyTo>
+		<a:To s:mustUnderstand="1">https://crtec0089176.cr.lcl/CDWSRequestReply/InmOffParoleSearch.svc</a:To>
+		<o:Security s:mustUnderstand="1">
+			<u:Timestamp u:Id="_0">
+				<u:Created>2018-05-08T20:40:23Z</u:Created>
+				<u:Expires>2018-05-08T20:50:23Z</u:Expires>
+			</u:Timestamp>
+			<o:UsernameToken u:Id="uuid-a3e30d57-0a79-4699-80cb-8652e2874a05-5">
+				<o:Username>JNetUser</o:Username>
+				<o:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">JNetPw</o:Password>
+			</o:UsernameToken>
+		</o:Security>
+	</s:Header>
+	<s:Body>
+		<ns1:GetPBPPOffenderDetails>
+			<ns1:inputCriteria>
+				<doc-ext:OffenderRequest>
+					<j:PersonVendorIdentification>
+						<nc:IdentificationID>JO</nc:IdentificationID>
+						<doc-ext:PersonVendorAugmentation>
+							<doc-ext:VendorName>CH</doc-ext:VendorName>
+						</doc-ext:PersonVendorAugmentation>
+					</j:PersonVendorIdentification>
+					<doc-ext:OffenderInput>
+						<doc-ext:SubjectAugmentation>
+							<!-- DOC Inmate Number
+						     <scr:InmateNumberID>AK8612</scr:InmateNumberID>
+						     -->
+							<!-- Offender Parole (PBPP) Identification Number. -->
+
+							<doc-ext:ParoleBoardIdentification>
+								<nc:IdentificationID>151HJ</nc:IdentificationID>
+							</doc-ext:ParoleBoardIdentification>
+
+						</doc-ext:SubjectAugmentation>
+						<!--
+						<nc:RoleOfPerson><nc:PersonBirthDate><nc:Date>1985-08-29</nc:Date></nc:PersonBirthDate><nc:PersonName><nc:PersonGivenName>JOHN</nc:PersonGivenName><nc:PersonSurName>smith</nc:PersonSurName></nc:PersonName></nc:RoleOfPerson>-->
+					</doc-ext:OffenderInput>
+				</doc-ext:OffenderRequest>
+			</ns1:inputCriteria>
+		</ns1:GetPBPPOffenderDetails>
+	</s:Body>
+</s:Envelope>

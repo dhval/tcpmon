@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetDriverStatus xmlns="http://jnet.state.pa.us/message/PennDOT/Driver">
+         <RequestMetadata xmlns="http://www.jnet.state.pa.us/niem/jnet/metadata/1">
+            <UserDefinedTrackingID/>
+            <RequestAuthenticatedUserID>NLETS</RequestAuthenticatedUserID>
+         </RequestMetadata>
+         <DriverCriteria xmlns="http://www.jnet.state.pa.us/niem/PennDOT/DriverCriteria/1">
+            <PersonBirthDate xmlns="http://niem.gov/niem/niem-core/2.0">
+               <Date>1980-01-01</Date>
+            </PersonBirthDate>
+            <PersonName xmlns="http://niem.gov/niem/niem-core/2.0">
+               <PersonGivenName>JOHN</PersonGivenName>
+               <PersonSurName>SMITH</PersonSurName>
+            </PersonName>
+         </DriverCriteria>
+      </GetDriverStatus>

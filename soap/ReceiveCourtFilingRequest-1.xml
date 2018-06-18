@@ -1,0 +1,12 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:ns2="http://www.jnet.state.pa.us/niem/jnet/metadata/1"
+                   xmlns:ns3="http://jnet.state.pa.us/message/aopc/CourtFiling/1">
+	  <SOAP-ENV:Body>
+		    <ns3:ReceiveCourtFilingRequest>
+			      <ns2:RequestMetadata>
+				        <ns2:UserDefinedTrackingID>_E0070383-5_050518100004</ns2:UserDefinedTrackingID>
+				        <ns2:RequestActionText>EFilingResponse</ns2:RequestActionText>
+			      </ns2:RequestMetadata>
+		    </ns3:ReceiveCourtFilingRequest>
+	  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

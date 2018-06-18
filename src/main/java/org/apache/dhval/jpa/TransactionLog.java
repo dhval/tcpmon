@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -50,10 +51,14 @@ public class TransactionLog {
     };
 
     @Transactional(readOnly=true)
-    public List<TransactionTable> byQueryType(String user) {
-        String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType, LEN(ISNULL(requestData,'')) as request, LEN(ISNULL(responseData,'')) as response FROM Audit_Log.dbo.TransactionLog" +
-                " where queryType LIKE ? order by requestDateTime desc";
-        List<TransactionTable> list =  jdbcTemplate.query(sql, new Object[] {"%" + user + "%"}, tableRowMapper);
+    public List<TransactionTable> byQueryType(String queryType) {
+        String[] queryTypes = queryType.split(",");
+        List<TransactionTable> list = new ArrayList<>();
+        for(String type:queryTypes) {
+            String sql = "SELECT top "+ size + " id, txnID, requestDateTime, userTrackingNumber, queryType, LEN(ISNULL(requestData,'')) as request, LEN(ISNULL(responseData,'')) as response FROM Audit_Log.dbo.TransactionLog" +
+                    " where queryType LIKE ? order by requestDateTime desc";
+            list.addAll(jdbcTemplate.query(sql, new Object[] {"%" + type + "%"}, tableRowMapper));
+        }
         return list;
     }
 
